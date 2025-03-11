@@ -1,0 +1,26 @@
+[project]
+name = "celery-cloud"
+version = "0.1.0"
+description = "Celery workers in the cloud"
+authors = [
+    {name = "Linus", email = "impalah@gmail.com"}
+]
+readme = "README.md"
+license = "MIT"
+keywords = ["celery", "cloud", "workers"]
+requires-python = ">=3.12"
+
+dependencies = [
+    "celery[dynamodb,sqs]>=5.4.0",
+    "python-dotenv>=1.0.1",
+]
+
+[project.scripts]
+celery-worker = "celery_cloud.worker:main"
+celery-test = "celery_cloud:celery"
+celery-cloud = "celery_cloud.main:main"
+celery-cloud-hello = "celery_cloud:hello"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
