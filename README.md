@@ -102,9 +102,15 @@ From VSCode launch debugger "Attach to FastAPI (uv)".
 Test the application.
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/lambda" -H "Content-Type: application/json" -d '{"key1": "value1"}'
+curl -X POST "http://127.0.0.1:8000/lambda" -H "Content-Type: application/json" -d @sqs_event.json
 ```
 
 ```powershell
-Invoke-RestMethod -Uri "http://127.0.0.1:8000/lambda" -Method Post -Headers @{"Content-Type"="application/json"} -Body '{"key1": "value1"}'
+$body = Get-Content -Raw -Path "sqs_event.json"
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/lambda" -Method Post -Headers @{"Content-Type"="application/json"} -Body $body
+
+# If UTF-8 required on server
+$body = Get-Content -Raw -Path "sqs_event.json" | Out-String
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/lambda" -Method Post -Headers @{"Content-Type"="application/json"} -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
+
 ```

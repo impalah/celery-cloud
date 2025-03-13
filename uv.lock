@@ -111,6 +111,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "celery", extra = ["dynamodb", "sqs"] },
+    { name = "pydantic" },
     { name = "python-dotenv" },
 ]
 
@@ -124,6 +125,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "celery", extras = ["dynamodb", "sqs"], specifier = ">=5.4.0" },
+    { name = "pydantic", specifier = ">=2.10.6" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
 ]
 
