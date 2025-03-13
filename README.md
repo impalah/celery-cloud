@@ -55,3 +55,56 @@ uv run python -c "import sys; print(sys.executable)"
 ## Step 1: Celery local worker
 
 TODO
+
+## Test: debug local lambda
+
+Fastapi will be used as an interface to lambda. debugpy will be used to connect to VSCode.
+
+Add dependencies using uv.
+
+```bash
+uv add --group dev fastapi uvicorn debugpy
+```
+
+Create launch.json to connect to the debugger
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach to FastAPI (uv)",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5890
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "${workspaceFolder}"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Launch uvicorn with the fastapi project
+
+```bash
+uv run uvicorn celery_cloud.server:app
+```
+
+From VSCode launch debugger "Attach to FastAPI (uv)".
+
+Test the application.
+
+```bash
+curl -X POST "http://127.0.0.1:8000/lambda" -H "Content-Type: application/json" -d '{"key1": "value1"}'
+```
+
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/lambda" -Method Post -Headers @{"Content-Type"="application/json"} -Body '{"key1": "value1"}'
+```
