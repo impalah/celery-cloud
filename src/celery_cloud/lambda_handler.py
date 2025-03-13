@@ -19,5 +19,3 @@ def lambda_handler(celery_task: CeleryTask) -> Any:
     # TODO: Use strategy pattern to execute different tasks
     sleep(5)
     return celery_task.args[0] + celery_task.args[1]
-
-

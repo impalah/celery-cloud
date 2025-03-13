@@ -1,7 +1,13 @@
 import json
 from typing import Any, Callable, Dict, List, TypeVar
 from pydantic import ValidationError
-from celery_cloud.entities import SQSEvent, CeleryTask, ProcessedTask, FailedTask, LambdaResponse
+from celery_cloud.entities import (
+    SQSEvent,
+    CeleryTask,
+    ProcessedTask,
+    FailedTask,
+    LambdaResponse,
+)
 
 F = TypeVar("F", bound=Callable[..., Any])  # Generic type for functions
 
@@ -15,6 +21,7 @@ def sqs_processor(func: F) -> F:
     Returns:
         F: Decorated function.
     """
+
     def wrapper(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         processed_tasks: List[ProcessedTask] = []
         failed_tasks: List[FailedTask] = []
@@ -29,43 +36,47 @@ def sqs_processor(func: F) -> F:
                     task_data: Dict[str, Any] = json.loads(record.body)
                     celery_task: CeleryTask = CeleryTask(**task_data)
 
-                    print(f"Executing task: {celery_task.task} with ID {celery_task.id}")
+                    print(
+                        f"Executing task: {celery_task.task} with ID {celery_task.id}"
+                    )
 
                     # Call decorated function with the arguments
                     result: Any = func(celery_task)
 
                     processed_tasks.append(
-                        ProcessedTask(task_id=celery_task.id, status="SUCCESS", result=result)
+                        ProcessedTask(
+                            task_id=celery_task.id, status="SUCCESS", result=result
+                        )
                     )
 
                 except json.JSONDecodeError as e:
                     failed_tasks.append(
                         FailedTask(
                             message_id=record.messageId,
-                            error=f"JSONDecodeError: {str(e)}"
+                            error=f"JSONDecodeError: {str(e)}",
                         )
                     )
                 except ValidationError as e:
                     failed_tasks.append(
                         FailedTask(
                             message_id=record.messageId,
-                            error=f"ValidationError: {e.json()}"
+                            error=f"ValidationError: {e.json()}",
                         )
                     )
                 except Exception as e:
                     failed_tasks.append(
                         FailedTask(
-                            task_id=celery_task.id if 'celery_task' in locals() else None,
+                            task_id=(
+                                celery_task.id if "celery_task" in locals() else None
+                            ),
                             message_id=record.messageId,
-                            error=str(e)
+                            error=str(e),
                         )
                     )
 
         except ValidationError as e:
             return LambdaResponse(
-                status="error",
-                message="Invalid SQS event format",
-                details=e.json()
+                status="error", message="Invalid SQS event format", details=e.json()
             ).model_dump()
 
         return LambdaResponse(
@@ -73,7 +84,7 @@ def sqs_processor(func: F) -> F:
             processed_messages=len(processed_tasks),
             failed_messages=len(failed_tasks),
             processed_tasks=processed_tasks if processed_tasks else None,
-            failed_tasks=failed_tasks if failed_tasks else None
+            failed_tasks=failed_tasks if failed_tasks else None,
         ).model_dump()
 
     return wrapper  # Return decorated function
