@@ -1,7 +1,7 @@
 import platform
 from typing import List
 
-from celery_cloud.settings import settings
+from celery_cloud.core.settings import settings
 from celery_cloud.task import app
 
 

@@ -20,6 +20,11 @@ class Settings:
         self.CELERY_BROKER_SQS_QUEUE_URL: str = self.get_env_variable('CELERY_BROKER_SQS_QUEUE_URL', None)
         self.CELERY_BROKER_SQS_REGION: str = self.get_env_variable('CELERY_BROKER_SQS_REGION', None)
         self.LOG_LEVEL: str = self.get_env_variable('LOG_LEVEL', 'INFO')
+        self.LOG_FORMAT: str = self.get_env_variable(
+            "LOG_FORMAT",
+            "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | trace_id={extra[trace_id]} | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",)
+
+
         self.CELERY_WORKERS: int = self.get_env_variable('CELERY_WORKERS', 2)
 
 

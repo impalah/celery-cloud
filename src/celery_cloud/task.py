@@ -1,7 +1,7 @@
 from celery import Celery
 from time import sleep
 
-from celery_cloud.celery_config import Celeryconfig
+from celery_cloud.core.celery_config import Celeryconfig
 
 
 # Configure Celery

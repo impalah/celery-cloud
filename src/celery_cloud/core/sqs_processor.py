@@ -1,7 +1,9 @@
 import json
 from typing import Any, Callable, Dict, List, TypeVar
 from pydantic import ValidationError
-from celery_cloud.entities import SQSEvent, CeleryTask, ProcessedTask, FailedTask, LambdaResponse
+from ksuid import Ksuid
+from celery_cloud.core.logging import trace_id_context, logger
+from celery_cloud.core.entities import SQSEvent, CeleryTask, ProcessedTask, FailedTask, LambdaResponse
 
 F = TypeVar("F", bound=Callable[..., Any])  # Generic type for functions
 
@@ -20,8 +22,16 @@ def sqs_processor(func: F) -> F:
         failed_tasks: List[FailedTask] = []
 
         try:
+
+            # Generate KSUID as trace_id
+            trace_id = str(Ksuid())
+            # Assign trace_id to context
+            trace_id_context.set(trace_id)
+
             # Validate event with pydantic
             sqs_event: SQSEvent = SQSEvent(**event)
+
+            logger.debug(f"Processing lambda event: {sqs_event.model_dump()}")
 
             for record in sqs_event.Records:
                 try:
@@ -29,16 +39,19 @@ def sqs_processor(func: F) -> F:
                     task_data: Dict[str, Any] = json.loads(record.body)
                     celery_task: CeleryTask = CeleryTask(**task_data)
 
-                    print(f"Executing task: {celery_task.task} with ID {celery_task.id}")
+                    logger.debug(f"Processing task: {celery_task.task} with ID {celery_task.id}")
 
                     # Call decorated function with the arguments
                     result: Any = func(celery_task)
+
+                    logger.debug(f"Processed task: {celery_task.task} with ID {celery_task.id}")
 
                     processed_tasks.append(
                         ProcessedTask(task_id=celery_task.id, status="SUCCESS", result=result)
                     )
 
                 except json.JSONDecodeError as e:
+                    logger.error(f"JSONDecodeError processing task {celery_task.task}/{celery_task.id}: {str(e)}")
                     failed_tasks.append(
                         FailedTask(
                             message_id=record.messageId,
@@ -46,6 +59,7 @@ def sqs_processor(func: F) -> F:
                         )
                     )
                 except ValidationError as e:
+                    logger.error(f"ValidationError processing task {celery_task.task}/{celery_task.id}: {str(e)}")
                     failed_tasks.append(
                         FailedTask(
                             message_id=record.messageId,
@@ -53,6 +67,7 @@ def sqs_processor(func: F) -> F:
                         )
                     )
                 except Exception as e:
+                    logger.error(f"Error processing task {celery_task.task if 'celery_task' in locals() else None}/{celery_task.id if 'celery_task' in locals() else None}: {str(e)}")
                     failed_tasks.append(
                         FailedTask(
                             task_id=celery_task.id if 'celery_task' in locals() else None,
@@ -62,11 +77,20 @@ def sqs_processor(func: F) -> F:
                     )
 
         except ValidationError as e:
+
+            logger.error(f"Invalid SQS event format: {e.json()}")
+
+            # Clear context before finishing the function
+            trace_id_context.set(None)
+
             return LambdaResponse(
                 status="error",
                 message="Invalid SQS event format",
                 details=e.json()
             ).model_dump()
+
+        # Clear context before finishing the function
+        trace_id_context.set(None)
 
         return LambdaResponse(
             status="completed",
@@ -77,3 +101,4 @@ def sqs_processor(func: F) -> F:
         ).model_dump()
 
     return wrapper  # Return decorated function
+

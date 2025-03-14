@@ -17,7 +17,7 @@ def celery() -> None:
     print(f"Task ID: {result.id}")
 
     while not result.ready():
-        print("Task not ready yet...")
+        print(f"Task not ready yet: {result.state}")
         sleep(1)
 
     print(f"Task ID finished. Result: {result.get()}")
