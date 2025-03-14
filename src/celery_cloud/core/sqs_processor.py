@@ -17,6 +17,7 @@ def sqs_processor(func: F) -> F:
     Returns:
         F: Decorated function.
     """
+
     def wrapper(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         processed_tasks: List[ProcessedTask] = []
         failed_tasks: List[FailedTask] = []
@@ -47,7 +48,9 @@ def sqs_processor(func: F) -> F:
                     logger.debug(f"Processed task: {celery_task.task} with ID {celery_task.id}")
 
                     processed_tasks.append(
-                        ProcessedTask(task_id=celery_task.id, status="SUCCESS", result=result)
+                        ProcessedTask(
+                            task_id=celery_task.id, status="SUCCESS", result=result
+                        )
                     )
 
                 except json.JSONDecodeError as e:
@@ -55,7 +58,7 @@ def sqs_processor(func: F) -> F:
                     failed_tasks.append(
                         FailedTask(
                             message_id=record.messageId,
-                            error=f"JSONDecodeError: {str(e)}"
+                            error=f"JSONDecodeError: {str(e)}",
                         )
                     )
                 except ValidationError as e:
@@ -63,16 +66,18 @@ def sqs_processor(func: F) -> F:
                     failed_tasks.append(
                         FailedTask(
                             message_id=record.messageId,
-                            error=f"ValidationError: {e.json()}"
+                            error=f"ValidationError: {e.json()}",
                         )
                     )
                 except Exception as e:
                     logger.error(f"Error processing task {celery_task.task if 'celery_task' in locals() else None}/{celery_task.id if 'celery_task' in locals() else None}: {str(e)}")
                     failed_tasks.append(
                         FailedTask(
-                            task_id=celery_task.id if 'celery_task' in locals() else None,
+                            task_id=(
+                                celery_task.id if "celery_task" in locals() else None
+                            ),
                             message_id=record.messageId,
-                            error=str(e)
+                            error=str(e),
                         )
                     )
 
@@ -84,9 +89,7 @@ def sqs_processor(func: F) -> F:
             trace_id_context.set(None)
 
             return LambdaResponse(
-                status="error",
-                message="Invalid SQS event format",
-                details=e.json()
+                status="error", message="Invalid SQS event format", details=e.json()
             ).model_dump()
 
         # Clear context before finishing the function
@@ -97,7 +100,7 @@ def sqs_processor(func: F) -> F:
             processed_messages=len(processed_tasks),
             failed_messages=len(failed_tasks),
             processed_tasks=processed_tasks if processed_tasks else None,
-            failed_tasks=failed_tasks if failed_tasks else None
+            failed_tasks=failed_tasks if failed_tasks else None,
         ).model_dump()
 
     return wrapper  # Return decorated function
