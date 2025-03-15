@@ -94,7 +94,7 @@ Create launch.json to connect to the debugger
 Launch uvicorn with the fastapi project
 
 ```bash
-uv run uvicorn celery_cloud.server:app
+ uv run uvicorn celery_cloud.debug_server:app
 ```
 
 From VSCode launch debugger "Attach to FastAPI (uv)".

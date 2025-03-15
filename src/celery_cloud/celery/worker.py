@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from celery_cloud.celery_worker import start_worker
+from celery_cloud.celery.celery_worker import start_worker
 
 
 def main():

@@ -44,6 +44,9 @@ class Settings:
         self.LOG_LEVEL: str = self.get_env_variable("LOG_LEVEL", "INFO")
         self.CELERY_WORKERS: int = self.get_env_variable("CELERY_WORKERS", 2)
 
+        self.SERVER_DEBUG_PORT: int = self.get_env_variable('SERVER_DEBUG_PORT', 5890)
+
+
     @staticmethod
     def get_env_variable(var_name: str, default: Any = None) -> Any:
         """Get environment variable or default value

@@ -20,11 +20,10 @@ dependencies = [
 ]
 
 [project.scripts]
-celery-worker = "celery_cloud.worker:main"
-celery-test = "celery_cloud:celery"
-celery-cloud = "celery_cloud.main:main"
-celery-cloud-hello = "celery_cloud:hello"
-celery-lambda = "celery_cloud.server:main"
+celery-worker = "celery_cloud.celery.worker:main"
+celery-cloud = "celery_cloud.celery.main:main"
+celery-cloud-hello = "celery_cloud.client:hello"
+celery-client = "celery_cloud.client:celery"
 
 [build-system]
 requires = ["hatchling"]

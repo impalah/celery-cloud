@@ -2,8 +2,8 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to FastAPI (uv)",
-      "type": "python",
+      "name": "Celery Cloud - Attach to FastAPI (uv)",
+      "type": "debugpy",
       "request": "attach",
       "connect": {
         "host": "localhost",

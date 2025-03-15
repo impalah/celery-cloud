@@ -22,3 +22,31 @@ def add(x: int, y: int) -> int:
     """
     sleep(5)
     return x + y
+
+
+@app.task
+def sumar(x: int, y: int) -> int:
+    """Simple function to add two numbers.
+
+    Args:
+        x (_type_): _description_
+        y (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    pass
+
+@app.task
+def restar(x: int, y: int) -> int:
+    """Simple function to substract two numbers.
+
+    Args:
+        x (_type_): _description_
+        y (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    pass
+
