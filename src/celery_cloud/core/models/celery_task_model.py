@@ -1,9 +1,11 @@
 import base64
 import json
-import datetime
+from datetime import datetime, timezone
 from typing import Optional, Any
 from pynamodb.models import Model
 from pynamodb.attributes import UnicodeAttribute, BinaryAttribute, NumberAttribute
+from celery_cloud.core.entities import CeleryTaskResult
+
 
 
 class CeleryTaskModel(Model):
@@ -17,20 +19,21 @@ class CeleryTaskModel(Model):
     """
 
     class Meta:
+        # TODO: send to settings
         table_name = "celery"
         region = "eu-west-1"
 
-    # El task_id tiene un prefijo b'celery-task-meta-' antes del UUID
-    task_id = UnicodeAttribute(hash_key=True)
+    # task_id has b'celery-task-meta-' prefix before UUID
+    id = UnicodeAttribute(hash_key=True)
 
-    # El resultado se almacena en formato binario (base64)
-    result = BinaryAttribute(null=True)
+    # Result stored as binary (base64)
+    result = BinaryAttribute(legacy_encoding=False)
 
-    # Timestamp como número flotante
-    timestamp = NumberAttribute(default=lambda: datetime.datetime.now(datetime.timezone.utc).timestamp())
+    # Timestamp as floating number
+    timestamp = NumberAttribute(default=lambda: datetime.now(timezone.utc).timestamp())
 
     @classmethod
-    def insert_task(cls, task_uuid: str):
+    def insert_task(cls, task_uuid: str) -> "CeleryTaskModel":
         """Insert a new task with the correct prefix.
 
         Args:
@@ -42,7 +45,20 @@ class CeleryTaskModel(Model):
 
         prefixed_task_id = f"celery-task-meta-{task_uuid}"
 
-        task = cls(task_id=prefixed_task_id, result=None)
+        task_result = CeleryTaskResult(
+            status="PROCESSING",
+            result=None,
+            traceback=None,
+            children=[],
+            date_done=str(datetime.now(timezone.utc).isoformat()),
+            task_id=task_uuid,
+        )
+
+        # encoded_result = base64.b64encode(json.dumps(task_result.model_dump()).encode())
+        encoded_result = json.dumps(task_result.model_dump()).encode()
+
+
+        task = cls(id=prefixed_task_id, result=encoded_result)
         task.save()
         return task
 
@@ -65,9 +81,21 @@ class CeleryTaskModel(Model):
 
         try:
             task = cls.get(prefixed_task_id)
-            encoded_result = base64.b64encode(json.dumps(result).encode())
 
-            task.update(actions=[cls.result.set(encoded_result)])
+
+            task_result = CeleryTaskResult(
+                status=status,
+                result=result,
+                traceback=traceback if traceback else None,
+                children=[],
+                date_done=str(datetime.now(timezone.utc).isoformat()),
+                task_id=task_uuid,
+            )
+
+            # encoded_result = base64.b64encode(json.dumps(task_result.model_dump()).encode())
+            encoded_result = json.dumps(task_result.model_dump()).encode()
+
+            task.update(actions=[cls.result.set(encoded_result), cls.timestamp.set(datetime.now(timezone.utc).timestamp())])
             return task
         except cls.DoesNotExist:
             return None

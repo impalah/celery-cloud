@@ -3,7 +3,8 @@ from typing import Any, Callable, Dict, List, TypeVar
 from pydantic import ValidationError
 from ksuid import Ksuid
 from celery_cloud.core.logging import trace_id_context, logger
-from celery_cloud.core.entities import SQSEvent, CeleryTask, ProcessedTask, FailedTask, LambdaResponse
+from celery_cloud.core.entities import SQSEvent, CeleryTask, ProcessedTask, FailedTask, LambdaResponse, CeleryTaskResult
+from celery_cloud.core.models.celery_task_model import CeleryTaskModel
 
 F = TypeVar("F", bound=Callable[..., Any])  # Generic type for functions
 
@@ -42,10 +43,20 @@ def sqs_processor(func: F) -> F:
 
                     logger.debug(f"Processing task: {celery_task.task} with ID {celery_task.id}")
 
+                    # Set task status to "PROCESSING" in backend
+
+                    task_model: CeleryTaskModel = CeleryTaskModel.insert_task(task_uuid=celery_task.id)
+
                     # Call decorated function with the arguments
                     result: Any = func(celery_task)
 
                     logger.debug(f"Processed task: {celery_task.task} with ID {celery_task.id}")
+
+                    CeleryTaskModel.update_task(
+                        celery_task.id,
+                        status="SUCCESS",
+                        result=result
+                    )
 
                     processed_tasks.append(
                         ProcessedTask(
@@ -55,6 +66,14 @@ def sqs_processor(func: F) -> F:
 
                 except json.JSONDecodeError as e:
                     logger.error(f"JSONDecodeError processing task {celery_task.task}/{celery_task.id}: {str(e)}")
+
+                    CeleryTaskModel.update_task(
+                        celery_task.id,
+                        status="FAILURE",
+                        result=f"JSONDecodeError: {str(e)}",
+                        traceback=e.__traceback__
+                    )
+
                     failed_tasks.append(
                         FailedTask(
                             message_id=record.messageId,
@@ -63,6 +82,14 @@ def sqs_processor(func: F) -> F:
                     )
                 except ValidationError as e:
                     logger.error(f"ValidationError processing task {celery_task.task}/{celery_task.id}: {str(e)}")
+
+                    CeleryTaskModel.update_task(
+                        celery_task.id,
+                        status="FAILURE",
+                        result=f"ValidationError: {e.json()}",
+                        traceback=e.__traceback__
+                    )
+
                     failed_tasks.append(
                         FailedTask(
                             message_id=record.messageId,
@@ -71,6 +98,14 @@ def sqs_processor(func: F) -> F:
                     )
                 except Exception as e:
                     logger.error(f"Error processing task {celery_task.task if 'celery_task' in locals() else None}/{celery_task.id if 'celery_task' in locals() else None}: {str(e)}")
+
+                    CeleryTaskModel.update_task(
+                        celery_task.id,
+                        status="FAILURE",
+                        result=f"Exception: {str(e)}",
+                        traceback=e.__traceback__
+                    )
+
                     failed_tasks.append(
                         FailedTask(
                             task_id=(

@@ -33,7 +33,7 @@ class CeleryTaskResult(BaseModel):
         json_schema_extra={"description": "List of children tasks", "example": []},
     )
 
-    date_done: Optional[datetime] = Field(
+    date_done: Optional[str] = Field(
         None,
         json_schema_extra={
             "description": "Finish data format ISO 8601",
