@@ -5,6 +5,7 @@ from typing import Optional, Any
 from pynamodb.models import Model
 from pynamodb.attributes import UnicodeAttribute, BinaryAttribute, NumberAttribute
 from celery_cloud.core.entities import CeleryTaskResult
+from celery_cloud.core.logging import logger
 
 
 
@@ -43,6 +44,8 @@ class CeleryTaskModel(Model):
             _type_: _description_
         """
 
+        logger.debug(f"Inserting task {task_uuid}")
+
         prefixed_task_id = f"celery-task-meta-{task_uuid}"
 
         task_result = CeleryTaskResult(
@@ -60,6 +63,9 @@ class CeleryTaskModel(Model):
 
         task = cls(id=prefixed_task_id, result=encoded_result)
         task.save()
+
+        logger.debug(f"Task {task_uuid} inserted on DynamoDB")
+
         return task
 
     @classmethod
@@ -75,7 +81,8 @@ class CeleryTaskModel(Model):
         Returns:
             _type_: _description_
         """
-        
+
+        logger.debug(f"Updating task {task_uuid} with status {status}")
 
         prefixed_task_id = f"celery-task-meta-{task_uuid}"
 
@@ -96,6 +103,9 @@ class CeleryTaskModel(Model):
             encoded_result = json.dumps(task_result.model_dump()).encode()
 
             task.update(actions=[cls.result.set(encoded_result), cls.timestamp.set(datetime.now(timezone.utc).timestamp())])
+
+            logger.debug(f"Task {task_uuid} updated on DynamoDB")
+
             return task
         except cls.DoesNotExist:
             return None
@@ -111,6 +121,8 @@ class CeleryTaskModel(Model):
             Optional[dict]: _description_
         """
 
+        logger.debug(f"Getting task {task_uuid}")
+
         prefixed_task_id = f"celery-task-meta-{task_uuid}"
 
         try:
@@ -119,6 +131,8 @@ class CeleryTaskModel(Model):
             decoded_result = (
                 json.loads(base64.b64decode(task.result).decode()) if task.result else None
             )
+
+            logger.debug(f"Task {task_uuid} retrieved from DynamoDB")
 
             return {
                 "task_id": task.task_id,
