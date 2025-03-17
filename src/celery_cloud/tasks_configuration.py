@@ -7,6 +7,6 @@ from celery_cloud.domain.restar import restar
 
 
 TASKS: Dict[str, Callable[..., Any]] = {
-    "tasks.sumar": sumar,
-    "tasks.restar": restar,
+    "celery_cloud.celery.task.sumar": sumar,
+    "celery_cloud.celery.task.restar": restar,
 }

@@ -1,9 +1,11 @@
+import ast
+import base64
 import json
 from typing import Any, Callable, Dict, List, TypeVar
 from pydantic import ValidationError
 from ksuid import Ksuid
 from celery_cloud.core.logging import trace_id_context, logger
-from celery_cloud.core.entities import SQSEvent, CeleryTask, ProcessedTask, FailedTask, LambdaResponse, CeleryTaskResult
+from celery_cloud.core.entities import SQSEvent, CeleryTask, ProcessedTask, FailedTask, LambdaResponse, CeleryTaskResult, SQSMessage
 from celery_cloud.core.models.celery_task_model import CeleryTaskModel
 
 F = TypeVar("F", bound=Callable[..., Any])  # Generic type for functions
@@ -37,14 +39,28 @@ def sqs_processor(func: F) -> F:
 
             for record in sqs_event.Records:
                 try:
-                    # Decode SQS message body
-                    task_data: Dict[str, Any] = json.loads(record.body)
-                    celery_task: CeleryTask = CeleryTask(**task_data)
 
-                    logger.debug(f"Processing task: {celery_task.task} with ID {celery_task.id}")
+                    # # Decode SQS message body
+                    # task_data: Dict[str, Any] = json.loads(base64.b64decode(record.body).decode())
+                    # logger.debug(f"Record data: {task_data}")
+
+                    # celery_task: CeleryTask = CeleryTask(**task_data)
+                    # logger.debug(f"Processing task: {celery_task.task} with ID {celery_task.id}")
+                    message: Dict[str, Any] = record.get_message()
+                    sqs_message: SQSMessage = SQSMessage(body=message["body"], content_encoding=message["content-encoding"], content_type=message["content-type"], headers=message["headers"], properties=message["properties"])
+                    logger.debug(f"Processing message: {sqs_message}")
+
+
+                    # Create CeleryTask object
+                    celery_task: CeleryTask = CeleryTask(
+                        id=sqs_message.headers.id,
+                        task=sqs_message.headers.task,
+                        args=ast.literal_eval(sqs_message.headers.argsrepr),  # Safely convert string to list
+                        kwargs=ast.literal_eval(sqs_message.headers.kwargsrepr)  # Safely convert string to dict
+                    )
+
 
                     # Set task status to "PROCESSING" in backend
-
                     task_model: CeleryTaskModel = CeleryTaskModel.insert_task(task_uuid=celery_task.id)
 
                     # Call decorated function with the arguments
@@ -81,6 +97,7 @@ def sqs_processor(func: F) -> F:
                         )
                     )
                 except ValidationError as e:
+                    # TODO: Add more specific error handling
                     logger.error(f"ValidationError processing task {celery_task.task}/{celery_task.id}: {str(e)}")
 
                     CeleryTaskModel.update_task(

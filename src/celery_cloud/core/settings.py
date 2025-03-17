@@ -15,6 +15,9 @@ class Settings:
 
         self.CELERY_BROKER_URL: str = self.get_env_variable('CELERY_BROKER_URL', 'sqs://@')
         self.CELERY_BACKEND_URL: str = self.get_env_variable('CELERY_BACKEND_URL', 'dynamodb://@/?read=5&write=5')
+        self.CELERY_BACKEND_TABLE: str = self.get_env_variable('CELERY_BACKEND_TABLE', 'celery')
+        self.CELERY_BACKEND_REGION: str = self.get_env_variable('CELERY_BACKEND_REGION', 'eu-west-1')
+
         self.CELERY_TASK_DEFAULT_QUEUE: str = self.get_env_variable('CELERY_TASK_DEFAULT_QUEUE', 'celery-test-queue')
         self.CELERY_BROKER_SQS_QUEUE_URL: str = self.get_env_variable('CELERY_BROKER_SQS_QUEUE_URL', None)
         self.CELERY_BROKER_SQS_REGION: str = self.get_env_variable('CELERY_BROKER_SQS_REGION', None)

@@ -6,7 +6,7 @@ from pynamodb.models import Model
 from pynamodb.attributes import UnicodeAttribute, BinaryAttribute, NumberAttribute
 from celery_cloud.core.entities import CeleryTaskResult
 from celery_cloud.core.logging import logger
-
+from celery_cloud.core.settings import settings
 
 
 class CeleryTaskModel(Model):
@@ -20,9 +20,8 @@ class CeleryTaskModel(Model):
     """
 
     class Meta:
-        # TODO: send to settings
-        table_name = "celery"
-        region = "eu-west-1"
+        table_name = settings.CELERY_BACKEND_TABLE
+        region = settings.CELERY_BACKEND_REGION
 
     # task_id has b'celery-task-meta-' prefix before UUID
     id = UnicodeAttribute(hash_key=True)
