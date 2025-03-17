@@ -45,7 +45,7 @@ class CeleryTaskModel(Model):
 
         logger.debug(f"Inserting task {task_uuid}")
 
-        prefixed_task_id = f"celery-task-meta-{task_uuid}"
+        prefixed_task_id = f"celery-task-meta-{task_uuid}".encode()
 
         task_result = CeleryTaskResult(
             status="PROCESSING",
@@ -59,8 +59,7 @@ class CeleryTaskModel(Model):
         # encoded_result = base64.b64encode(json.dumps(task_result.model_dump()).encode())
         encoded_result = json.dumps(task_result.model_dump()).encode()
 
-
-        task = cls(id=prefixed_task_id, result=encoded_result)
+        task = cls(id=str(prefixed_task_id), result=encoded_result)
         task.save()
 
         logger.debug(f"Task {task_uuid} inserted on DynamoDB")
@@ -68,7 +67,13 @@ class CeleryTaskModel(Model):
         return task
 
     @classmethod
-    def update_task(cls, task_uuid: str, status: str, result: Optional[Any] = None, traceback: Optional[str] = None):
+    def update_task(
+        cls,
+        task_uuid: str,
+        status: str,
+        result: Optional[Any] = None,
+        traceback: Optional[str] = None,
+    ):
         """Update task status
 
         Args:
@@ -83,11 +88,10 @@ class CeleryTaskModel(Model):
 
         logger.debug(f"Updating task {task_uuid} with status {status}")
 
-        prefixed_task_id = f"celery-task-meta-{task_uuid}"
+        prefixed_task_id = f"celery-task-meta-{task_uuid}".encode()
 
         try:
-            task = cls.get(prefixed_task_id)
-
+            task = cls.get(str(prefixed_task_id))
 
             task_result = CeleryTaskResult(
                 status=status,
@@ -101,7 +105,12 @@ class CeleryTaskModel(Model):
             # encoded_result = base64.b64encode(json.dumps(task_result.model_dump()).encode())
             encoded_result = json.dumps(task_result.model_dump()).encode()
 
-            task.update(actions=[cls.result.set(encoded_result), cls.timestamp.set(datetime.now(timezone.utc).timestamp())])
+            task.update(
+                actions=[
+                    cls.result.set(encoded_result),
+                    cls.timestamp.set(datetime.now(timezone.utc).timestamp()),
+                ]
+            )
 
             logger.debug(f"Task {task_uuid} updated on DynamoDB")
 
@@ -122,19 +131,21 @@ class CeleryTaskModel(Model):
 
         logger.debug(f"Getting task {task_uuid}")
 
-        prefixed_task_id = f"celery-task-meta-{task_uuid}"
+        prefixed_task_id = f"celery-task-meta-{task_uuid}".encode()
 
         try:
-            task = cls.get(prefixed_task_id)
+            task = cls.get(str(prefixed_task_id))
 
             decoded_result = (
-                json.loads(base64.b64decode(task.result).decode()) if task.result else None
+                json.loads(base64.b64decode(task.result).decode())
+                if task.result
+                else None
             )
 
             logger.debug(f"Task {task_uuid} retrieved from DynamoDB")
 
             return {
-                "task_id": task.task_id,
+                "task_id": str(prefixed_task_id),  # task.task_id,
                 "result": decoded_result,
                 "timestamp": task.timestamp,
             }
