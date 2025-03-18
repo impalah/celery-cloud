@@ -1,7 +1,16 @@
 from celery import Celery
 from time import sleep
+from typing import List, Dict, Optional, Any
+from pydantic import BaseModel, Field
+
 
 from celery_cloud.core.celery_config import Celeryconfig
+from celery_cloud.core.entities.test.prompt_reponse import PromptResponse
+from celery_cloud.core.entities.test.prompt_request import PromptRequest
+
+
+
+
 
 
 # Configure Celery
@@ -47,6 +56,34 @@ def restar(x: int, y: int) -> int:
 
     Returns:
         _type_: _description_
+    """
+    pass
+
+@app.task
+# def prompt(prompt: PromptRequest) -> PromptResponse:
+def prompt(prompt: Dict[str, Any]) -> PromptResponse:
+    """Testing complex objects serialization
+
+    Args:
+        x (int): _description_
+        y (int): _description_
+
+    Returns:
+        int: _description_
+    """
+    pass
+
+
+@app.task
+def prompt2(demo: str) -> PromptResponse:
+    """Testing complex objects serialization
+
+    Args:
+        x (int): _description_
+        y (int): _description_
+
+    Returns:
+        int: _description_
     """
     pass
 

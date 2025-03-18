@@ -25,6 +25,7 @@ def sqs_processor(func: F) -> F:
         processed_tasks: List[ProcessedTask] = []
         failed_tasks: List[FailedTask] = []
 
+        # TODO: Add more specific error handling (Exception) to capture all errors
         try:
 
             # Generate KSUID as trace_id
@@ -114,6 +115,7 @@ def sqs_processor(func: F) -> F:
                         )
                     )
                 except Exception as e:
+                    # TODO: Be careful with this generic exception handling, it is using celery_task variable that may not be defined
                     logger.error(f"Error processing task {celery_task.task if 'celery_task' in locals() else None}/{celery_task.id if 'celery_task' in locals() else None}: {str(e)}")
 
                     CeleryTaskModel.update_task(

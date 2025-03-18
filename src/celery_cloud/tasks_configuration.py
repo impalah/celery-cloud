@@ -4,9 +4,11 @@
 from typing import Any, Dict, Callable
 from celery_cloud.domain.sumar import sumar
 from celery_cloud.domain.restar import restar
+from celery_cloud.domain.prompt import prompt
 
 
 TASKS: Dict[str, Callable[..., Any]] = {
     "celery_cloud.celery.task.sumar": sumar,
     "celery_cloud.celery.task.restar": restar,
+    "celery_cloud.celery.task.prompt": prompt,
 }
