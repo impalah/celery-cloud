@@ -1,5 +1,5 @@
-from typing import List, Dict, Optional, Any
 from pydantic import BaseModel, Field
+
 
 class PromptRequest(BaseModel):
     """Representation of a prompt request (for testing purposes)
@@ -24,4 +24,3 @@ class PromptRequest(BaseModel):
             "example": "Gimme some answers",
         },
     )
-

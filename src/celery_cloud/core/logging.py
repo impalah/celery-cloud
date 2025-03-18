@@ -1,5 +1,4 @@
 import contextvars
-import logging
 import sys
 
 from loguru import logger
@@ -41,4 +40,3 @@ __all__ = [
     "logger",
     "trace_id_context",
 ]  # Add logger and trace_id_context to __all__ to be able to import them from the package
-

@@ -1,9 +1,13 @@
 import base64
 import json
-from datetime import datetime, timezone
-from typing import Optional, Any
+from datetime import datetime, UTC
+from typing import Any
 from pynamodb.models import Model
-from pynamodb.attributes import UnicodeAttribute, BinaryAttribute, NumberAttribute
+from pynamodb.attributes import (
+    UnicodeAttribute,
+    BinaryAttribute,
+    NumberAttribute,
+)
 from celery_cloud.core.entities import CeleryTaskResult
 from celery_cloud.core.logging import logger
 from celery_cloud.core.settings import settings
@@ -30,7 +34,7 @@ class CeleryTaskModel(Model):
     result = BinaryAttribute(legacy_encoding=False)
 
     # Timestamp as floating number
-    timestamp = NumberAttribute(default=lambda: datetime.now(timezone.utc).timestamp())
+    timestamp = NumberAttribute(default=lambda: datetime.now(UTC).timestamp())
 
     @classmethod
     def insert_task(cls, task_uuid: str) -> "CeleryTaskModel":
@@ -52,7 +56,7 @@ class CeleryTaskModel(Model):
             result=None,
             traceback=None,
             children=[],
-            date_done=str(datetime.now(timezone.utc).isoformat()),
+            date_done=str(datetime.now(UTC).isoformat()),
             task_id=task_uuid,
         )
 
@@ -71,8 +75,8 @@ class CeleryTaskModel(Model):
         cls,
         task_uuid: str,
         status: str,
-        result: Optional[Any] = None,
-        traceback: Optional[str] = None,
+        result: Any | None = None,
+        traceback: str | None = None,
     ):
         """Update task status
 
@@ -98,7 +102,7 @@ class CeleryTaskModel(Model):
                 result=result,
                 traceback=traceback if traceback else None,
                 children=[],
-                date_done=str(datetime.now(timezone.utc).isoformat()),
+                date_done=str(datetime.now(UTC).isoformat()),
                 task_id=task_uuid,
             )
 
@@ -108,7 +112,7 @@ class CeleryTaskModel(Model):
             task.update(
                 actions=[
                     cls.result.set(encoded_result),
-                    cls.timestamp.set(datetime.now(timezone.utc).timestamp()),
+                    cls.timestamp.set(datetime.now(UTC).timestamp()),
                 ]
             )
 
@@ -119,7 +123,7 @@ class CeleryTaskModel(Model):
             return None
 
     @classmethod
-    def get_task(cls, task_uuid: str) -> Optional[dict]:
+    def get_task(cls, task_uuid: str) -> dict | None:
         """Ges task status and decode result
 
         Args:

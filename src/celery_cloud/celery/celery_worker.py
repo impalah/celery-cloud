@@ -1,5 +1,4 @@
 import platform
-from typing import List
 
 from celery_cloud.core.settings import settings
 from celery_cloud.celery.task import app
@@ -18,7 +17,7 @@ celery -A celery_cloud.celery_worker.app worker --loglevel=info -P solo
 def start_worker():
     print("Starting celery worker")
 
-    argv: List[str] = [
+    argv: list[str] = [
         "worker",
         f"--loglevel={settings.LOG_LEVEL.lower()}",
     ]

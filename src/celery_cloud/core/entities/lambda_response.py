@@ -1,4 +1,4 @@
-from typing import List, Optional, Any
+from typing import Any
 from pydantic import BaseModel, Field
 
 
@@ -22,7 +22,7 @@ class ProcessedTask(BaseModel):
         },
     )
 
-    result: Optional[Any] = Field(
+    result: Any | None = Field(
         None,
         json_schema_extra={
             "description": "Returned result of the task if available",
@@ -34,7 +34,7 @@ class ProcessedTask(BaseModel):
 class FailedTask(BaseModel):
     """Representation of a failed Celery task"""
 
-    task_id: Optional[str] = Field(
+    task_id: str | None = Field(
         None,
         max_length=150,
         json_schema_extra={
@@ -71,7 +71,7 @@ class LambdaResponse(BaseModel):
         },
     )
 
-    processed_messages: Optional[int] = Field(
+    processed_messages: int | None = Field(
         None,
         json_schema_extra={
             "description": "Total number of messages successfully processed",
@@ -79,7 +79,7 @@ class LambdaResponse(BaseModel):
         },
     )
 
-    failed_messages: Optional[int] = Field(
+    failed_messages: int | None = Field(
         None,
         json_schema_extra={
             "description": "Total number of messages that failed processing",
@@ -87,21 +87,21 @@ class LambdaResponse(BaseModel):
         },
     )
 
-    processed_tasks: Optional[List[ProcessedTask]] = Field(
+    processed_tasks: list[ProcessedTask] | None = Field(
         None,
         json_schema_extra={
             "description": "List of successfully processed tasks",
         },
     )
 
-    failed_tasks: Optional[List[FailedTask]] = Field(
+    failed_tasks: list[FailedTask] | None = Field(
         None,
         json_schema_extra={
             "description": "List of failed tasks with details",
         },
     )
 
-    message: Optional[str] = Field(
+    message: str | None = Field(
         None,
         json_schema_extra={
             "description": "Error message if the entire Lambda execution failed",
@@ -109,10 +109,10 @@ class LambdaResponse(BaseModel):
         },
     )
 
-    details: Optional[str] = Field(
+    details: str | None = Field(
         None,
         json_schema_extra={
             "description": "Detailed error information if applicable",
-            "example": "{\"loc\": [\"Records\"], \"msg\": \"field required\", \"type\": \"value_error.missing\"}",
+            "example": '{"loc": ["Records"], "msg": "field required", "type": "value_error.missing"}',
         },
     )

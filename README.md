@@ -40,6 +40,35 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 ```
 
+### Version management
+
+#### Set a specific version
+
+```bash
+VERSION="0.5.0"
+uvx --from=toml-cli toml set --toml-path=pyproject.toml project.version $VERSION
+```
+
+#### Retrieve version
+
+```bash
+uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version
+```
+
+Works in a Dockerfile, makefile, etc.
+
+#### Bump project version
+
+If you need to bump the version by using specifiers like patch, minor, or major:
+
+```bash
+v=$(uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version)
+
+# bump patch version
+part="patch"
+uvx --from bump2version bumpversion --allow-dirty --current-version "$v" "$part" pyproject.toml
+```
+
 ### Launch project
 
 ```bash
@@ -63,7 +92,7 @@ Fastapi will be used as an interface to lambda. debugpy will be used to connect 
 Add dependencies using uv.
 
 ```bash
-uv add --group dev fastapi uvicorn debugpy
+uv add --group dev fastapi uvicorn debugpy ruff
 ```
 
 Create launch.json to connect to the debugger

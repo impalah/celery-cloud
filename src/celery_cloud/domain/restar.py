@@ -1,8 +1,7 @@
-from typing import List, Dict
 from celery_cloud.core.logging import logger
 
 
-def restar(args: List[int], kwargs: Dict[str, int]) -> int:
+def restar(args: list[int], kwargs: dict[str, int]) -> int:
     """Substracts all the values in args from the first one.
 
     Args:
@@ -16,7 +15,9 @@ def restar(args: List[int], kwargs: Dict[str, int]) -> int:
         int: _description_
     """
 
-    logger.debug(f"Executing task restar with args: {args} and kwargs: {kwargs}")
+    logger.debug(
+        f"Executing task restar with args: {args} and kwargs: {kwargs}"
+    )
 
     if len(args) < 2:
         logger.error("Needed at least 2 values to subtract")
@@ -25,5 +26,3 @@ def restar(args: List[int], kwargs: Dict[str, int]) -> int:
     for num in args[1:]:
         resultado -= num
     return resultado
-
-

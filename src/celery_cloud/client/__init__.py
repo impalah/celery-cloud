@@ -18,9 +18,13 @@ def celery() -> None:
 
     print("Starting celery client")
 
-    request = PromptRequest(id="4b8f27d1-cd8b-4b79-a1d5-937c5d3579d7", prompt="Gimme some answers")
+    request = PromptRequest(
+        id="4b8f27d1-cd8b-4b79-a1d5-937c5d3579d7", prompt="Gimme some answers"
+    )
 
-    result = prompt.apply_async(args=(request.model_dump(),)) #, countdown=10)
+    result = prompt.apply_async(
+        args=(request.model_dump(),)
+    )  # , countdown=10)
     # result = sumar.apply_async((10, 5)) #, countdown=10)
     print(f"Task ID: {result.id}")
 
@@ -29,4 +33,3 @@ def celery() -> None:
         sleep(1)
 
     print(f"Task ID finished. Result: {result.get()}")
-

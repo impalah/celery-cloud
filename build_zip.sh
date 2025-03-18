@@ -7,7 +7,7 @@
 # Requires: sudo apt update && sudo apt install -y libcurl4-openssl-dev libssl-dev zlib1g-dev zip
 
 # Declare variables
-BASE_VERSION="0.1.4"
+BASE_VERSION="0.1.5"
 PLATFORM="x86_64-manylinux2014"
 PYTHON_VERSION="3.12"
 

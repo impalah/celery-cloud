@@ -18,15 +18,13 @@ def lambda_handler(celery_task: CeleryTask) -> Any:
     """
 
     if celery_task.task not in TASKS:
-
         logger.error(f"Task '{celery_task.task}' not supported")
 
         return LambdaResponse(
             status="error",
             message=f"Task '{celery_task.task}' not supported",
-            details=f"Task '{celery_task.task}' not supported"
+            details=f"Task '{celery_task.task}' not supported",
         ).model_dump()
-
 
     # Simulate execution of Celery task adding a delay
     # TODO: Use strategy pattern to execute different tasks
@@ -34,11 +32,3 @@ def lambda_handler(celery_task: CeleryTask) -> Any:
 
     # Call function with args and kwargs
     return TASKS[celery_task.task](celery_task.args, celery_task.kwargs)
-
-
-
-
-
-
-
-

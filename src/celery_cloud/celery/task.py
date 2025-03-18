@@ -1,16 +1,10 @@
 from celery import Celery
 from time import sleep
-from typing import List, Dict, Optional, Any
-from pydantic import BaseModel, Field
+from typing import Any
 
 
 from celery_cloud.core.celery_config import Celeryconfig
 from celery_cloud.core.entities.test.prompt_reponse import PromptResponse
-from celery_cloud.core.entities.test.prompt_request import PromptRequest
-
-
-
-
 
 
 # Configure Celery
@@ -46,6 +40,7 @@ def sumar(x: int, y: int) -> int:
     """
     pass
 
+
 @app.task
 def restar(x: int, y: int) -> int:
     """Simple function to substract two numbers.
@@ -59,9 +54,10 @@ def restar(x: int, y: int) -> int:
     """
     pass
 
+
 @app.task
 # def prompt(prompt: PromptRequest) -> PromptResponse:
-def prompt(prompt: Dict[str, Any]) -> PromptResponse:
+def prompt(prompt: dict[str, Any]) -> dict[str, Any]:
     """Testing complex objects serialization
 
     Args:
@@ -86,4 +82,3 @@ def prompt2(demo: str) -> PromptResponse:
         int: _description_
     """
     pass
-

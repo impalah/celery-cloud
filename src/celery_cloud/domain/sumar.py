@@ -1,8 +1,7 @@
-from typing import List, Dict
 from celery_cloud.core.logging import logger
 
 
-def sumar(args: List[int], kwargs: Dict[str, int]) -> int:
+def sumar(args: list[int], kwargs: dict[str, int]) -> int:
     """Adds all the values in args.
 
     Args:
@@ -13,6 +12,7 @@ def sumar(args: List[int], kwargs: Dict[str, int]) -> int:
         int: _description_
     """
 
-    logger.debug(f"Executing task sumar with args: {args} and kwargs: {kwargs}")
+    logger.debug(
+        f"Executing task sumar with args: {args} and kwargs: {kwargs}"
+    )
     return sum(args)
-

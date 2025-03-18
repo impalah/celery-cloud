@@ -1,5 +1,6 @@
-from typing import List, Dict, Optional, Any
+from typing import Any
 from pydantic import BaseModel, Field
+
 
 class CeleryTask(BaseModel):
     """Representation of a celery SQS task
@@ -27,7 +28,7 @@ class CeleryTask(BaseModel):
         },
     )
 
-    args: List[Any] = Field(
+    args: list[Any] = Field(
         ...,
         json_schema_extra={
             "description": "Positional arguments for the task",
@@ -35,7 +36,7 @@ class CeleryTask(BaseModel):
         },
     )
 
-    kwargs: Dict[str, Any] = Field(
+    kwargs: dict[str, Any] = Field(
         ...,
         json_schema_extra={
             "description": "Named arguments for the task",
@@ -43,7 +44,7 @@ class CeleryTask(BaseModel):
         },
     )
 
-    retries: Optional[int] = Field(
+    retries: int | None = Field(
         default=0,
         json_schema_extra={
             "description": "Number of retries",
@@ -58,4 +59,3 @@ class CeleryTask(BaseModel):
             "example": "TODO",
         },
     )
-
