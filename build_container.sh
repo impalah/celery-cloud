@@ -7,7 +7,6 @@ DOMAIN_OWNER="670089840758"
 AWS_REGION="eu-west-1"
 REGISTRY_URI="670089840758.dkr.ecr.eu-west-1.amazonaws.com"
 REPOSITORY_NAME="lambda-runner"
-BASE_VERSION="0.1.1"
 PLATFORM="linux/amd64"
 # PLATFORM="linux/amd64,linux/arm64"
 BUILDER_NAME="mybuilder"
@@ -22,6 +21,15 @@ while [[ "$#" -gt 0 ]]; do
     esac
     shift
 done
+
+echo "Bumping version ..."
+v=$(uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version)
+# bump patch version
+part="patch"
+uvx --from bump2version bumpversion --allow-dirty --current-version "$v" "$part" pyproject.toml
+
+BASE_VERSION=$(uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version)
+echo "✅ Bumped version to $BASE_VERSION"
 
 # Verify if builder exists
 if docker buildx ls | grep -q "^$BUILDER_NAME "; then
@@ -57,8 +65,8 @@ echo -n "$CODEARTIFACT_AUTH_TOKEN" > /tmp/codeartifact_auth_token
 echo -n "aws" > /tmp/codeartifact_username
 
 echo "Building the image for multiple platforms"
-docker buildx build --progress=plain --platform $PLATFORM --secret id=codeartifact_auth_token,src=/tmp/codeartifact_auth_token --secret id=codeartifact_username,src=/tmp/codeartifact_username -t $REGISTRY_URI/$DOMAIN/$REPOSITORY_NAME:$BASE_VERSION -f Dockerfile --push .
+docker buildx build --provenance=false --progress=plain --platform $PLATFORM -t $REGISTRY_URI/$DOMAIN/$REPOSITORY_NAME:$BASE_VERSION -f Dockerfile --push .
 
 # docker buildx imagetools create -t $REGISTRY_URI/$REPOSITORY_NAME:$BASE_VERSION
 
-docker buildx rm $BUILDER_NAME
+echo "✅ Image building finished: $REGISTRY_URI/$DOMAIN/$REPOSITORY_NAME:$BASE_VERSION"

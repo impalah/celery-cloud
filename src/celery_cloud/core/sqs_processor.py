@@ -19,7 +19,7 @@ F = TypeVar("F", bound=Callable[..., Any])  # Generic type for functions
 
 
 def sqs_processor(func: F) -> F:
-    """Decorator for Processing SQS events .
+    """Decorator for Processing SQS events.
 
     Args:
         func (F): Function to execute.
@@ -116,6 +116,7 @@ def sqs_processor(func: F) -> F:
                             error=f"JSONDecodeError: {str(e)}",
                         )
                     )
+
                 except ValidationError as e:
                     # TODO: Add more specific error handling
                     logger.error(
@@ -136,29 +137,48 @@ def sqs_processor(func: F) -> F:
                         )
                     )
                 except Exception as e:
-                    # TODO: Be careful with this generic exception handling, it is using celery_task variable that may not be defined
-                    logger.error(
-                        f"Error processing task {celery_task.task if 'celery_task' in locals() else None}/{celery_task.id if 'celery_task' in locals() else None}: {str(e)}"
-                    )
 
-                    CeleryTaskModel.update_task(
-                        celery_task.id,
-                        status="FAILURE",
-                        result=f"Exception: {str(e)}",
-                        traceback=e.__traceback__,
-                    )
+                    if "celery_task" in locals():
 
-                    failed_tasks.append(
-                        FailedTask(
-                            task_id=(
-                                celery_task.id
-                                if "celery_task" in locals()
-                                else None
-                            ),
-                            message_id=record.messageId,
-                            error=str(e),
+                        # Error while processing task
+
+                        logger.error(
+                            f"Error processing task {celery_task.task if 'celery_task' in locals() else None}/{celery_task.id if 'celery_task' in locals() else None}: {str(e)}"
                         )
-                    )
+
+                        CeleryTaskModel.update_task(
+                            celery_task.id,
+                            status="FAILURE",
+                            result=f"Exception: {str(e)}",
+                            traceback=e.__traceback__,
+                        )
+
+                        failed_tasks.append(
+                            FailedTask(
+                                task_id=(
+                                    celery_task.id
+                                    if "celery_task" in locals()
+                                    else None
+                                ),
+                                message_id=record.messageId,
+                                error=str(e),
+                            )
+                        )
+
+                    else:
+
+                        # General error while executing function
+                        logger.error(f"Error executing function: {str(e)}")
+
+                        # Clear context before finishing the function
+                        trace_id_context.set(None)
+
+                        return LambdaResponse(
+                            status="error",
+                            message="Error executing function",
+                            details=e.json(),
+                        ).model_dump()
+
 
         except ValidationError as e:
             logger.error(f"Invalid SQS event format: {e.json()}")
