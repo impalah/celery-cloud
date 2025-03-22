@@ -25,5 +25,6 @@ class Celeryconfig:
                 "visibility_timeout": 3600,  # 1 hour
                 "polling_interval": 10,
                 # "queue_name_prefix": settings.CELERY_TASK_DEFAULT_QUEUE,
-                "dead_letter_queue": f"{settings.CELERY_TASK_DEFAULT_QUEUE}-dead-letter-queue",
+                "dead_letter_queue": f"{settings.CELERY_TASK_DEFAULT_QUEUE}-dlq",
             }
+
