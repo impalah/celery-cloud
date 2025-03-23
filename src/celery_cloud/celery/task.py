@@ -14,7 +14,7 @@ app.config_from_object(Celeryconfig())
 
 @app.task
 def add(x: int, y: int) -> int:
-    """Simple function to add two numbers. 5 seconds sleep included to simulate a long running task.
+    """Simple function to add two numbers.
 
     Args:
         x (_type_): _description_

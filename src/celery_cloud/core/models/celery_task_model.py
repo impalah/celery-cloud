@@ -11,6 +11,7 @@ from pynamodb.attributes import (
 from celery_cloud.core.entities import CeleryTaskResult
 from celery_cloud.core.logging import logger
 from celery_cloud.core.settings import settings
+from celery_cloud.core.exceptions import BackendException
 
 
 class CeleryTaskModel(Model):
@@ -47,28 +48,35 @@ class CeleryTaskModel(Model):
             _type_: _description_
         """
 
-        logger.debug(f"Inserting task {task_uuid}")
+        try:
+            logger.debug(f"Inserting task {task_uuid}")
 
-        prefixed_task_id = f"celery-task-meta-{task_uuid}".encode()
+            prefixed_task_id = f"celery-task-meta-{task_uuid}".encode()
 
-        task_result = CeleryTaskResult(
-            status="PROCESSING",
-            result=None,
-            traceback=None,
-            children=[],
-            date_done=str(datetime.now(UTC).isoformat()),
-            task_id=task_uuid,
-        )
+            task_result = CeleryTaskResult(
+                status="PROCESSING",
+                result=None,
+                traceback=None,
+                children=[],
+                date_done=str(datetime.now(UTC).isoformat()),
+                task_id=task_uuid,
+            )
 
-        # encoded_result = base64.b64encode(json.dumps(task_result.model_dump()).encode())
-        encoded_result = json.dumps(task_result.model_dump()).encode()
+            encoded_result = json.dumps(task_result.model_dump()).encode()
 
-        task = cls(id=str(prefixed_task_id), result=encoded_result)
-        task.save()
+            task = cls(id=str(prefixed_task_id), result=encoded_result)
+            task.save()
 
-        logger.debug(f"Task {task_uuid} inserted on DynamoDB")
+            logger.debug(f"Task {task_uuid} inserted on DynamoDB")
 
-        return task
+            return task
+
+        except Exception as e:
+            logger.error(f"Error inserting task {task_uuid}: {str(e)}")
+            raise BackendException(
+                message=f"Error inserting task {task_uuid}: {str(e)}",
+                detail=str(e),
+            )
 
     @classmethod
     def update_task(
@@ -83,8 +91,8 @@ class CeleryTaskModel(Model):
         Args:
             task_uuid (str): _description_
             status (str): _description_
-            result (Optional[Any], optional): _description_. Defaults to None.
-            traceback (Optional[str], optional): _description_. Defaults to None.
+            result (Optional[Any], optional): Defaults to None.
+            traceback (Optional[str], optional): Defaults to None.
 
         Returns:
             _type_: _description_
@@ -106,7 +114,6 @@ class CeleryTaskModel(Model):
                 task_id=task_uuid,
             )
 
-            # encoded_result = base64.b64encode(json.dumps(task_result.model_dump()).encode())
             encoded_result = json.dumps(task_result.model_dump()).encode()
 
             task.update(
@@ -121,6 +128,12 @@ class CeleryTaskModel(Model):
             return task
         except cls.DoesNotExist:
             return None
+        except Exception as e:
+            logger.error(f"Error updating task {task_uuid}: {str(e)}")
+            raise BackendException(
+                message=f"Error updating task {task_uuid}: {str(e)}",
+                detail=str(e),
+            )
 
     @classmethod
     def get_task(cls, task_uuid: str) -> dict | None:
@@ -155,3 +168,9 @@ class CeleryTaskModel(Model):
             }
         except cls.DoesNotExist:
             return None
+        except Exception as e:
+            logger.error(f"Error getting task {task_uuid}: {str(e)}")
+            raise BackendException(
+                message=f"Error getting task {task_uuid}: {str(e)}",
+                detail=str(e),
+            )

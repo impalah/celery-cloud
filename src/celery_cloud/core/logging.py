@@ -33,10 +33,10 @@ logger.add(
     serialize=False,
     backtrace=True,
     diagnose=True,
-    enqueue=False,  # Do not uses multiprocesing for enqueueing the logs (aws lambda)
+    enqueue=False,  # Do not uses multiprocesing for the logs (aws lambda)
 )
 
 __all__ = [
     "logger",
     "trace_id_context",
-]  # Add logger and trace_id_context to __all__ to be able to import them from the package
+]  # Add  to __all__ to be able to import them from the package

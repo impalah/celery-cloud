@@ -37,7 +37,12 @@ class Settings:
         self.LOG_LEVEL: str = self.get_env_variable("LOG_LEVEL", "INFO")
         self.LOG_FORMAT: str = self.get_env_variable(
             "LOG_FORMAT",
-            "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | trace_id={extra[trace_id]} | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+            (
+                "<green>{time:YYYY-MM-DD HH:mm:ss}</green> "
+                "| <level>{level: <8}</level> | trace_id={extra[trace_id]} "
+                "| <cyan>{name}</cyan>:<cyan>{function}</cyan>:"
+                "<cyan>{line}</cyan> - <level>{message}</level>",
+            )
         )
 
         self.CELERY_WORKERS: int = self.get_env_variable("CELERY_WORKERS", 2)
@@ -73,7 +78,10 @@ class Settings:
         value: Any = os.getenv(var_name, default)
         if value is None:
             raise OSError(
-                f"Environment variable '{var_name}' is not defined and does not have default value."
+                
+                    f"Environment variable '{var_name}' "
+                    f"is not defined and does not have default value."
+                
             )
         return value
 

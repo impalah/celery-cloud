@@ -19,9 +19,7 @@ def prompt(args: list[Any], kwargs: dict[str, Any]) -> dict[str, Any]:
         f"Executing task prompt with args: {args} and kwargs: {kwargs}"
     )
 
-    logger.debug(
-        f"Type args: {type(args)} and type kwargs: {type(kwargs)}"
-    )
+    logger.debug(f"Type args: {type(args)} and type kwargs: {type(kwargs)}")
 
     # Convert the received arguments into a pydantic model
     request = PromptRequest.model_validate(args[0])

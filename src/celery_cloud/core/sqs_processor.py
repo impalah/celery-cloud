@@ -137,13 +137,16 @@ def sqs_processor(func: F) -> F:
                         )
                     )
                 except Exception as e:
-
                     if "celery_task" in locals():
-
                         # Error while processing task
 
                         logger.error(
-                            f"Error processing task {celery_task.task if 'celery_task' in locals() else None}/{celery_task.id if 'celery_task' in locals() else None}: {str(e)}"
+                            
+                                f"Error processing task "
+                                f"{celery_task.task if 'celery_task' in locals() else None}"
+                                f"/{celery_task.id if 'celery_task' in locals() else None}: "
+                                f"{str(e)}"
+                            
                         )
 
                         CeleryTaskModel.update_task(
@@ -166,7 +169,6 @@ def sqs_processor(func: F) -> F:
                         )
 
                     else:
-
                         # General error while executing function
                         logger.error(f"Error executing function: {str(e)}")
 
@@ -178,7 +180,6 @@ def sqs_processor(func: F) -> F:
                             message="Error executing function",
                             details=e.json(),
                         ).model_dump()
-
 
         except ValidationError as e:
             logger.error(f"Invalid SQS event format: {e.json()}")

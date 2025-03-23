@@ -104,7 +104,9 @@ class LambdaResponse(BaseModel):
     message: str | None = Field(
         None,
         json_schema_extra={
-            "description": "Error message if the entire Lambda execution failed",
+            "description": (
+                "Error message if the entire Lambda execution failed"
+            ),
             "example": "Invalid SQS event format",
         },
     )
@@ -113,6 +115,9 @@ class LambdaResponse(BaseModel):
         None,
         json_schema_extra={
             "description": "Detailed error information if applicable",
-            "example": '{"loc": ["Records"], "msg": "field required", "type": "value_error.missing"}',
+            "example": (
+                '{"loc": ["Records"], "msg": "field required", '
+                '"type": "value_error.missing"}'
+            ),
         },
     )
