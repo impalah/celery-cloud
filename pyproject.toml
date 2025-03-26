@@ -1,6 +1,6 @@
 [project]
 name = "celery-cloud"
-version = "0.1.12"
+version = "0.1.13"
 description = "Celery workers in the cloud"
 authors = [
     {name = "Linus", email = "impalah@gmail.com"}
