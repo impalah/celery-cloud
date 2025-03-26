@@ -11,7 +11,7 @@ debugpy.wait_for_client()
 
 @app.post("/lambda")
 async def run_lambda(event: dict):
-    from celery_cloud.core.runner import (
+    from celery_cloud.runner import (
         lambda_handler,
     )  # Import the real function
 

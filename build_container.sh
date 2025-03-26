@@ -3,11 +3,8 @@
 # Declare variables
 PROFILE="pak"
 DOMAIN="celery-cloud"
-DOMAIN_OWNER="670089840758"
-# AWS_REGION="eu-west-1"
-# REGISTRY_URI="670089840758.dkr.ecr.eu-west-1.amazonaws.com"
-AWS_REGION="eu-central-1"
-REGISTRY_URI="670089840758.dkr.ecr.eu-central-1.amazonaws.com"
+AWS_REGION="us-east-1"
+REGISTRY_URI="public.ecr.aws/e2b2x4l7"
 REPOSITORY_NAME="lambda-runner"
 PLATFORM="linux/amd64"
 # PLATFORM="linux/amd64,linux/arm64"
@@ -50,21 +47,13 @@ set -e
 
 docker buildx inspect $BUILDER_NAME --bootstrap
 
-# echo "Authorizing in codeartifact"
-# export CODEARTIFACT_AUTH_TOKEN=$(aws --profile $PROFILE codeartifact get-authorization-token --region $AWS_REGION --domain $CODE_ARTIFACT_DOMAIN --domain-owner $DOMAIN_OWNER --query authorizationToken --output text)
-
 echo "Authorizing in repo"
-aws --profile $PROFILE ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REGISTRY_URI
+aws --profile $PROFILE ecr-public get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REGISTRY_URI
 
 echo "$REGISTRY_URI/$DOMAIN/$REPOSITORY_NAME:$BASE_VERSION"
 
-
 echo "Installing QEMU for multi-architecture support"
-docker run --rm --privileged 654654400302.dkr.ecr.eu-west-1.amazonaws.com/multiarch/qemu-user-static --reset -p yes
-
-echo "Creating secret files for CodeArtifact"
-echo -n "$CODEARTIFACT_AUTH_TOKEN" > /tmp/codeartifact_auth_token
-echo -n "aws" > /tmp/codeartifact_username
+docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
 echo "Building the image for multiple platforms"
 docker buildx build --provenance=false --progress=plain --platform $PLATFORM -t $REGISTRY_URI/$DOMAIN/$REPOSITORY_NAME:$BASE_VERSION -f Dockerfile --push .

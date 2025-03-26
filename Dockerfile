@@ -24,5 +24,5 @@ RUN pip install -r requirements.txt
 COPY src/.  ${LAMBDA_TASK_ROOT}/
 
 # Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
-CMD [ "celery_cloud.core.runner.lambda_handler" ]
+CMD [ "celery_cloud.runner.lambda_handler" ]
 

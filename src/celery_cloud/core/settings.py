@@ -1,4 +1,5 @@
 import os
+import json
 from typing import Any
 from dotenv import load_dotenv
 
@@ -41,7 +42,7 @@ class Settings:
                 "<green>{time:YYYY-MM-DD HH:mm:ss}</green> "
                 "| <level>{level: <8}</level> | trace_id={extra[trace_id]} "
                 "| <cyan>{name}</cyan>:<cyan>{function}</cyan>:"
-                "<cyan>{line}</cyan> - <level>{message}</level>",
+                "<cyan>{line}</cyan> - <level>{message}</level>"
             )
         )
 
@@ -58,6 +59,12 @@ class Settings:
 
         self.SERVER_DEBUG_PORT: int = self.get_env_variable(
             "SERVER_DEBUG_PORT", 5890
+        )
+
+        self.TASKS: dict[str, str] = json.loads(
+            self.get_env_variable(
+                "TASKS", "{}"
+            )
         )
 
     @staticmethod
