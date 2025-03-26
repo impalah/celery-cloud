@@ -61,13 +61,26 @@ release: clean build publish
 docker-release: docker-build
 
 # Development utilities
-# Linting
-ruff-fix:
-	uv run ruff check --fix
+# Ruff lint (style, imports, common errors)
+lint:
+	uv run ruff check src
 
-ruff-format:
-	uv run ruff format
+# Sort imports
+format:
+	uv run ruff format src
+	uv run ruff check --fix src
 
-ruff: ruff-format ruff-fix
+# Typing with mypy
+type-check:
+	uv run mypy src
+
+# Bandit security scan
+security-check:
+	uv run bandit -r src
+
+# Full review
+check: lint format type-check security-check
+
 
 # Test execution	
+

@@ -1,4 +1,5 @@
 from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -23,7 +24,7 @@ class ProcessedTask(BaseModel):
     )
 
     result: Any | None = Field(
-        None,
+        default = None,
         json_schema_extra={
             "description": "Returned result of the task if available",
             "example": 15,
@@ -35,7 +36,7 @@ class FailedTask(BaseModel):
     """Representation of a failed Celery task"""
 
     task_id: str | None = Field(
-        None,
+        default = None,
         max_length=150,
         json_schema_extra={
             "description": "Unique ID of the failed task (if extractable)",
@@ -72,7 +73,7 @@ class LambdaResponse(BaseModel):
     )
 
     processed_messages: int | None = Field(
-        None,
+        default = None,
         json_schema_extra={
             "description": "Total number of messages successfully processed",
             "example": 5,
@@ -80,7 +81,7 @@ class LambdaResponse(BaseModel):
     )
 
     failed_messages: int | None = Field(
-        None,
+        default = None,
         json_schema_extra={
             "description": "Total number of messages that failed processing",
             "example": 2,
@@ -88,31 +89,29 @@ class LambdaResponse(BaseModel):
     )
 
     processed_tasks: list[ProcessedTask] | None = Field(
-        None,
+        default = None,
         json_schema_extra={
             "description": "List of successfully processed tasks",
         },
     )
 
     failed_tasks: list[FailedTask] | None = Field(
-        None,
+        default = None,
         json_schema_extra={
             "description": "List of failed tasks with details",
         },
     )
 
     message: str | None = Field(
-        None,
+        default = None,
         json_schema_extra={
-            "description": (
-                "Error message if the entire Lambda execution failed"
-            ),
+            "description": ("Error message if the entire Lambda execution failed"),
             "example": "Invalid SQS event format",
         },
     )
 
     details: str | None = Field(
-        None,
+        default = None,
         json_schema_extra={
             "description": "Detailed error information if applicable",
             "example": (

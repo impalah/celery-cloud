@@ -1,31 +1,30 @@
-import json
 import ast
+import json
 from typing import Any, NamedTuple
-from ksuid import Ksuid
-from pydantic import ValidationError
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs, urlparse
 
 import boto3
+from ksuid import Ksuid
+from pydantic import ValidationError
 
-from celery_cloud.logging import trace_id_context, logger
 from celery_cloud.entities import (
-    SQSEvent,
     CeleryTask,
-    ProcessedTask,
     FailedTask,
     LambdaResponse,
+    ProcessedTask,
+    SQSEvent,
     SQSMessage,
     SQSRecord,
 )
-from celery_cloud.models.celery_task_model import CeleryTaskModel
 from celery_cloud.exceptions import (
+    BackendException,
     EventDecodeException,
     MessageDecodeException,
     TaskDecodeException,
-    BackendException,
     TaskExecutionException,
 )
-
+from celery_cloud.logging import logger, trace_id_context
+from celery_cloud.models.celery_task_model import CeleryTaskModel
 from celery_cloud.settings import settings
 
 
@@ -92,11 +91,7 @@ def call_lambda_task(celery_task: CeleryTask, route: TaskRoute) -> Any:
             detail=response_payload,
         )
 
-    return (
-        response_payload["body"]
-        if "body" in response_payload
-        else response_payload
-    )
+    return response_payload["body"] if "body" in response_payload else response_payload
 
 
 def call_local_task(celery_task: CeleryTask, route: TaskRoute) -> Any:
@@ -150,9 +145,7 @@ def call_task(celery_task: CeleryTask) -> Any:
                 detail=route.scheme,
             )
 
-        logger.debug(
-            f"Executed task: {celery_task.task} with ID {celery_task.id}"
-        )
+        logger.debug(f"Executed task: {celery_task.task} with ID {celery_task.id}")
 
         return task_result
 
@@ -161,7 +154,7 @@ def call_task(celery_task: CeleryTask) -> Any:
 
         raise TaskExecutionException(
             message=f"Exception executing task {celery_task.id}", detail=str(e)
-        )
+        ) from e
 
 
 def get_event(event: dict[str, Any]) -> SQSEvent:
@@ -182,12 +175,10 @@ def get_event(event: dict[str, Any]) -> SQSEvent:
         logger.error(f"Invalid SQS event format: {e.json()}")
         raise EventDecodeException(
             message="Invalid SQS event format", detail=e.json()
-        )
+        ) from e
     except Exception as e:
         logger.error(f"Error decoding event: {str(e)}")
-        raise EventDecodeException(
-            message="Error decoding event", detail=str(e)
-        )
+        raise EventDecodeException(message="Error decoding event", detail=str(e)) from e
 
 
 def get_message(record: SQSRecord) -> SQSMessage:
@@ -219,20 +210,20 @@ def get_message(record: SQSRecord) -> SQSMessage:
 
         raise MessageDecodeException(
             message="JSONDecodeError processing message", detail=str(e)
-        )
+        ) from e
 
     except ValidationError as e:
         logger.error(f"ValidationError processing message: {str(e)}")
         raise MessageDecodeException(
             message="ValidationError processing message", detail=str(e)
-        )
+        ) from e
 
     except Exception as e:
         logger.error(f"Exception processing message: {str(e)}")
 
         raise MessageDecodeException(
             message="Exception processing message", detail=str(e)
-        )
+        ) from e
 
 
 def get_task(message: SQSMessage) -> CeleryTask:
@@ -266,20 +257,20 @@ def get_task(message: SQSMessage) -> CeleryTask:
 
         raise TaskDecodeException(
             message="JSONDecodeError getting task", detail=str(e)
-        )
+        ) from e
 
     except ValidationError as e:
         logger.error(f"ValidationError getting task: {str(e)}")
         raise TaskDecodeException(
             message="ValidationError getting task", detail=str(e)
-        )
+        ) from e
 
     except Exception as e:
         logger.error(f"Exception getting task: {str(e)}")
 
         raise TaskDecodeException(
             message="Exception getting task", detail=str(e)
-        )
+        ) from e
 
 
 def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
@@ -348,18 +339,14 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
                 )
 
                 # 3.3.1. Update task status and result in backend
-                CeleryTaskModel.update_task(
-                    celery_task.id, status="ERROR", result=None
-                )
+                CeleryTaskModel.update_task(celery_task.id, status="ERROR", result=None)
 
                 continue
 
             # 3.4. Call function with args and kwargs
             task_result: Any = call_task(celery_task)
 
-            logger.debug(
-                f"Processed task: {celery_task.task} with ID {celery_task.id}"
-            )
+            logger.debug(f"Processed task: {celery_task.task} with ID {celery_task.id}")
 
             # 3.5. Update task status and result in backend
             CeleryTaskModel.update_task(

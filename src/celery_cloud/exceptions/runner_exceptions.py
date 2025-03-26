@@ -9,25 +9,25 @@ class BackendException(RunnerBaseException):
     ...
 
 
-class EventDecodeException(Exception):
+class EventDecodeException(RunnerBaseException):
     """Domain exception for message decoding errors"""
 
     ...
 
 
-class MessageDecodeException(Exception):
+class MessageDecodeException(RunnerBaseException):
     """Domain exception for message decoding errors"""
 
     ...
 
 
-class TaskDecodeException(Exception):
+class TaskDecodeException(RunnerBaseException):
     """Domain exception for task decoding errors"""
 
     ...
 
 
-class TaskExecutionException(Exception):
+class TaskExecutionException(RunnerBaseException):
     """Domain exception for execution exceptions"""
 
     ...

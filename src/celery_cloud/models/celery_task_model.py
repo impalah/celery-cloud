@@ -1,17 +1,19 @@
 import base64
 import json
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
-from pynamodb.models import Model
+
 from pynamodb.attributes import (
-    UnicodeAttribute,
     BinaryAttribute,
     NumberAttribute,
+    UnicodeAttribute,
 )
+from pynamodb.models import Model
+
 from celery_cloud.entities import CeleryTaskResult
+from celery_cloud.exceptions import BackendException
 from celery_cloud.logging import logger
 from celery_cloud.settings import settings
-from celery_cloud.exceptions import BackendException
 
 
 class CeleryTaskModel(Model):
@@ -76,7 +78,7 @@ class CeleryTaskModel(Model):
             raise BackendException(
                 message=f"Error inserting task {task_uuid}: {str(e)}",
                 detail=str(e),
-            )
+            ) from e
 
     @classmethod
     def update_task(
@@ -133,7 +135,7 @@ class CeleryTaskModel(Model):
             raise BackendException(
                 message=f"Error updating task {task_uuid}: {str(e)}",
                 detail=str(e),
-            )
+            ) from e
 
     @classmethod
     def get_task(cls, task_uuid: str) -> dict | None:
@@ -173,4 +175,4 @@ class CeleryTaskModel(Model):
             raise BackendException(
                 message=f"Error getting task {task_uuid}: {str(e)}",
                 detail=str(e),
-            )
+            ) from e

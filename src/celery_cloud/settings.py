@@ -1,6 +1,7 @@
-import os
 import json
+import os
 from typing import Any
+
 from dotenv import load_dotenv
 
 # Load variables from dotenv file
@@ -31,13 +32,9 @@ class Settings:
             ),
         )
 
-        self.SERVER_DEBUG_PORT: int = self.get_env_variable(
-            "SERVER_DEBUG_PORT", 5890
-        )
+        self.SERVER_DEBUG_PORT: int = self.get_env_variable("SERVER_DEBUG_PORT", 5890)
 
-        self.TASKS: dict[str, str] = json.loads(
-            self.get_env_variable("TASKS", "{}")
-        )
+        self.TASKS: dict[str, str] = json.loads(self.get_env_variable("TASKS", "{}"))
 
     @staticmethod
     def get_env_variable(var_name: str, default: Any = None) -> Any:

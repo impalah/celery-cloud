@@ -1,4 +1,5 @@
 from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -15,12 +16,12 @@ class CeleryTaskResult(BaseModel):
     )
 
     result: Any | None = Field(
-        None,
+        default = None,
         json_schema_extra={"description": "Task result", "example": 5},
     )
 
     traceback: str | None = Field(
-        None,
+        default = None,
         json_schema_extra={
             "description": "Error traceback if the task failed",
             "example": None,
@@ -36,7 +37,7 @@ class CeleryTaskResult(BaseModel):
     )
 
     date_done: str | None = Field(
-        None,
+        default = None,
         json_schema_extra={
             "description": "Finish data format ISO 8601",
             "example": "2025-03-11T09:56:48.043888+00:00",

@@ -1,5 +1,6 @@
-from fastapi import FastAPI
 import debugpy
+from fastapi import FastAPI
+
 from .settings import settings
 
 app = FastAPI()

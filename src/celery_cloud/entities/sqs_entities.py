@@ -1,6 +1,7 @@
 import base64
 import json
 from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -9,9 +10,7 @@ class DeliveryInfo(BaseModel):
 
     exchange: str = Field(
         ...,
-        json_schema_extra={
-            "description": "Exchange used for message delivery."
-        },
+        json_schema_extra={"description": "Exchange used for message delivery."},
     )
     routing_key: str = Field(
         ..., json_schema_extra={"description": "Routing key used in SQS."}
@@ -29,9 +28,7 @@ class Properties(BaseModel):
     )
     delivery_mode: int = Field(
         ...,
-        json_schema_extra={
-            "description": "Delivery mode (2 for persistent messages)."
-        },
+        json_schema_extra={"description": "Delivery mode (2 for persistent messages)."},
     )
     delivery_info: DeliveryInfo = Field(
         ..., json_schema_extra={"description": "Message delivery details."}
@@ -48,9 +45,7 @@ class Properties(BaseModel):
     )
     delivery_tag: str = Field(
         ...,
-        json_schema_extra={
-            "description": "Unique delivery tag for the message."
-        },
+        json_schema_extra={"description": "Unique delivery tag for the message."},
     )
 
 
@@ -59,13 +54,9 @@ class Headers(BaseModel):
 
     lang: str = Field(
         ...,
-        json_schema_extra={
-            "description": "Programming language used (e.g., 'py')."
-        },
+        json_schema_extra={"description": "Programming language used (e.g., 'py')."},
     )
-    task: str = Field(
-        ..., json_schema_extra={"description": "Celery task path."}
-    )
+    task: str = Field(..., json_schema_extra={"description": "Celery task path."})
     id: str = Field(..., json_schema_extra={"description": "Unique task ID."})
     shadow: str | None = Field(
         None, json_schema_extra={"description": "Task shadow, if applicable."}
@@ -89,9 +80,7 @@ class Headers(BaseModel):
     timelimit: list[int | None] = Field(
         ..., json_schema_extra={"description": "Execution time limits."}
     )
-    root_id: str = Field(
-        ..., json_schema_extra={"description": "Root task ID."}
-    )
+    root_id: str = Field(..., json_schema_extra={"description": "Root task ID."})
     parent_id: str | None = Field(
         None, json_schema_extra={"description": "Parent task ID, if any."}
     )
@@ -126,9 +115,7 @@ class Headers(BaseModel):
     )
     stamps: dict[str, Any] = Field(
         ...,
-        json_schema_extra={
-            "description": "Additional metadata about the task."
-        },
+        json_schema_extra={"description": "Additional metadata about the task."},
     )
 
 
@@ -168,8 +155,7 @@ class SQSAttributes(BaseModel):
         ...,
         json_schema_extra={
             "description": (
-                "Number of times the message "
-                "has been received but not deleted."
+                "Number of times the message has been received but not deleted."
             )
         },
     )
@@ -177,8 +163,7 @@ class SQSAttributes(BaseModel):
         ...,
         json_schema_extra={
             "description": (
-                "Timestamp when the message was sent "
-                "(milliseconds since epoch)."
+                "Timestamp when the message was sent (milliseconds since epoch)."
             )
         },
     )
@@ -198,9 +183,7 @@ class SQSRecord(BaseModel):
 
     messageId: str = Field(
         ...,
-        json_schema_extra={
-            "description": "Unique identifier for the message."
-        },
+        json_schema_extra={"description": "Unique identifier for the message."},
     )
     receiptHandle: str = Field(
         ...,
@@ -218,21 +201,17 @@ class SQSRecord(BaseModel):
     )
     attributes: SQSAttributes = Field(
         ...,
-        json_schema_extra={
-            "description": "Metadata attributes of the SQS message."
-        },
+        json_schema_extra={"description": "Metadata attributes of the SQS message."},
     )
     eventSource: str = Field(
         ...,
-        json_schema_extra={
-            "description": "Source of the event (e.g., 'aws:sqs')."
-        },
+        json_schema_extra={"description": "Source of the event (e.g., 'aws:sqs')."},
     )
     eventSourceARN: str = Field(
         ..., json_schema_extra={"description": "ARN of the SQS queue."}
     )
 
-    def get_message(self) -> dict[str, Any]:
+    def get_message(self) -> Any:
         """Decodes the base64-encoded body into a JSON dictionary."""
         return json.loads(base64.b64decode(self.body).decode("utf-8"))
 

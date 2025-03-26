@@ -38,20 +38,36 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
+    "bandit>=1.8.3",
     "debugpy>=1.8.13",
     "fastapi>=0.115.11",
     "ipykernel>=6.29.5",
+    "mypy>=1.15.0",
     "ruff>=0.11.0",
     "uvicorn>=0.34.0",
 ]
 
 [tool.ruff]
-# Set the maximum line length to 79.
-line-length = 79
+line-length = 88
+src = ["src"]  # First, add the source code folder
+target-version = "py312"  # We are using Python 3.12
 
 [tool.ruff.lint]
-extend-select = [
-  "UP",  # pyupgrade
-  "E501",   # maxdocline
+# Activate additional rules to imitate flake8 and isort
+select = [
+  "E", "F", "I", "UP", "B", "W", "C90"
 ]
+# Exclude files and folders that are not part of the source code
+exclude = ["tests/data", ".venv"]
+
+# Activate autofix for common problems
+fixable = ["ALL"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+pretty = true
+
+
 

@@ -1,8 +1,8 @@
 from .runner_exceptions import (
+    BackendException,
     EventDecodeException,
     MessageDecodeException,
     TaskDecodeException,
-    BackendException,
     TaskExecutionException,
 )
 
