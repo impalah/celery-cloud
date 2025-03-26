@@ -1,4 +1,4 @@
-from celery_cloud.core.exceptions.runner_base_exception import (
+from .runner_base_exception import (
     RunnerBaseException,
 )
 

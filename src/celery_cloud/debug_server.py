@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import debugpy
-from celery_cloud.core.settings import settings
+from .settings import settings
 
 app = FastAPI()
 

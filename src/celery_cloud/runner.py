@@ -7,8 +7,8 @@ from urllib.parse import urlparse, parse_qs
 
 import boto3
 
-from celery_cloud.core.logging import trace_id_context, logger
-from celery_cloud.core.entities import (
+from celery_cloud.logging import trace_id_context, logger
+from celery_cloud.entities import (
     SQSEvent,
     CeleryTask,
     ProcessedTask,
@@ -17,8 +17,8 @@ from celery_cloud.core.entities import (
     SQSMessage,
     SQSRecord,
 )
-from celery_cloud.core.models.celery_task_model import CeleryTaskModel
-from celery_cloud.core.exceptions import (
+from celery_cloud.models.celery_task_model import CeleryTaskModel
+from celery_cloud.exceptions import (
     EventDecodeException,
     MessageDecodeException,
     TaskDecodeException,
@@ -26,7 +26,7 @@ from celery_cloud.core.exceptions import (
     TaskExecutionException,
 )
 
-from celery_cloud.core.settings import settings
+from celery_cloud.settings import settings
 
 
 

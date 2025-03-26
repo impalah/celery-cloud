@@ -1,4 +1,4 @@
-from celery_cloud.core.settings import settings
+from .settings import settings
 
 
 class Celeryconfig:

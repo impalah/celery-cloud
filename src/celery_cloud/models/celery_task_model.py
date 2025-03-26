@@ -8,10 +8,10 @@ from pynamodb.attributes import (
     BinaryAttribute,
     NumberAttribute,
 )
-from celery_cloud.core.entities import CeleryTaskResult
-from celery_cloud.core.logging import logger
-from celery_cloud.core.settings import settings
-from celery_cloud.core.exceptions import BackendException
+from celery_cloud.entities import CeleryTaskResult
+from celery_cloud.logging import logger
+from celery_cloud.settings import settings
+from celery_cloud.exceptions import BackendException
 
 
 class CeleryTaskModel(Model):
