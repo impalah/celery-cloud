@@ -29,15 +29,13 @@ jobs:
           echo "Release tag: ${{ github.event.release.tag_name }}"
           echo "Release description: ${{ github.event.release.body }}"
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
-      - name: Install dependencies
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv --version
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
 
       - name: Update version
         run: |
@@ -56,9 +54,12 @@ jobs:
           git commit -m "Update version" || echo "No changes to commit"
           git push origin HEAD
 
+      - name: Install the project
+        run: uv sync --all-extras --dev
+
       # - name: Run tests
-      #   run: |
-      #     uv run pytest ./tests
+      #   # For example, using `pytest`
+      #   run: uv run pytest tests
 
       # - name: Build documentation
       #   run: |
@@ -72,7 +73,10 @@ jobs:
       #     git commit -m "Update documentation" || echo "No changes to commit"
       #     git push origin HEAD
 
-      - name: Build and publish on pypi
+      - name: Build
         run: |
           uv build
-          uv publish
+
+      - name: Publish on pypi
+        run: |
+          uv publish --token ${{ secrets.PYPI_TOKEN }}
