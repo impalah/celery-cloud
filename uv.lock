@@ -125,7 +125,7 @@ sqs = [
 
 [[package]]
 name = "celery-cloud"
-version = "0.1.9"
+version = "0.1.19"
 source = { editable = "." }
 dependencies = [
     { name = "celery", extra = ["dynamodb", "sqs"] },

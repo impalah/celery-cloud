@@ -206,8 +206,7 @@ class SQSRecord(BaseModel):
         ...,
         json_schema_extra={
             "description": (
-                "Receipt handle used for deleting "
-                "or modifying the message."
+                "Receipt handle used for deleting or modifying the message."
             )
         },
     )

@@ -29,20 +29,19 @@ from celery_cloud.exceptions import (
 from celery_cloud.settings import settings
 
 
-
 class TaskRoute(NamedTuple):
-    scheme: str        # task / lambda / etc.
-    module: str        # module or lambda arn (as host)
-    function: str      # function path or callable name
-    query: dict        # parsed query params if any
+    scheme: str  # task / lambda / etc.
+    module: str  # module or lambda arn (as host)
+    function: str  # function path or callable name
+    query: dict  # parsed query params if any
 
 
 def parse_task_url(url: str) -> TaskRoute:
     parsed = urlparse(url)
 
-    scheme = parsed.scheme               # 'task' or 'lambda'
-    module = parsed.netloc               # module path or ARN
-    function = parsed.path.lstrip('/')   # remove leading slash
+    scheme = parsed.scheme  # 'task' or 'lambda'
+    module = parsed.netloc  # module path or ARN
+    function = parsed.path.lstrip("/")  # remove leading slash
     query = parse_qs(parsed.query)
 
     return TaskRoute(scheme, module, function, query)
@@ -92,8 +91,12 @@ def call_lambda_task(celery_task: CeleryTask, route: TaskRoute) -> Any:
             message=f"Lambda function {route.module} returned an error",
             detail=response_payload,
         )
-    
-    return response_payload['body'] if 'body' in response_payload else response_payload
+
+    return (
+        response_payload["body"]
+        if "body" in response_payload
+        else response_payload
+    )
 
 
 def call_local_task(celery_task: CeleryTask, route: TaskRoute) -> Any:
@@ -119,8 +122,6 @@ def call_local_task(celery_task: CeleryTask, route: TaskRoute) -> Any:
     return task_result
 
 
-
-
 def call_task(celery_task: CeleryTask) -> Any:
     """Execute a Celery task and return the result
 
@@ -134,16 +135,14 @@ def call_task(celery_task: CeleryTask) -> Any:
 
     # TODO: allow to call remote lambda functions
 
-
     try:
-
         # Get task configuration
         task_config = settings.TASKS[celery_task.task]
         route = parse_task_url(task_config)
 
-        if route.scheme == 'lambda':
+        if route.scheme == "lambda":
             task_result = call_lambda_task(celery_task, route)
-        elif route.scheme == 'task':
+        elif route.scheme == "task":
             task_result: Any = call_local_task(celery_task, route)
         else:
             raise TaskExecutionException(
@@ -308,7 +307,6 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
 
     logger.debug(f"Settings TASKS: {settings.TASKS}")
 
-
     try:
         # 1. Decode the event depending on the event source
         # TODO: Only SQS managed by now, add more event types
@@ -335,9 +333,7 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             logger.debug(f"Processing task: {celery_task}")
 
             # Set task status to "PROCESSING" in backend
-            CeleryTaskModel.insert_task(
-                task_uuid=celery_task.id
-            )
+            CeleryTaskModel.insert_task(task_uuid=celery_task.id)
 
             # 3.3. Check if task is supported
             if celery_task.task not in settings.TASKS:
@@ -423,4 +419,3 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             message=f"General error: {str(e)}",
             details=str(e),
         ).model_dump()
-
