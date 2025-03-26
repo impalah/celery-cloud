@@ -37,7 +37,6 @@ jobs:
       - name: Install dependencies
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          mv ~/.local/bin/uv /usr/local/bin/
           uv --version
 
       - name: Update version
