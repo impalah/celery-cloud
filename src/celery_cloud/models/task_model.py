@@ -10,13 +10,13 @@ from pynamodb.attributes import (
 )
 from pynamodb.models import Model
 
-from celery_cloud.entities import CeleryTaskResult
+from celery_cloud.entities import TaskResult
 from celery_cloud.exceptions import BackendException
 from celery_cloud.logging import logger
 from celery_cloud.settings import settings
 
 
-class CeleryTaskModel(Model):
+class TaskModel(Model):
     """Dynamodb model to store Celery tasks.
 
     Args:
@@ -40,7 +40,7 @@ class CeleryTaskModel(Model):
     timestamp = NumberAttribute(default=lambda: datetime.now(UTC).timestamp())
 
     @classmethod
-    def insert_task(cls, task_uuid: str) -> "CeleryTaskModel":
+    def insert_task(cls, task_uuid: str) -> "TaskModel":
         """Insert a new task with the correct prefix.
 
         Args:
@@ -55,7 +55,7 @@ class CeleryTaskModel(Model):
 
             prefixed_task_id = f"celery-task-meta-{task_uuid}".encode()
 
-            task_result = CeleryTaskResult(
+            task_result = TaskResult(
                 status="PROCESSING",
                 result=None,
                 traceback=None,
@@ -107,7 +107,7 @@ class CeleryTaskModel(Model):
         try:
             task = cls.get(str(prefixed_task_id))
 
-            task_result = CeleryTaskResult(
+            task_result = TaskResult(
                 status=status,
                 result=result,
                 traceback=traceback if traceback else None,

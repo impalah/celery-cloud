@@ -33,7 +33,7 @@ logger.add(
     serialize=False,
     backtrace=True,
     diagnose=True,
-    enqueue=False,  # Do not uses multiprocesing for the logs (aws lambda)
+    enqueue=settings.LOG_ENQUEUE,  # Do not uses multiprocesing for the logs (aws lambda)
 )
 
 __all__ = [

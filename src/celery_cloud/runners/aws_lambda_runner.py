@@ -8,7 +8,7 @@ from ksuid import Ksuid
 from pydantic import ValidationError
 
 from celery_cloud.entities import (
-    CeleryTask,
+    Task,
     FailedTask,
     LambdaResponse,
     ProcessedTask,
@@ -24,7 +24,7 @@ from celery_cloud.exceptions import (
     TaskExecutionException,
 )
 from celery_cloud.logging import logger, trace_id_context
-from celery_cloud.models.celery_task_model import CeleryTaskModel
+from celery_cloud.models.task_model import TaskModel
 from celery_cloud.settings import settings
 
 
@@ -46,11 +46,11 @@ def parse_task_url(url: str) -> TaskRoute:
     return TaskRoute(scheme, module, function, query)
 
 
-def call_lambda_task(celery_task: CeleryTask, route: TaskRoute) -> Any:
+def call_lambda_task(task: Task, route: TaskRoute) -> Any:
     """Execute a task defined in a remote lambda function
 
     Args:
-        celery_task (CeleryTask): Celery task to execute
+        task (Task): Task to execute
 
     Returns:
         Any: Task execution result
@@ -71,8 +71,8 @@ def call_lambda_task(celery_task: CeleryTask, route: TaskRoute) -> Any:
         InvocationType="RequestResponse",
         Payload=json.dumps(
             {
-                "args": celery_task.args,
-                "kwargs": celery_task.kwargs,
+                "args": task.args,
+                "kwargs": task.kwargs,
             }
         ),
     )
@@ -94,11 +94,11 @@ def call_lambda_task(celery_task: CeleryTask, route: TaskRoute) -> Any:
     return response_payload["body"] if "body" in response_payload else response_payload
 
 
-def call_local_task(celery_task: CeleryTask, route: TaskRoute) -> Any:
+def call_local_task(task: Task, route: TaskRoute) -> Any:
     """Execute a task defined in the local application
 
     Args:
-        celery_task (CeleryTask): Celery task to execute
+        task (Task): Celery task to execute
 
     Returns:
         Any: Task execution result
@@ -112,16 +112,16 @@ def call_local_task(celery_task: CeleryTask, route: TaskRoute) -> Any:
     function = getattr(module, route.function)
 
     # Execute function
-    task_result = function(celery_task.args, celery_task.kwargs)
+    task_result = function(task.args, task.kwargs)
 
     return task_result
 
 
-def call_task(celery_task: CeleryTask) -> Any:
+def call_task(task: Task) -> Any:
     """Execute a Celery task and return the result
 
     Args:
-        celery_task (CeleryTask): Celery task to execute
+        task (Task): Celery task to execute
 
     Returns:
         Any: Task execution result
@@ -132,28 +132,28 @@ def call_task(celery_task: CeleryTask) -> Any:
 
     try:
         # Get task configuration
-        task_config = settings.TASKS[celery_task.task]
+        task_config = settings.TASKS[task.task]
         route = parse_task_url(task_config)
 
         if route.scheme == "lambda":
-            task_result = call_lambda_task(celery_task, route)
+            task_result = call_lambda_task(task, route)
         elif route.scheme == "task":
-            task_result: Any = call_local_task(celery_task, route)
+            task_result: Any = call_local_task(task, route)
         else:
             raise TaskExecutionException(
                 message=f"Unsupported task scheme: {route.scheme}",
                 detail=route.scheme,
             )
 
-        logger.debug(f"Executed task: {celery_task.task} with ID {celery_task.id}")
+        logger.debug(f"Executed task: {task.task} with ID {task.id}")
 
         return task_result
 
     except Exception as e:
-        logger.error(f"Exception executing task {celery_task.id}: {str(e)}")
+        logger.error(f"Exception executing task {task.id}: {str(e)}")
 
         raise TaskExecutionException(
-            message=f"Exception executing task {celery_task.id}", detail=str(e)
+            message=f"Exception executing task {task.id}", detail=str(e)
         ) from e
 
 
@@ -226,20 +226,20 @@ def get_message(record: SQSRecord) -> SQSMessage:
         ) from e
 
 
-def get_task(message: SQSMessage) -> CeleryTask:
+def get_task(message: SQSMessage) -> Task:
     """Get Task from message
 
     Args:
         message (SQSMessage): _description_
 
     Returns:
-        CeleryTask: _description_
+        Task: _description_
     """
 
     # 3.1. Get Message from record
     try:
-        # Create CeleryTask object
-        celery_task: CeleryTask = CeleryTask(
+        # Create Task object
+        task: Task = Task(
             id=message.headers.id,
             task=message.headers.task,
             args=ast.literal_eval(
@@ -250,7 +250,7 @@ def get_task(message: SQSMessage) -> CeleryTask:
             ),  # Safely convert string to dict
         )
 
-        return celery_task
+        return task
 
     except json.JSONDecodeError as e:
         logger.error(f"JSONDecodeError getting task: {str(e)}")
@@ -320,43 +320,43 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             logger.debug(f"Processing message: {sqs_message}")
 
             # 3.2. Get celery Task from message
-            celery_task: CeleryTask = get_task(sqs_message)
-            logger.debug(f"Processing task: {celery_task}")
+            task: Task = get_task(sqs_message)
+            logger.debug(f"Processing task: {task}")
 
             # Set task status to "PROCESSING" in backend
-            CeleryTaskModel.insert_task(task_uuid=celery_task.id)
+            TaskModel.insert_task(task_uuid=task.id)
 
             # 3.3. Check if task is supported
-            if celery_task.task not in settings.TASKS:
-                logger.error(f"Task '{celery_task.task}' not supported")
+            if task.task not in settings.TASKS:
+                logger.error(f"Task '{task.task}' not supported")
 
                 failed_tasks.append(
                     FailedTask(
                         message_id=record.messageId,
-                        task_id=celery_task.id,
-                        error=f"Task '{celery_task.task}' not supported",
+                        task_id=task.id,
+                        error=f"Task '{task.task}' not supported",
                     )
                 )
 
                 # 3.3.1. Update task status and result in backend
-                CeleryTaskModel.update_task(celery_task.id, status="ERROR", result=None)
+                TaskModel.update_task(task.id, status="ERROR", result=None)
 
                 continue
 
             # 3.4. Call function with args and kwargs
-            task_result: Any = call_task(celery_task)
+            task_result: Any = call_task(task)
 
-            logger.debug(f"Processed task: {celery_task.task} with ID {celery_task.id}")
+            logger.debug(f"Processed task: {task.task} with ID {task.id}")
 
             # 3.5. Update task status and result in backend
-            CeleryTaskModel.update_task(
-                celery_task.id, status="SUCCESS", result=task_result
+            TaskModel.update_task(
+                task.id, status="SUCCESS", result=task_result
             )
 
             # 3.6. Append task to processed tasks
             processed_tasks.append(
                 ProcessedTask(
-                    task_id=celery_task.id,
+                    task_id=task.id,
                     status="SUCCESS",
                     result=task_result,
                 )

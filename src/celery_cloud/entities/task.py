@@ -3,7 +3,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
-class CeleryTask(BaseModel):
+class Task(BaseModel):
     """Representation of a celery SQS task
 
     Args:

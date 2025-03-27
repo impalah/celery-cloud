@@ -32,6 +32,8 @@ class Settings:
             ),
         )
 
+        self.LOG_ENQUEUE: bool = self.get_env_variable("LOG_ENQUEUE", False)
+
         self.SERVER_DEBUG_PORT: int = self.get_env_variable("SERVER_DEBUG_PORT", 5890)
 
         self.TASKS: dict[str, str] = json.loads(self.get_env_variable("TASKS", "{}"))

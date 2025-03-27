@@ -3,8 +3,8 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
-class CeleryTaskResult(BaseModel):
-    """Model for the result of a Celery task
+class TaskResult(BaseModel):
+    """Model for the result of a task
 
     Args:
         BaseModel (_type_): _description_
