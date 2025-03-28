@@ -83,4 +83,5 @@ check: lint format type-check security-check
 
 
 # Test execution	
-
+test:
+	uv run pytest -v --tb=short --doctest-modules --disable-warnings --maxfail=1 --junitxml=junit.xml --cov-report term-missing --cov-report html:coverage_html_report --cov-report xml:coverage.xml --cov-config=.coveragerc --cov src tests
