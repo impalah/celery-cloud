@@ -1,7 +1,6 @@
 import ast
 import json
-from typing import Any, NamedTuple
-from urllib.parse import parse_qs, urlparse
+from typing import Any
 
 import boto3
 from ksuid import Ksuid
@@ -15,6 +14,7 @@ from celery_cloud.entities import (
     SQSEvent,
     SQSMessage,
     SQSRecord,
+    TaskRoute,
 )
 from celery_cloud.exceptions import (
     BackendException,
@@ -26,24 +26,7 @@ from celery_cloud.exceptions import (
 from celery_cloud.logging import logger, trace_id_context
 from celery_cloud.models.task_model import TaskModel
 from celery_cloud.settings import settings
-
-
-class TaskRoute(NamedTuple):
-    scheme: str  # task / lambda / etc.
-    module: str  # module or lambda arn (as host)
-    function: str  # function path or callable name
-    query: dict  # parsed query params if any
-
-
-def parse_task_url(url: str) -> TaskRoute:
-    parsed = urlparse(url)
-
-    scheme = parsed.scheme  # 'task' or 'lambda'
-    module = parsed.netloc  # module path or ARN
-    function = parsed.path.lstrip("/")  # remove leading slash
-    query = parse_qs(parsed.query)
-
-    return TaskRoute(scheme, module, function, query)
+from .task_executor import TaskExecutor
 
 
 def call_lambda_task(task: Task, route: TaskRoute) -> Any:
@@ -117,6 +100,25 @@ def call_local_task(task: Task, route: TaskRoute) -> Any:
     return task_result
 
 
+# def call_task(task: Task) -> Any:
+#     """Execute a Celery task and return the result"""
+#     try:
+#         task_config = settings.TASKS[task.task]
+#         route = TaskRoute.from_url(task_config)
+
+#         executor = TaskExecutor()
+#         task_result = executor.execute(task, route)
+
+#         logger.debug(f"Executed task: {task.task} with ID {task.id}")
+#         return task_result
+
+#     except Exception as e:
+#         logger.error(f"Exception executing task {task.id}: {str(e)}")
+#         raise TaskExecutionException(
+#             message=f"Exception executing task {task.id}", detail=str(e)
+#         ) from e
+
+
 def call_task(task: Task) -> Any:
     """Execute a Celery task and return the result
 
@@ -133,7 +135,7 @@ def call_task(task: Task) -> Any:
     try:
         # Get task configuration
         task_config = settings.TASKS[task.task]
-        route = parse_task_url(task_config)
+        route = TaskRoute.from_url(task_config)
 
         if route.scheme == "lambda":
             task_result = call_lambda_task(task, route)
@@ -349,9 +351,7 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             logger.debug(f"Processed task: {task.task} with ID {task.id}")
 
             # 3.5. Update task status and result in backend
-            TaskModel.update_task(
-                task.id, status="SUCCESS", result=task_result
-            )
+            TaskModel.update_task(task.id, status="SUCCESS", result=task_result)
 
             # 3.6. Append task to processed tasks
             processed_tasks.append(

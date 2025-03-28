@@ -1,15 +1,16 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from celery_cloud.runners.aws_lambda_runner import lambda_handler
+from celery_cloud.runners.aws_lambda import lambda_handler
 from celery_cloud.entities import Task
 
-@patch("celery_cloud.runners.aws_lambda_runner.settings")
-@patch("celery_cloud.runners.aws_lambda_runner.call_task")
-@patch("celery_cloud.runners.aws_lambda_runner.TaskModel.update_task")
-@patch("celery_cloud.runners.aws_lambda_runner.TaskModel.insert_task")
-@patch("celery_cloud.runners.aws_lambda_runner.get_task")
-@patch("celery_cloud.runners.aws_lambda_runner.SQSMessage")
-@patch("celery_cloud.runners.aws_lambda_runner.get_event")
+
+@patch("celery_cloud.runners.aws_lambda.settings")
+@patch("celery_cloud.runners.aws_lambda.call_task")
+@patch("celery_cloud.runners.aws_lambda.TaskModel.update_task")
+@patch("celery_cloud.runners.aws_lambda.TaskModel.insert_task")
+@patch("celery_cloud.runners.aws_lambda.get_task")
+@patch("celery_cloud.runners.aws_lambda.SQSMessage")
+@patch("celery_cloud.runners.aws_lambda.get_event")
 def test_lambda_handler_success(
     mock_get_event,
     mock_sqs_message_class,
@@ -50,10 +51,7 @@ def test_lambda_handler_success(
             "correlation_id": "abc",
             "reply_to": "r",
             "delivery_mode": 2,
-            "delivery_info": {
-                "exchange": "default",
-                "routing_key": "task_queue"
-            },
+            "delivery_info": {"exchange": "default", "routing_key": "task_queue"},
             "priority": 0,
             "body_encoding": "base64",
             "delivery_tag": "xyz",
@@ -75,13 +73,12 @@ def test_lambda_handler_success(
     assert result["processed_tasks"][0]["status"] == "SUCCESS"
 
 
-
-@patch("celery_cloud.runners.aws_lambda_runner.settings")
-@patch("celery_cloud.runners.aws_lambda_runner.TaskModel.update_task")
-@patch("celery_cloud.runners.aws_lambda_runner.TaskModel.insert_task")
-@patch("celery_cloud.runners.aws_lambda_runner.get_task")
-@patch("celery_cloud.runners.aws_lambda_runner.SQSMessage")
-@patch("celery_cloud.runners.aws_lambda_runner.get_event")
+@patch("celery_cloud.runners.aws_lambda.settings")
+@patch("celery_cloud.runners.aws_lambda.TaskModel.update_task")
+@patch("celery_cloud.runners.aws_lambda.TaskModel.insert_task")
+@patch("celery_cloud.runners.aws_lambda.get_task")
+@patch("celery_cloud.runners.aws_lambda.SQSMessage")
+@patch("celery_cloud.runners.aws_lambda.get_event")
 def test_lambda_handler_unsupported_task(
     mock_get_event,
     mock_sqs_message_class,
@@ -121,10 +118,7 @@ def test_lambda_handler_unsupported_task(
             "correlation_id": "abc",
             "reply_to": "r",
             "delivery_mode": 2,
-            "delivery_info": {
-                "exchange": "default",
-                "routing_key": "task_queue"
-            },
+            "delivery_info": {"exchange": "default", "routing_key": "task_queue"},
             "priority": 0,
             "body_encoding": "base64",
             "delivery_tag": "xyz",
@@ -143,13 +137,13 @@ def test_lambda_handler_unsupported_task(
     assert "not supported" in result["failed_tasks"][0]["error"]
 
 
-@patch("celery_cloud.runners.aws_lambda_runner.settings")
-@patch("celery_cloud.runners.aws_lambda_runner.call_task", side_effect=Exception("boom"))
-@patch("celery_cloud.runners.aws_lambda_runner.TaskModel.update_task")
-@patch("celery_cloud.runners.aws_lambda_runner.TaskModel.insert_task")
-@patch("celery_cloud.runners.aws_lambda_runner.get_task")
-@patch("celery_cloud.runners.aws_lambda_runner.SQSMessage")
-@patch("celery_cloud.runners.aws_lambda_runner.get_event")
+@patch("celery_cloud.runners.aws_lambda.settings")
+@patch("celery_cloud.runners.aws_lambda.call_task", side_effect=Exception("boom"))
+@patch("celery_cloud.runners.aws_lambda.TaskModel.update_task")
+@patch("celery_cloud.runners.aws_lambda.TaskModel.insert_task")
+@patch("celery_cloud.runners.aws_lambda.get_task")
+@patch("celery_cloud.runners.aws_lambda.SQSMessage")
+@patch("celery_cloud.runners.aws_lambda.get_event")
 def test_lambda_handler_call_task_raises(
     mock_get_event,
     mock_sqs_message_class,
@@ -189,10 +183,7 @@ def test_lambda_handler_call_task_raises(
             "correlation_id": "abc",
             "reply_to": "r",
             "delivery_mode": 2,
-            "delivery_info": {
-                "exchange": "default",
-                "routing_key": "task_queue"
-            },
+            "delivery_info": {"exchange": "default", "routing_key": "task_queue"},
             "priority": 0,
             "body_encoding": "base64",
             "delivery_tag": "xyz",
@@ -207,4 +198,3 @@ def test_lambda_handler_call_task_raises(
     assert result["status"] == "error"
     assert "General error" in result["message"]
     assert "boom" in result["details"]
-
