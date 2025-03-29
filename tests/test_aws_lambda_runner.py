@@ -1,9 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from celery_cloud.runners.aws_lambda import (
-    call_lambda_task,
-    call_local_task,
-    call_task,
     get_event,
     get_message,
     get_task,
@@ -17,93 +14,6 @@ from celery_cloud.entities import SQSEvent, SQSMessage, Task
 from celery_cloud.models.task_model import TaskModel
 import json
 
-
-# ===================================
-# call_lambda_task
-# ===================================
-
-
-@patch("boto3.client")
-def test_call_lambda_task_success(mock_boto):
-    mock_lambda = MagicMock()
-    mock_lambda.invoke.return_value = {
-        "Payload": MagicMock(read=lambda: json.dumps({"body": "ok"}).encode())
-    }
-    mock_boto.return_value = mock_lambda
-
-    task = Task(id="t1", task="demo", args=[], kwargs={})
-    route = TaskRoute("lambda", "arn:aws:lambda:us-east-1:123:function:name", "", {})
-    result = call_lambda_task(task, route)
-    assert result == "ok"
-
-
-@patch("boto3.client")
-def test_call_lambda_task_error(mock_boto):
-    mock_lambda = MagicMock()
-    mock_lambda.invoke.return_value = {
-        "Payload": MagicMock(read=lambda: json.dumps({"error": "fail"}).encode()),
-        "FunctionError": "Handled",
-    }
-    mock_boto.return_value = mock_lambda
-
-    task = Task(id="t1", task="demo", args=[], kwargs={})
-    route = TaskRoute("lambda", "arn:aws:lambda:us-east-1:123:function:name", "", {})
-    with pytest.raises(TaskExecutionException):
-        call_lambda_task(task, route)
-
-
-# ===================================
-# call_local_task
-# ===================================
-
-
-@patch("builtins.__import__")
-def test_call_local_task_success(mock_import):
-    fake_module = MagicMock()
-    fake_module.test_func.return_value = "done"
-    mock_import.return_value = fake_module
-
-    task = Task(id="t1", task="local_task", args=[], kwargs={})
-    route = TaskRoute("task", "some_mod", "test_func", {})
-    result = call_local_task(task, route)
-    assert result == "done"
-
-
-@patch("builtins.__import__")
-def test_call_local_task_missing_func(mock_import):
-    fake_module = MagicMock()
-    del fake_module.non_existent
-    mock_import.return_value = fake_module
-
-    task = Task(id="t1", task="demo", args=[], kwargs={})
-    route = TaskRoute("task", "some_mod", "non_existent", {})
-    with pytest.raises(AttributeError):
-        call_local_task(task, route)
-
-
-# ===================================
-# call_task
-# ===================================
-
-
-@patch("celery_cloud.runners.aws_lambda.call_local_task")
-@patch("celery_cloud.runners.aws_lambda.settings")
-def test_call_task_supported_task(mock_settings, mock_local_call):
-    mock_local_call.return_value = 42
-    mock_settings.TASKS = {"my.task": "task://mod/fn"}
-
-    task = Task(id="123", task="my.task", args=[], kwargs={})
-    result = call_task(task)
-    assert result == 42
-
-
-@patch("celery_cloud.runners.aws_lambda.settings")
-def test_call_task_invalid_scheme(mock_settings):
-    mock_settings.TASKS = {"weird.task": "ftp://host/path"}
-
-    task = Task(id="123", task="weird.task", args=[], kwargs={})
-    with pytest.raises(TaskExecutionException):
-        call_task(task)
 
 
 # ===================================

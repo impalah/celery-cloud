@@ -8,6 +8,14 @@ PLATFORM="linux/amd64"
 BUILDER_NAME="mybuilder"
 PART ?= patch  # puede sobrescribirse con: make bump-version PART=minor
 
+# Delete the virtual environment and force a sync
+venv:
+	rm -rf .venv && \
+	echo "✅ Deleted virtual environment" && \
+	uv sync && \
+	echo "✅ Created virtual environment" && \
+	uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version
+
 # Bump patch/minor/major version
 bump-version:
 	@v=$$(uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version) && \

@@ -29,134 +29,26 @@ from celery_cloud.settings import settings
 from .task_executor import TaskExecutor
 
 
-def call_lambda_task(task: Task, route: TaskRoute) -> Any:
-    """Execute a task defined in a remote lambda function
-
-    Args:
-        task (Task): Task to execute
-
-    Returns:
-        Any: Task execution result
-
-    """
-
-    logger.debug(f"Calling lambda task: {route.module}")
-
-    region = route.module.split(":")[3]
-    logger.debug(f"Lambda function on region: {region}")
-
-    # Build the lambda client
-    lambda_client = boto3.client("lambda", region_name=region)
-
-    # Execute the lambda function
-    response = lambda_client.invoke(
-        FunctionName=route.module,
-        InvocationType="RequestResponse",
-        Payload=json.dumps(
-            {
-                "args": task.args,
-                "kwargs": task.kwargs,
-            }
-        ),
-    )
-
-    logger.debug(f"Raw response: {response}")
-
-    # Parse the response
-    response_payload = json.loads(response["Payload"].read())
-
-    logger.debug(f"Response payload: {response_payload}")
-
-    # Check if the lambda function returned an error
-    if "FunctionError" in response:
-        raise TaskExecutionException(
-            message=f"Lambda function {route.module} returned an error",
-            detail=response_payload,
-        )
-
-    return response_payload["body"] if "body" in response_payload else response_payload
-
-
-def call_local_task(task: Task, route: TaskRoute) -> Any:
-    """Execute a task defined in the local application
-
-    Args:
-        task (Task): Celery task to execute
-
-    Returns:
-        Any: Task execution result
-
-    """
-
-    logger.debug(f"Calling local task: {route.module}.{route.function}")
-
-    # Import module
-    module = __import__(route.module, fromlist=[route.function])
-    function = getattr(module, route.function)
-
-    # Execute function
-    task_result = function(task.args, task.kwargs)
-
-    return task_result
-
-
-# def call_task(task: Task) -> Any:
-#     """Execute a Celery task and return the result"""
-#     try:
-#         task_config = settings.TASKS[task.task]
-#         route = TaskRoute.from_url(task_config)
-
-#         executor = TaskExecutor()
-#         task_result = executor.execute(task, route)
-
-#         logger.debug(f"Executed task: {task.task} with ID {task.id}")
-#         return task_result
-
-#     except Exception as e:
-#         logger.error(f"Exception executing task {task.id}: {str(e)}")
-#         raise TaskExecutionException(
-#             message=f"Exception executing task {task.id}", detail=str(e)
-#         ) from e
 
 
 def call_task(task: Task) -> Any:
-    """Execute a Celery task and return the result
-
-    Args:
-        task (Task): Celery task to execute
-
-    Returns:
-        Any: Task execution result
-
-    """
-
-    # TODO: allow to call remote lambda functions
-
+    """Execute a Celery task and return the result"""
     try:
-        # Get task configuration
         task_config = settings.TASKS[task.task]
         route = TaskRoute.from_url(task_config)
 
-        if route.scheme == "lambda":
-            task_result = call_lambda_task(task, route)
-        elif route.scheme == "task":
-            task_result: Any = call_local_task(task, route)
-        else:
-            raise TaskExecutionException(
-                message=f"Unsupported task scheme: {route.scheme}",
-                detail=route.scheme,
-            )
+        executor = TaskExecutor()
+        task_result = executor.execute(task, route)
 
         logger.debug(f"Executed task: {task.task} with ID {task.id}")
-
         return task_result
 
     except Exception as e:
         logger.error(f"Exception executing task {task.id}: {str(e)}")
-
         raise TaskExecutionException(
             message=f"Exception executing task {task.id}", detail=str(e)
         ) from e
+
 
 
 def get_event(event: dict[str, Any]) -> SQSEvent:
