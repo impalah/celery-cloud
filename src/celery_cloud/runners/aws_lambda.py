@@ -75,54 +75,6 @@ def get_event(event: dict[str, Any]) -> SQSEvent:
         raise EventDecodeException(message="Error decoding event", detail=str(e)) from e
 
 
-
-def get_task(message: SQSMessage) -> Task:
-    """Get Task from message
-
-    Args:
-        message (SQSMessage): _description_
-
-    Returns:
-        Task: _description_
-    """
-
-    # 3.1. Get Message from record
-    try:
-        # Create Task object
-        task: Task = Task(
-            id=message.headers.id,
-            task=message.headers.task,
-            args=ast.literal_eval(
-                message.headers.argsrepr
-            ),  # Safely convert string to list
-            kwargs=ast.literal_eval(
-                message.headers.kwargsrepr
-            ),  # Safely convert string to dict
-        )
-
-        return task
-
-    except json.JSONDecodeError as e:
-        logger.error(f"JSONDecodeError getting task: {str(e)}")
-
-        raise TaskDecodeException(
-            message="JSONDecodeError getting task", detail=str(e)
-        ) from e
-
-    except ValidationError as e:
-        logger.error(f"ValidationError getting task: {str(e)}")
-        raise TaskDecodeException(
-            message="ValidationError getting task", detail=str(e)
-        ) from e
-
-    except Exception as e:
-        logger.error(f"Exception getting task: {str(e)}")
-
-        raise TaskDecodeException(
-            message="Exception getting task", detail=str(e)
-        ) from e
-
-
 def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     """Lambda handler for processing Celery Broker events
 
@@ -170,7 +122,7 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             logger.debug(f"Processing message: {sqs_message}")
 
             # 3.2. Get celery Task from message
-            task: Task = get_task(sqs_message)
+            task: Task = sqs_message.get_task()
             logger.debug(f"Processing task: {task}")
 
             # Set task status to "PROCESSING" in backend

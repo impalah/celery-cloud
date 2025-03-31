@@ -92,7 +92,7 @@ wheels = [
 
 [[package]]
 name = "celery-cloud"
-version = "0.1.21"
+version = "0.1.22"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },

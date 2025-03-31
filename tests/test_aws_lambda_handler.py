@@ -8,13 +8,11 @@ from celery_cloud.entities import Task
 @patch("celery_cloud.runners.aws_lambda.call_task")
 @patch("celery_cloud.runners.aws_lambda.TaskModel.update_task")
 @patch("celery_cloud.runners.aws_lambda.TaskModel.insert_task")
-@patch("celery_cloud.runners.aws_lambda.get_task")
 @patch("celery_cloud.runners.aws_lambda.SQSMessage")
 @patch("celery_cloud.runners.aws_lambda.get_event")
 def test_lambda_handler_success(
     mock_get_event,
     mock_sqs_message_class,
-    mock_get_task,
     mock_insert_task,
     mock_update_task,
     mock_call_task,
@@ -22,8 +20,6 @@ def test_lambda_handler_success(
 ):
     # Configuración de mocks
     mock_settings.TASKS = {"my.task": "task://module/function"}
-    fake_task = Task(id="abc123", task="my.task", args=[], kwargs={})
-    mock_get_task.return_value = fake_task
     mock_call_task.return_value = {"result": 42}
 
     # Mock del mensaje SQS y record
@@ -59,7 +55,13 @@ def test_lambda_handler_success(
     }
 
     mock_get_event.return_value = MagicMock(Records=[mock_record])
-    mock_sqs_message_class.return_value = MagicMock()
+
+    mock_sqs_message = MagicMock()
+    mock_sqs_message.get_task.return_value = Task(
+        id="abc123", task="my.task", args=[], kwargs={}
+    )
+    mock_sqs_message_class.return_value = mock_sqs_message
+
 
     # Ejecutar lambda_handler
     result = lambda_handler({"Records": [{}]}, context={})
@@ -76,13 +78,11 @@ def test_lambda_handler_success(
 @patch("celery_cloud.runners.aws_lambda.settings")
 @patch("celery_cloud.runners.aws_lambda.TaskModel.update_task")
 @patch("celery_cloud.runners.aws_lambda.TaskModel.insert_task")
-@patch("celery_cloud.runners.aws_lambda.get_task")
 @patch("celery_cloud.runners.aws_lambda.SQSMessage")
 @patch("celery_cloud.runners.aws_lambda.get_event")
 def test_lambda_handler_unsupported_task(
     mock_get_event,
     mock_sqs_message_class,
-    mock_get_task,
     mock_insert_task,
     mock_update_task,
     mock_settings,
@@ -92,7 +92,6 @@ def test_lambda_handler_unsupported_task(
 
     task_id = "abc123"
     fake_task = Task(id=task_id, task="unknown.task", args=[], kwargs={})
-    mock_get_task.return_value = fake_task
 
     mock_record = MagicMock()
     mock_record.messageId = "msg-2"
@@ -126,7 +125,10 @@ def test_lambda_handler_unsupported_task(
     }
 
     mock_get_event.return_value = MagicMock(Records=[mock_record])
-    mock_sqs_message_class.return_value = MagicMock()
+
+    mock_sqs_message = MagicMock()
+    mock_sqs_message.get_task.return_value = fake_task
+    mock_sqs_message_class.return_value = mock_sqs_message
 
     result = lambda_handler({"Records": [{}]}, context={})
 
@@ -141,13 +143,11 @@ def test_lambda_handler_unsupported_task(
 @patch("celery_cloud.runners.aws_lambda.call_task", side_effect=Exception("boom"))
 @patch("celery_cloud.runners.aws_lambda.TaskModel.update_task")
 @patch("celery_cloud.runners.aws_lambda.TaskModel.insert_task")
-@patch("celery_cloud.runners.aws_lambda.get_task")
 @patch("celery_cloud.runners.aws_lambda.SQSMessage")
 @patch("celery_cloud.runners.aws_lambda.get_event")
 def test_lambda_handler_call_task_raises(
     mock_get_event,
     mock_sqs_message_class,
-    mock_get_task,
     mock_insert_task,
     mock_update_task,
     mock_call_task,
@@ -157,7 +157,6 @@ def test_lambda_handler_call_task_raises(
     mock_settings.TASKS = {"my.task": "task://mod/fn"}
 
     fake_task = Task(id="abc123", task="my.task", args=[], kwargs={})
-    mock_get_task.return_value = fake_task
 
     mock_record = MagicMock()
     mock_record.messageId = "msg-3"
@@ -191,7 +190,9 @@ def test_lambda_handler_call_task_raises(
     }
 
     mock_get_event.return_value = MagicMock(Records=[mock_record])
-    mock_sqs_message_class.return_value = MagicMock()
+    mock_sqs_message = MagicMock()
+    mock_sqs_message.get_task.return_value = fake_task
+    mock_sqs_message_class.return_value = mock_sqs_message
 
     result = lambda_handler({"Records": [{}]}, context={})
 

@@ -1,8 +1,16 @@
+import ast
 import base64
 import json
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
+from celery_cloud.entities import (
+    Task,
+)
+from celery_cloud.exceptions import (
+    TaskDecodeException,
+)
+
 
 
 class DeliveryInfo(BaseModel):
@@ -146,6 +154,48 @@ class SQSMessage(BaseModel):
         """Decodes the base64-encoded message body into a Python object."""
         decoded_json = base64.b64decode(self.body).decode("utf-8")
         return json.loads(decoded_json)
+
+
+    def get_task(self) -> Task:
+        """Get Task from message
+
+        Args:
+            message (SQSMessage): _description_
+
+        Returns:
+            Task: _description_
+        """
+
+        try:
+            # Create Task object
+            task: Task = Task(
+                id=self.headers.id,
+                task=self.headers.task,
+                args=ast.literal_eval(
+                    self.headers.argsrepr
+                ),  # Safely convert string to list
+                kwargs=ast.literal_eval(
+                    self.headers.kwargsrepr
+                ),  # Safely convert string to dict
+            )
+
+            return task
+
+        except json.JSONDecodeError as e:
+            raise TaskDecodeException(
+                message="JSONDecodeError getting task", detail=str(e)
+            ) from e
+
+        except ValidationError as e:
+            raise TaskDecodeException(
+                message="ValidationError getting task", detail=str(e)
+            ) from e
+
+        except Exception as e:
+            raise TaskDecodeException(
+                message="Exception getting task", detail=str(e)
+            ) from e
+
 
 
 class SQSAttributes(BaseModel):
