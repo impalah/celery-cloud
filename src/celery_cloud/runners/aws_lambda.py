@@ -75,50 +75,6 @@ def get_event(event: dict[str, Any]) -> SQSEvent:
         raise EventDecodeException(message="Error decoding event", detail=str(e)) from e
 
 
-def get_message(record: SQSRecord) -> SQSMessage:
-    """Get message from SQS record
-
-    Args:
-        record (SQSRecord): _description_
-
-    Returns:
-        SQSMessage: _description_
-    """
-
-    # 3.1. Get Message from record
-    try:
-        message: dict[str, Any] = record.get_message()
-        # TODO: validate fields exist
-        sqs_message: SQSMessage = SQSMessage(
-            body=message["body"],
-            content_encoding=message["content-encoding"],
-            content_type=message["content-type"],
-            headers=message["headers"],
-            properties=message["properties"],
-        )
-
-        return sqs_message
-
-    except json.JSONDecodeError as e:
-        logger.error(f"JSONDecodeError processing message: {str(e)}")
-
-        raise MessageDecodeException(
-            message="JSONDecodeError processing message", detail=str(e)
-        ) from e
-
-    except ValidationError as e:
-        logger.error(f"ValidationError processing message: {str(e)}")
-        raise MessageDecodeException(
-            message="ValidationError processing message", detail=str(e)
-        ) from e
-
-    except Exception as e:
-        logger.error(f"Exception processing message: {str(e)}")
-
-        raise MessageDecodeException(
-            message="Exception processing message", detail=str(e)
-        ) from e
-
 
 def get_task(message: SQSMessage) -> Task:
     """Get Task from message
