@@ -9,6 +9,7 @@ from celery_cloud.entities import (
 )
 from celery_cloud.exceptions import (
     TaskDecodeException,
+    EventDecodeException,
 )
 
 
@@ -279,3 +280,25 @@ class SQSEvent(BaseModel):
             "description": "List of messages received in the SQS event.",
         },
     )
+
+    @classmethod
+    def from_lambda(cls, event: dict[str, Any]) -> "SQSEvent":
+        """Get a SQSEvent from a lambda event
+
+        Args:
+            event (dict[str, Any]): Lambda event
+
+        Returns:
+            SQSEVent: Decoded event
+        """
+
+        try:
+            # Validate the event with Pydantic
+            sqs_event: SQSEvent = SQSEvent(**event)
+            return sqs_event
+        except ValidationError as e:
+            raise EventDecodeException(
+                message="Invalid SQS event format", detail=e.json()
+            ) from e
+        except Exception as e:
+            raise EventDecodeException(message="Error decoding event", detail=str(e)) from e

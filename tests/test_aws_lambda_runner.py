@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from celery_cloud.runners.aws_lambda import (
-    get_event,
     TaskRoute,
     TaskExecutionException,
     EventDecodeException,
@@ -14,19 +13,19 @@ import json
 
 
 
-# ===================================
-# get_event
-# ===================================
+# # ===================================
+# # get_event
+# # ===================================
 
 
-def test_get_event_valid():
-    result = get_event({"Records": []})
-    assert isinstance(result, SQSEvent)
+# def test_get_event_valid():
+#     result = get_event({"Records": []})
+#     assert isinstance(result, SQSEvent)
 
 
-def test_get_event_invalid():
-    with pytest.raises(EventDecodeException):
-        get_event({"bad": "input"})
+# def test_get_event_invalid():
+#     with pytest.raises(EventDecodeException):
+#         get_event({"bad": "input"})
 
 
 

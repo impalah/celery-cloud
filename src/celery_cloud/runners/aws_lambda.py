@@ -51,28 +51,6 @@ def call_task(task: Task) -> Any:
 
 
 
-def get_event(event: dict[str, Any]) -> SQSEvent:
-    """Get SQSEvent from message
-
-    Args:
-        event (dict[str, Any]): SQS event
-
-    Returns:
-        SQSEVent: Decoded event
-    """
-
-    try:
-        # Validate the event with Pydantic
-        sqs_event: SQSEvent = SQSEvent(**event)
-        return sqs_event
-    except ValidationError as e:
-        logger.error(f"Invalid SQS event format: {e.json()}")
-        raise EventDecodeException(
-            message="Invalid SQS event format", detail=e.json()
-        ) from e
-    except Exception as e:
-        logger.error(f"Error decoding event: {str(e)}")
-        raise EventDecodeException(message="Error decoding event", detail=str(e)) from e
 
 
 def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
@@ -104,7 +82,7 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         # 1. Decode the event depending on the event source
         # TODO: Only SQS managed by now, add more event types
 
-        sqs_event: SQSEvent = get_event(event)
+        sqs_event: SQSEvent = SQSEvent.from_lambda(event)
 
         logger.debug(f"Processing lambda event: {sqs_event.model_dump()}")
 
