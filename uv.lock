@@ -92,15 +92,17 @@ wheels = [
 
 [[package]]
 name = "celery-cloud"
-version = "0.1.23"
+version = "0.1.27"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
     { name = "loguru" },
+    { name = "pybreaker" },
     { name = "pydantic" },
     { name = "pynamodb" },
     { name = "python-dotenv" },
     { name = "svix-ksuid" },
+    { name = "tenacity" },
 ]
 
 [package.dev-dependencies]
@@ -122,10 +124,12 @@ dev = [
 requires-dist = [
     { name = "boto3", specifier = ">=1.37.21" },
     { name = "loguru", specifier = ">=0.7.3" },
+    { name = "pybreaker", specifier = ">=1.3.0" },
     { name = "pydantic", specifier = ">=2.10.6" },
     { name = "pynamodb", specifier = ">=6.0.2" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "svix-ksuid", specifier = ">=0.6.2" },
+    { name = "tenacity", specifier = ">=9.1.2" },
 ]
 
 [package.metadata.requires-dev]
@@ -627,6 +631,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pybreaker"
+version = "1.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0c/f0/d9ed44a05f7f632a4c684293ccce9dc0476de218071cc6a982bc7c9f4c70/pybreaker-1.3.0.tar.gz", hash = "sha256:4a4e2ffc3a4dc47909b96cf0d707e3343c898c97cfe3f161ff9bd0c779ddeb9f", size = 14950 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9f/17/316816624bb6ac692c035dd7c8ec98398b3e175d365195a730ad657cff22/pybreaker-1.3.0-py3-none-any.whl", hash = "sha256:ebebdf8a1c0de677c5a4e1adf29045747dbd1d6bf13b860be453d38337d66ad6", size = 12441 },
+]
+
+[[package]]
 name = "pycparser"
 version = "2.22"
 source = { registry = "https://pypi.org/simple" }
@@ -991,6 +1004,15 @@ dependencies = [
     { name = "python-baseconv" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a1/7a/0c98b77ca01d64f13143607b88273a13110d659780b93cb1333abebf8039/svix-ksuid-0.6.2.tar.gz", hash = "sha256:beb95bd6284bdbd526834e233846653d2bd26eb162b3233513d8f2c853c78964", size = 6957 }
+
+[[package]]
+name = "tenacity"
+version = "9.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0a/d4/2b0cd0fe285e14b36db076e78c93766ff1d529d70408bd1d2a5a84f1d929/tenacity-9.1.2.tar.gz", hash = "sha256:1169d376c297e7de388d18b4481760d478b0e99a777cad3a9c86e556f4b697cb", size = 48036 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e5/30/643397144bfbfec6f6ef821f36f33e57d35946c44a2352d3c9f0ae847619/tenacity-9.1.2-py3-none-any.whl", hash = "sha256:f77bf36710d8b73a50b2dd155c97b870017ad21afe6ab300326b0371b3b05138", size = 28248 },
+]
 
 [[package]]
 name = "tornado"

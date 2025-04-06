@@ -34,6 +34,12 @@ class Settings:
 
         self.LOG_ENQUEUE: bool = self.get_env_variable("LOG_ENQUEUE", False)
 
+        # Circuit breaker and retries config
+        self.CB_FAIL_MAX: int = self.get_env_variable("CB_FAIL_MAX", 5)
+        self.CB_RESET_TIMEOUT: int = self.get_env_variable("CB_RESET_TIMEOUT", 60)
+        self.MAX_ATTEMPTS: int = self.get_env_variable("MAX_ATTEMPTS", 5)
+        self.MAX_RETRIES: int = self.get_env_variable("MAX_RETRIES", 5)
+
         self.SERVER_DEBUG_PORT: int = self.get_env_variable("SERVER_DEBUG_PORT", 5890)
         self.DEBUG_MODE: bool = self.get_env_variable("DEBUG_MODE", False)
 
