@@ -6,7 +6,7 @@ Estado de partida: todo el trabajo está **sin commitear** en el árbol de traba
 
 - [ ] **Decidir cómo trocear los commits.** Propuesta: (1) licencia MPL-2.0 y versión 0.2.0; (2) auditoría de calidad (`documentation/`, correcciones, tests); (3) README + TTL; (4) paridad con Celery (fases 1-5); (5) documentación Sphinx y workflows.
 - [ ] **Activar GitHub Pages** (rama `main`, carpeta `/docs`). El README apunta a `https://impalah.github.io/celery-cloud/`; confirmar la URL.
-- [ ] **`release.yml`:** el bump automático está comentado, así que cada push a `main` intenta publicar la misma versión en PyPI y **falla** hasta subir la versión a mano. Decidir: dejar solo `release`/`workflow_dispatch` como disparadores, o comprobar antes si la versión ya existe en PyPI (como hace `auth-middleware`).
+- [x] **`release.yml`:** comprueba en PyPI si la versión ya existe (como `auth-middleware`) y salta build y publicación; el control de calidad corre siempre. Verificar en el próximo push.
 - [ ] **Primer release 0.2.0:** subir a PyPI y publicar una **imagen nueva en ECR** (las publicadas llegan a `0.1.25` y no tienen ninguna corrección). Valorar incluir los extras `msgpack`/`yaml` en la imagen.
 - [ ] **Ningún workflow se ha ejecutado** (`ci.yml`, `docs.yml`, `release.yml`, `mutation.yml`, Dependabot): solo se validó su YAML. Vigilar la primera ejecución, sobre todo `docs.yml` (commitea `docs/` con `GITHUB_TOKEN`).
 

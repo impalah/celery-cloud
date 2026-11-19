@@ -45,6 +45,24 @@ jobs:
         with:
           python-version-file: "pyproject.toml"
 
+      - name: Read the project version
+        id: version
+        run: echo "version=$(uv version --short)" >> "$GITHUB_OUTPUT"
+
+      - name: Check whether this version is already on PyPI
+        id: pypi
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          # PyPI never accepts the same version twice: pushes without a version bump
+          # (fixes, docs) must still run the quality gate, not publish.
+          if curl -sf "https://pypi.org/pypi/celery-cloud/${VERSION}/json" > /dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Version ${VERSION} is already published: skipping build and publish."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Install the project
         run: uv sync --all-extras --dev
 
@@ -86,10 +104,12 @@ jobs:
       #     git push origin HEAD
 
       - name: Build
+        if: steps.pypi.outputs.exists == 'false'
         run: |
           uv build
 
       - name: Publish on pypi
+        if: steps.pypi.outputs.exists == 'false'
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
