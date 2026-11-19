@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/api.html" />
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Task API" href="api/tasks.html" />
+    <link rel="prev" title="Operations" href="infrastructure/operations.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html">Task API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/signals.html">Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/client.html">Client helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/runners.html">Lambda handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/strategies.html">Task execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/canvas.html">Workflows and built-in tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/messaging.html">Messaging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html">Result backend model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/serialization.html">Serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/deadline.html">Time limits and metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/entities.html">Entities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/settings.html">Settings</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<p>Reference of the <code class="docutils literal notranslate"><span class="pre">celery_cloud</span></code> package, generated from the docstrings of the
+source code. Task authors need <a class="reference internal" href="api/tasks.html"><span class="doc">Task API</span></a> and <a class="reference internal" href="api/signals.html"><span class="doc">Signals</span></a>; client
+applications may use <a class="reference internal" href="api/client.html"><span class="doc">Client helpers</span></a>; the rest is for people extending or debugging the
+runner.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">For task authors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/tasks.html">Task API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#celery_cloud.tasks.TaskContext"><code class="docutils literal notranslate"><span class="pre">TaskContext</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#celery_cloud.tasks.TaskOptions"><code class="docutils literal notranslate"><span class="pre">TaskOptions</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#celery_cloud.tasks.TaskRequest"><code class="docutils literal notranslate"><span class="pre">TaskRequest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#celery_cloud.tasks.backoff_countdown"><code class="docutils literal notranslate"><span class="pre">backoff_countdown()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#celery_cloud.tasks.call_task_function"><code class="docutils literal notranslate"><span class="pre">call_task_function()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#celery_cloud.tasks.get_options"><code class="docutils literal notranslate"><span class="pre">get_options()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#celery_cloud.tasks.task"><code class="docutils literal notranslate"><span class="pre">task()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/tasks.html#runtime">Runtime</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/signals.html">Signals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/signals.html#celery_cloud.signals.Signal"><code class="docutils literal notranslate"><span class="pre">Signal</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/signals.html#the-signals">The signals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/exceptions.html">Exceptions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html#celery_cloud.exceptions.runner_base_exception.RunnerBaseException"><code class="docutils literal notranslate"><span class="pre">RunnerBaseException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.BackendException"><code class="docutils literal notranslate"><span class="pre">BackendException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.DuplicateTaskException"><code class="docutils literal notranslate"><span class="pre">DuplicateTaskException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.EventDecodeException"><code class="docutils literal notranslate"><span class="pre">EventDecodeException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.MessageDecodeException"><code class="docutils literal notranslate"><span class="pre">MessageDecodeException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.ResultTooLargeException"><code class="docutils literal notranslate"><span class="pre">ResultTooLargeException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.RevokedTaskException"><code class="docutils literal notranslate"><span class="pre">RevokedTaskException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.TaskDecodeException"><code class="docutils literal notranslate"><span class="pre">TaskDecodeException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.TaskExecutionException"><code class="docutils literal notranslate"><span class="pre">TaskExecutionException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html#exceptions-for-task-code">Exceptions for task code</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">For client applications</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/client.html">Client helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/client.html#celery_cloud.client.backend_location"><code class="docutils literal notranslate"><span class="pre">backend_location()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/client.html#celery_cloud.client.install"><code class="docutils literal notranslate"><span class="pre">install()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/client.html#celery_cloud.client.revoke"><code class="docutils literal notranslate"><span class="pre">revoke()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Runner internals</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/runners.html">Lambda handler</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/runners.html#celery_cloud.runners.aws_lambda.lambda_handler"><code class="docutils literal notranslate"><span class="pre">lambda_handler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/runners.html#celery_cloud.runners.aws_lambda.call_task"><code class="docutils literal notranslate"><span class="pre">call_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/strategies.html">Task execution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/strategies.html#module-celery_cloud.runners.task_executor">Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/strategies.html#module-celery_cloud.runners.task_execution_strategy">Strategy interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/strategies.html#module-celery_cloud.runners.local_strategy">Local strategy (<code class="docutils literal notranslate"><span class="pre">task://</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/strategies.html#module-celery_cloud.runners.lambda_strategy">Lambda strategy (<code class="docutils literal notranslate"><span class="pre">lambda://</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/canvas.html">Workflows and built-in tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/canvas.html#celery_cloud.runners.canvas.dispatch_failure"><code class="docutils literal notranslate"><span class="pre">dispatch_failure()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/canvas.html#celery_cloud.runners.canvas.dispatch_success"><code class="docutils literal notranslate"><span class="pre">dispatch_success()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/canvas.html#celery_cloud.runners.canvas.on_chord_part_return"><code class="docutils literal notranslate"><span class="pre">on_chord_part_return()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/canvas.html#module-celery_cloud.runners.builtin_tasks"><code class="docutils literal notranslate"><span class="pre">celery.map</span></code> and <code class="docutils literal notranslate"><span class="pre">celery.starmap</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/messaging.html">Messaging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/messaging.html#celery_cloud.messaging.QueueRef"><code class="docutils literal notranslate"><span class="pre">QueueRef</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/messaging.html#celery_cloud.messaging.build_message"><code class="docutils literal notranslate"><span class="pre">build_message()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/messaging.html#celery_cloud.messaging.delay_message"><code class="docutils literal notranslate"><span class="pre">delay_message()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/messaging.html#celery_cloud.messaging.encode_body"><code class="docutils literal notranslate"><span class="pre">encode_body()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/messaging.html#celery_cloud.messaging.retry_message"><code class="docutils literal notranslate"><span class="pre">retry_message()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/messaging.html#celery_cloud.messaging.send"><code class="docutils literal notranslate"><span class="pre">send()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/models.html">Result backend model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#celery_cloud.models.task_model.TaskModel"><code class="docutils literal notranslate"><span class="pre">TaskModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#chords">Chords</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/serialization.html">Serialization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/serialization.html#celery_cloud.serialization.SerializationError"><code class="docutils literal notranslate"><span class="pre">SerializationError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/serialization.html#celery_cloud.serialization.decompress"><code class="docutils literal notranslate"><span class="pre">decompress()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/serialization.html#celery_cloud.serialization.dumps"><code class="docutils literal notranslate"><span class="pre">dumps()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/serialization.html#celery_cloud.serialization.loads"><code class="docutils literal notranslate"><span class="pre">loads()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/deadline.html">Time limits and metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/deadline.html#celery_cloud.deadline.effective_limits"><code class="docutils literal notranslate"><span class="pre">effective_limits()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/deadline.html#celery_cloud.deadline.remaining_seconds"><code class="docutils literal notranslate"><span class="pre">remaining_seconds()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/deadline.html#celery_cloud.deadline.signals_available"><code class="docutils literal notranslate"><span class="pre">signals_available()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/deadline.html#celery_cloud.deadline.time_limits"><code class="docutils literal notranslate"><span class="pre">time_limits()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/deadline.html#module-celery_cloud.metrics">Metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/entities.html">Entities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/entities.html#module-celery_cloud.entities.sqs_entities">SQS event and messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/entities.html#module-celery_cloud.entities.task">Task and route</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/entities.html#module-celery_cloud.entities.lambda_response">Handler response</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/settings.html">Settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/settings.html#celery_cloud.settings.Settings"><code class="docutils literal notranslate"><span class="pre">Settings</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="infrastructure/operations.html" class="btn btn-neutral float-left" title="Operations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api/tasks.html" class="btn btn-neutral float-right" title="Task API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

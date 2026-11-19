@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SQS queue &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/infrastructure/sqs-queue.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="DynamoDB table" href="dynamodb-table.html" />
+    <link rel="prev" title="Infrastructure" href="../infrastructure.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../infrastructure.html">Infrastructure</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SQS queue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-the-queue-and-a-dead-letter-queue">Create the queue and a dead-letter queue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#settings-that-matter">Settings that matter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#check">Check</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dynamodb-table.html">DynamoDB table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iam-roles.html">IAM roles and permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runner-image.html">Runner image (ECR)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lambda-function.html">Lambda function and event source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="terraform.html">Terraform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="periodic-tasks.html">Periodic tasks (replacing celery beat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queues-and-priorities.html">Several queues, priorities and rate limits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operations.html">Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure.html#conventions-of-the-guides">Conventions of the guides</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../infrastructure.html">Infrastructure</a></li>
+      <li class="breadcrumb-item active">SQS queue</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/infrastructure/sqs-queue.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sqs-queue">
+<h1>SQS queue<a class="headerlink" href="#sqs-queue" title="Link to this heading"></a></h1>
+<p>The queue is the Celery <strong>broker</strong>. The client writes messages to it and the
+runner’s event source mapping reads them.</p>
+<section id="create-the-queue-and-a-dead-letter-queue">
+<h2>Create the queue and a dead-letter queue<a class="headerlink" href="#create-the-queue-and-a-dead-letter-queue" title="Link to this heading"></a></h2>
+<p>A dead-letter queue (DLQ) keeps the messages that SQS could not hand over to the
+runner after several attempts, so you can inspect them instead of losing them.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>sqs<span class="w"> </span>create-queue<span class="w"> </span>--queue-name<span class="w"> </span><span class="si">${</span><span class="nv">QUEUE</span><span class="si">}</span>-dlq<span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span>
+
+<span class="nv">DLQ_ARN</span><span class="o">=</span><span class="k">$(</span>aws<span class="w"> </span>sqs<span class="w"> </span>get-queue-attributes<span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--queue-url<span class="w"> </span>https://sqs.<span class="nv">$AWS_REGION</span>.amazonaws.com/<span class="nv">$ACCOUNT_ID</span>/<span class="si">${</span><span class="nv">QUEUE</span><span class="si">}</span>-dlq<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-names<span class="w"> </span>QueueArn<span class="w"> </span>--query<span class="w"> </span>Attributes.QueueArn<span class="w"> </span>--output<span class="w"> </span>text<span class="k">)</span>
+</pre></div>
+</div>
+<p>Write the attributes of the main queue to a file (the redrive policy is JSON inside
+JSON):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>&gt;<span class="w"> </span>queue-attributes.json<span class="w"> </span><span class="s">&lt;&lt;JSON</span>
+<span class="s">{</span>
+<span class="s">  "VisibilityTimeout": "360",</span>
+<span class="s">  "MessageRetentionPeriod": "345600",</span>
+<span class="s">  "RedrivePolicy": "{\"deadLetterTargetArn\":\"$DLQ_ARN\",\"maxReceiveCount\":\"5\"}"</span>
+<span class="s">}</span>
+<span class="s">JSON</span>
+
+aws<span class="w"> </span>sqs<span class="w"> </span>create-queue<span class="w"> </span>--queue-name<span class="w"> </span><span class="nv">$QUEUE</span><span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attributes<span class="w"> </span>file://queue-attributes.json
+</pre></div>
+</div>
+<p>Take note of the <strong>queue URL</strong> (<code class="docutils literal notranslate"><span class="pre">https://sqs.&lt;region&gt;.amazonaws.com/&lt;account&gt;/&lt;queue&gt;</span></code>):
+the client needs it, and the event source mapping needs the queue <strong>ARN</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">QUEUE_URL</span><span class="o">=</span>https://sqs.<span class="nv">$AWS_REGION</span>.amazonaws.com/<span class="nv">$ACCOUNT_ID</span>/<span class="nv">$QUEUE</span>
+<span class="nv">QUEUE_ARN</span><span class="o">=</span><span class="k">$(</span>aws<span class="w"> </span>sqs<span class="w"> </span>get-queue-attributes<span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span>--queue-url<span class="w"> </span><span class="nv">$QUEUE_URL</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-names<span class="w"> </span>QueueArn<span class="w"> </span>--query<span class="w"> </span>Attributes.QueueArn<span class="w"> </span>--output<span class="w"> </span>text<span class="k">)</span>
+</pre></div>
+</div>
+</section>
+<section id="settings-that-matter">
+<h2>Settings that matter<a class="headerlink" href="#settings-that-matter" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 20.0%" />
+<col style="width: 55.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Suggested</p></th>
+<th class="head"><p>Why</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">VisibilityTimeout</span></code></p></td>
+<td><p>At least <strong>the function timeout</strong> (AWS recommends six times it)</p></td>
+<td><p>While the runner processes a message SQS hides it; if the visibility timeout
+is shorter than the processing time the message is delivered again while it
+is still running. The runner discards that duplicate, but the batch is
+wasted work. With a function timeout of 300 s, 360 s is the minimum and 1800
+s is comfortable.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MessageRetentionPeriod</span></code></p></td>
+<td><p>4 days (default)</p></td>
+<td><p>How long an unprocessed message survives. Keep <code class="docutils literal notranslate"><span class="pre">RESULT_TTL_SECONDS</span></code> longer
+than this (see <a class="reference internal" href="../concepts.html#result-expiration"><span class="std std-ref">Result expiration</span></a>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RedrivePolicy.maxReceiveCount</span></code></p></td>
+<td><p>3 to 5</p></td>
+<td><p>Receives before a message goes to the DLQ. Application failures never
+cause a redelivery; only backend failures (see
+<a class="reference internal" href="../concepts.html"><span class="doc">Concepts and behaviour</span></a>) and crashes do.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A <strong>FIFO</strong> queue is not supported: Celery’s SQS transport uses standard queues.</p>
+</div>
+</section>
+<section id="check">
+<h2>Check<a class="headerlink" href="#check" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>sqs<span class="w"> </span>send-message<span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span>--queue-url<span class="w"> </span><span class="nv">$QUEUE_URL</span><span class="w"> </span>--message-body<span class="w"> </span><span class="nb">test</span>
+aws<span class="w"> </span>sqs<span class="w"> </span>receive-message<span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span>--queue-url<span class="w"> </span><span class="nv">$QUEUE_URL</span>
+aws<span class="w"> </span>sqs<span class="w"> </span>purge-queue<span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span>--queue-url<span class="w"> </span><span class="nv">$QUEUE_URL</span><span class="w">   </span><span class="c1"># remove the test message</span>
+</pre></div>
+</div>
+<p>Do this <strong>before</strong> connecting the runner: otherwise the test message will reach it
+and fail to decode.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../infrastructure.html" class="btn btn-neutral float-left" title="Infrastructure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dynamodb-table.html" class="btn btn-neutral float-right" title="DynamoDB table" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

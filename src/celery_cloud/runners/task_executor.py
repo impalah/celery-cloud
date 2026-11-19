@@ -1,14 +1,17 @@
+from typing import Any
+
 from celery_cloud.entities import Task, TaskRoute
 from celery_cloud.exceptions import TaskExecutionException
-from typing import Any
-from celery_cloud.logging import logger, trace_id_context
+from celery_cloud.logging import logger
+
 from .lambda_strategy import LambdaTaskExecutionStrategy
 from .local_strategy import LocalTaskExecutionStrategy
+from .task_execution_strategy import TaskExecutionStrategy
 
 
 class TaskExecutor:
-    def __init__(self):
-        self.strategies = {
+    def __init__(self) -> None:
+        self.strategies: dict[str, TaskExecutionStrategy] = {
             "lambda": LambdaTaskExecutionStrategy(),
             "task": LocalTaskExecutionStrategy(),
         }
@@ -19,13 +22,13 @@ class TaskExecutor:
         )
         strategy = self.strategies.get(route.scheme)
 
-        logger.debug(
-            f"Using strategy {strategy} for task {task.task} with ID {task.id}"
-        )
-
         if not strategy:
             raise TaskExecutionException(
                 message=f"Unsupported task scheme: {route.scheme}",
                 detail=route.scheme,
             )
+
+        logger.debug(
+            f"Using strategy {strategy} for task {task.task} with ID {task.id}"
+        )
         return strategy.execute(task, route)

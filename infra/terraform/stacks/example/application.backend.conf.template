@@ -1,0 +1,7 @@
+# Copy to application.backend.conf (git-ignored) and edit.
+# The bucket must already exist (versioned, private): Terraform does not create its own state bucket.
+bucket       = "CHANGE-ME-terraform-state-bucket"
+region       = "eu-central-1"
+key          = "celery-cloud/example/terraform.tfstate"
+use_lockfile = true
+encrypt      = true

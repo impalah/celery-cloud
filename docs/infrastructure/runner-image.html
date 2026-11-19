@@ -1,0 +1,234 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Runner image (ECR) &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/infrastructure/runner-image.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Lambda function and event source" href="lambda-function.html" />
+    <link rel="prev" title="IAM roles and permissions" href="iam-roles.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../infrastructure.html">Infrastructure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sqs-queue.html">SQS queue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamodb-table.html">DynamoDB table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iam-roles.html">IAM roles and permissions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Runner image (ECR)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-base-image">The base image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-your-repository">Create your repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#image-with-remote-tasks-only">Image with remote tasks only</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#image-with-local-tasks">Image with local tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#build-the-base-image-yourself">Build the base image yourself</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#test-the-image-locally">Test the image locally</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#versioning">Versioning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lambda-function.html">Lambda function and event source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="terraform.html">Terraform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="periodic-tasks.html">Periodic tasks (replacing celery beat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queues-and-priorities.html">Several queues, priorities and rate limits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operations.html">Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure.html#conventions-of-the-guides">Conventions of the guides</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../infrastructure.html">Infrastructure</a></li>
+      <li class="breadcrumb-item active">Runner image (ECR)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/infrastructure/runner-image.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="runner-image-ecr">
+<h1>Runner image (ECR)<a class="headerlink" href="#runner-image-ecr" title="Link to this heading"></a></h1>
+<p>The runner is deployed as a <strong>container image</strong>. AWS Lambda runs images that are
+stored in an <strong>Amazon ECR repository in the same Region as the function</strong>, so you
+push the image to your own repository.</p>
+<section id="the-base-image">
+<h2>The base image<a class="headerlink" href="#the-base-image" title="Link to this heading"></a></h2>
+<p>A published base image contains <code class="docutils literal notranslate"><span class="pre">celery-cloud</span></code> and the Lambda handler:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>public.ecr.aws/e2b2x4l7/celery-cloud/lambda-runner
+</pre></div>
+</div>
+<p>Browse the existing tags at <a class="reference external" href="https://gallery.ecr.aws/e2b2x4l7/celery-cloud/lambda-runner">https://gallery.ecr.aws/e2b2x4l7/celery-cloud/lambda-runner</a>.
+There is <strong>no</strong> <code class="docutils literal notranslate"><span class="pre">latest</span></code> tag, and published tags can be older than the version on
+PyPI: check that the tag you use contains the behaviour described here. If in doubt,
+build your own image from the repository (<code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> at its root).</p>
+</section>
+<section id="create-your-repository">
+<h2>Create your repository<a class="headerlink" href="#create-your-repository" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>ecr<span class="w"> </span>create-repository<span class="w"> </span>--repository-name<span class="w"> </span>celery-cloud-runner<span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span>
+
+aws<span class="w"> </span>ecr<span class="w"> </span>get-login-password<span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>docker<span class="w"> </span>login<span class="w"> </span>--username<span class="w"> </span>AWS<span class="w"> </span>--password-stdin<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">$ACCOUNT_ID</span>.dkr.ecr.<span class="nv">$AWS_REGION</span>.amazonaws.com
+</pre></div>
+</div>
+</section>
+<section id="image-with-remote-tasks-only">
+<h2>Image with remote tasks only<a class="headerlink" href="#image-with-remote-tasks-only" title="Link to this heading"></a></h2>
+<p>If every task is <code class="docutils literal notranslate"><span class="pre">lambda://</span></code>, no code of yours is needed in the runner: pull the
+base image, tag it and push it.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>--platform<span class="w"> </span>linux/amd64<span class="w"> </span>public.ecr.aws/e2b2x4l7/celery-cloud/lambda-runner:&lt;tag&gt;
+docker<span class="w"> </span>tag<span class="w"> </span>public.ecr.aws/e2b2x4l7/celery-cloud/lambda-runner:&lt;tag&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="nv">$ACCOUNT_ID</span>.dkr.ecr.<span class="nv">$AWS_REGION</span>.amazonaws.com/celery-cloud-runner:1
+docker<span class="w"> </span>push<span class="w"> </span><span class="nv">$ACCOUNT_ID</span>.dkr.ecr.<span class="nv">$AWS_REGION</span>.amazonaws.com/celery-cloud-runner:1
+</pre></div>
+</div>
+</section>
+<section id="image-with-local-tasks">
+<h2>Image with local tasks<a class="headerlink" href="#image-with-local-tasks" title="Link to this heading"></a></h2>
+<p>Build on top of the base image (see <a class="reference internal" href="../user-guide/server-local-tasks.html"><span class="doc">Server: local tasks</span></a> for the
+complete <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>):</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">public.ecr.aws/e2b2x4l7/celery-cloud/lambda-runner:&lt;tag&gt;</span>
+<span class="k">COPY</span><span class="w"> </span>calculator.py<span class="w"> </span>reports.py<span class="w"> </span><span class="si">${</span><span class="nv">LAMBDA_TASK_ROOT</span><span class="si">}</span>/
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64<span class="w"> </span>--provenance<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-t<span class="w"> </span><span class="nv">$ACCOUNT_ID</span>.dkr.ecr.<span class="nv">$AWS_REGION</span>.amazonaws.com/celery-cloud-runner:1<span class="w"> </span>.
+docker<span class="w"> </span>push<span class="w"> </span><span class="nv">$ACCOUNT_ID</span>.dkr.ecr.<span class="nv">$AWS_REGION</span>.amazonaws.com/celery-cloud-runner:1
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--platform</span></code> must match the architecture of the function (<code class="docutils literal notranslate"><span class="pre">linux/amd64</span></code> for
+<code class="docutils literal notranslate"><span class="pre">x86_64</span></code>; use <code class="docutils literal notranslate"><span class="pre">linux/arm64</span></code> together with <code class="docutils literal notranslate"><span class="pre">--architectures</span> <span class="pre">arm64</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--provenance=false</span></code> avoids the extra attestation manifest that Lambda does not
+accept.</p></li>
+</ul>
+</section>
+<section id="build-the-base-image-yourself">
+<h2>Build the base image yourself<a class="headerlink" href="#build-the-base-image-yourself" title="Link to this heading"></a></h2>
+<p>The repository <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> installs <code class="docutils literal notranslate"><span class="pre">celery-cloud</span></code> and its dependencies
+(through <code class="docutils literal notranslate"><span class="pre">uv</span></code>) and sets the handler:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/impalah/celery-cloud.git<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>celery-cloud
+docker<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64<span class="w"> </span>--provenance<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-t<span class="w"> </span><span class="nv">$ACCOUNT_ID</span>.dkr.ecr.<span class="nv">$AWS_REGION</span>.amazonaws.com/celery-cloud-runner:base<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<section id="test-the-image-locally">
+<h2>Test the image locally<a class="headerlink" href="#test-the-image-locally" title="Link to this heading"></a></h2>
+<p>The AWS base image includes the Lambda Runtime Interface Emulator:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">9000</span>:8080<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">TASKS</span><span class="o">=</span><span class="s1">'{"calculator.add": "task://calculator/add"}'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">CELERY_BACKEND_TABLE</span><span class="o">=</span><span class="nv">$TABLE</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">CELERY_BACKEND_REGION</span><span class="o">=</span><span class="nv">$AWS_REGION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span>AWS_ACCESS_KEY_ID<span class="w"> </span>-e<span class="w"> </span>AWS_SECRET_ACCESS_KEY<span class="w"> </span>-e<span class="w"> </span>AWS_SESSION_TOKEN<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="nv">$ACCOUNT_ID</span>.dkr.ecr.<span class="nv">$AWS_REGION</span>.amazonaws.com/celery-cloud-runner:1
+
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:9000/2015-03-31/functions/function/invocations<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span>@sqs_event.json
+</pre></div>
+</div>
+</section>
+<section id="versioning">
+<h2>Versioning<a class="headerlink" href="#versioning" title="Link to this heading"></a></h2>
+<p>Use immutable tags (<code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code>, <code class="docutils literal notranslate"><span class="pre">2025-01-15</span></code>…) and update the function to the
+new tag; do not overwrite a tag that a function uses, because Lambda resolves the
+tag to a digest at deploy time.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="iam-roles.html" class="btn btn-neutral float-left" title="IAM roles and permissions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lambda-function.html" class="btn btn-neutral float-right" title="Lambda function and event source" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

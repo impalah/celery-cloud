@@ -1,0 +1,230 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Server: debugging locally &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/user-guide/server-local-debugging.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Client: sending a task" href="client-basic.html" />
+    <link rel="prev" title="Server: remote Lambda tasks" href="server-remote-lambda.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user-guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="server-local-tasks.html">Server: local tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-task-api.html">Server: the Celery-like task API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-remote-lambda.html">Server: remote Lambda tasks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Server: debugging locally</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-debug-server">The debug server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#send-an-sqs-event">Send an SQS event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#attach-a-debugger">Attach a debugger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-the-container-locally">Run the container locally</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unit-testing-your-tasks">Unit-testing your tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="client-basic.html">Client: sending a task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-errors.html">Client: errors, timeouts and states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-structured.html">Client: structured data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-retries-progress.html">Client: retries, progress and delayed tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-canvas.html">Client: workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-revoke.html">Client: revoking tasks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user-guide.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Server: debugging locally</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/server-local-debugging.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="server-debugging-locally">
+<h1>Server: debugging locally<a class="headerlink" href="#server-debugging-locally" title="Link to this heading"></a></h1>
+<p>You can run the handler on your machine, with your task code, without deploying and
+without AWS credentials for the queue.</p>
+<section id="the-debug-server">
+<h2>The debug server<a class="headerlink" href="#the-debug-server" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">celery_cloud.debug_server</span></code> is a small FastAPI application that exposes
+<code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/lambda</span></code>: it feeds the JSON body to <code class="docutils literal notranslate"><span class="pre">lambda_handler</span></code> as the event. It
+needs the development dependencies (<code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span></code> in a clone of the repository, which
+installs FastAPI, uvicorn and debugpy).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">TASKS</span><span class="o">=</span><span class="s1">'{"calculator.add": "task://calculator/add"}'</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CELERY_BACKEND_TABLE</span><span class="o">=</span>lambda-runner-tasks
+<span class="nb">export</span><span class="w"> </span><span class="nv">CELERY_BACKEND_REGION</span><span class="o">=</span>eu-central-1
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span>pages_source/examples/server<span class="w">   </span><span class="c1"># where calculator.py lives</span>
+uv<span class="w"> </span>run<span class="w"> </span>uvicorn<span class="w"> </span>celery_cloud.debug_server:app
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The handler writes to DynamoDB, so you need a table: the real one with
+credentials, or a local emulator (DynamoDB Local, or <code class="docutils literal notranslate"><span class="pre">moto_server</span></code> together
+with <code class="docutils literal notranslate"><span class="pre">AWS_ENDPOINT_URL</span></code>).</p>
+</div>
+</section>
+<section id="send-an-sqs-event">
+<h2>Send an SQS event<a class="headerlink" href="#send-an-sqs-event" title="Link to this heading"></a></h2>
+<p>An SQS event holds the Celery message in <code class="docutils literal notranslate"><span class="pre">Records[].body</span></code>. The easiest way to get
+a realistic one is to take it from a test: <code class="docutils literal notranslate"><span class="pre">tests/conftest.py::build_sqs_record</span></code>
+builds it. Post it to the server:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://127.0.0.1:8000/lambda<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span>@sqs_event.json
+</pre></div>
+</div>
+</section>
+<section id="attach-a-debugger">
+<h2>Attach a debugger<a class="headerlink" href="#attach-a-debugger" title="Link to this heading"></a></h2>
+<p>With <code class="docutils literal notranslate"><span class="pre">DEBUG_MODE=true</span></code> the server waits for a <code class="docutils literal notranslate"><span class="pre">debugpy</span></code> client on
+<code class="docutils literal notranslate"><span class="pre">SERVER_DEBUG_PORT</span></code> (5890, on <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>). Example <code class="docutils literal notranslate"><span class="pre">launch.json</span></code> for VS Code:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.2.0"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"configurations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Attach to FastAPI (uv)"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"debugpy"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"request"</span><span class="p">:</span><span class="w"> </span><span class="s2">"attach"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"connect"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"host"</span><span class="p">:</span><span class="w"> </span><span class="s2">"localhost"</span><span class="p">,</span><span class="w"> </span><span class="nt">"port"</span><span class="p">:</span><span class="w"> </span><span class="mi">5890</span><span class="p">},</span>
+<span class="w">      </span><span class="nt">"pathMappings"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">"localRoot"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${workspaceFolder}"</span><span class="p">,</span><span class="w"> </span><span class="nt">"remoteRoot"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${workspaceFolder}"</span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">debugpy</span></code> lets whoever connects run code. It listens on <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> by
+default; set <code class="docutils literal notranslate"><span class="pre">DEBUG_HOST=0.0.0.0</span></code> only inside a container on a trusted
+network.</p>
+</div>
+</section>
+<section id="run-the-container-locally">
+<h2>Run the container locally<a class="headerlink" href="#run-the-container-locally" title="Link to this heading"></a></h2>
+<p>The AWS base image includes the Lambda Runtime Interface Emulator:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">9000</span>:8080<span class="w"> </span>--env-file<span class="w"> </span>.env<span class="w"> </span>&lt;image&gt;
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:9000/2015-03-31/functions/function/invocations<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span>@sqs_event.json
+</pre></div>
+</div>
+</section>
+<section id="unit-testing-your-tasks">
+<h2>Unit-testing your tasks<a class="headerlink" href="#unit-testing-your-tasks" title="Link to this heading"></a></h2>
+<p>Local tasks are plain functions, so they are tested without any AWS involvement:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">calculator</span><span class="w"> </span><span class="kn">import</span> <span class="n">add</span><span class="p">,</span> <span class="n">subtract</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_add</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">add</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span> <span class="o">==</span> <span class="mi">18</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_subtract_needs_two_values</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">subtract</span><span class="p">([</span><span class="mi">5</span><span class="p">],</span> <span class="p">{})</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="server-remote-lambda.html" class="btn btn-neutral float-left" title="Server: remote Lambda tasks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="client-basic.html" class="btn btn-neutral float-right" title="Client: sending a task" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,235 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terraform &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/infrastructure/terraform.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Periodic tasks (replacing celery beat)" href="periodic-tasks.html" />
+    <link rel="prev" title="Lambda function and event source" href="lambda-function.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../infrastructure.html">Infrastructure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sqs-queue.html">SQS queue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamodb-table.html">DynamoDB table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iam-roles.html">IAM roles and permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runner-image.html">Runner image (ECR)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lambda-function.html">Lambda function and event source</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Terraform</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-it-creates">What it creates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use">Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-image-comes-between-two-applies">The image comes between two applies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#checks">Checks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="periodic-tasks.html">Periodic tasks (replacing celery beat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queues-and-priorities.html">Several queues, priorities and rate limits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operations.html">Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure.html#conventions-of-the-guides">Conventions of the guides</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../infrastructure.html">Infrastructure</a></li>
+      <li class="breadcrumb-item active">Terraform</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/infrastructure/terraform.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="terraform">
+<h1>Terraform<a class="headerlink" href="#terraform" title="Link to this heading"></a></h1>
+<p>Everything in this section can also be created with Terraform. The code is in
+<code class="docutils literal notranslate"><span class="pre">infra/terraform/</span></code> of the repository: four generic modules and a complete example
+stack.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The code has been validated without credentials (<code class="docutils literal notranslate"><span class="pre">terraform</span> <span class="pre">validate</span></code> and plan-level
+tests with a mocked provider) and applied once against a real AWS account
+(<code class="docutils literal notranslate"><span class="pre">eu-central-1</span></code>): the queue, table, repository and function were created in two
+applies and the client examples of the user guide ran against it. Read the plan before
+applying it anyway.</p>
+</div>
+<section id="what-it-creates">
+<h2>What it creates<a class="headerlink" href="#what-it-creates" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Module</p></th>
+<th class="head"><p>Resources</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sqs-queue</span></code></p></td>
+<td><p>The queue and its dead-letter queue (encrypted, with the redrive policy)
+(<a class="reference internal" href="sqs-queue.html"><span class="doc">SQS queue</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">results-table</span></code></p></td>
+<td><p>The DynamoDB table: on-demand, hash key <code class="docutils literal notranslate"><span class="pre">id</span></code>, TTL on <code class="docutils literal notranslate"><span class="pre">ttl</span></code>
+(<a class="reference internal" href="dynamodb-table.html"><span class="doc">DynamoDB table</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ecr-repository</span></code></p></td>
+<td><p>The repository of the runner image: scan on push, immutable tags, lifecycle policy
+(<a class="reference internal" href="runner-image.html"><span class="doc">Runner image (ECR)</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lambda-runner</span></code></p></td>
+<td><p>The function, its least-privilege role, the log group and the event source
+mapping with <code class="docutils literal notranslate"><span class="pre">ReportBatchItemFailures</span></code> (<a class="reference internal" href="iam-roles.html"><span class="doc">IAM roles and permissions</span></a>,
+<a class="reference internal" href="lambda-function.html"><span class="doc">Lambda function and event source</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">schedules</span></code></p></td>
+<td><p>Optional periodic tasks: EventBridge Scheduler group and schedules, their role and
+dead-letter queue (<a class="reference internal" href="periodic-tasks.html"><span class="doc">Periodic tasks (replacing celery beat)</span></a>)</p></td>
+</tr>
+</tbody>
+</table>
+<p>The <code class="docutils literal notranslate"><span class="pre">stacks/example</span></code> stack puts them together and adds the IAM policy for the client
+application (and, optionally, an IAM user to try it from your laptop).</p>
+</section>
+<section id="use">
+<h2>Use<a class="headerlink" href="#use" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>infra/terraform/stacks/example
+cp<span class="w"> </span>application.backend.conf.template<span class="w"> </span>application.backend.conf<span class="w">               </span><span class="c1"># your state bucket</span>
+cp<span class="w"> </span>application.configuration.tfvars.template<span class="w"> </span>application.configuration.tfvars<span class="w">   </span><span class="c1"># edit</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">AWS_PROFILE</span><span class="o">=</span>...
+
+terraform<span class="w"> </span>init<span class="w"> </span>-backend-config<span class="o">=</span>application.backend.conf
+terraform<span class="w"> </span>plan<span class="w"> </span>-var-file<span class="o">=</span>application.configuration.tfvars<span class="w"> </span>-out<span class="o">=</span>plan.tfplan
+terraform<span class="w"> </span>apply<span class="w"> </span>plan.tfplan
+</pre></div>
+</div>
+<p>The state bucket must already exist: Terraform does not create its own. The provider
+refuses any account other than <code class="docutils literal notranslate"><span class="pre">aws_account_id</span></code>.</p>
+</section>
+<section id="the-image-comes-between-two-applies">
+<h2>The image comes between two applies<a class="headerlink" href="#the-image-comes-between-two-applies" title="Link to this heading"></a></h2>
+<p>A Lambda function cannot be created before its image exists in ECR. The first <code class="docutils literal notranslate"><span class="pre">apply</span></code>
+(with <code class="docutils literal notranslate"><span class="pre">runner_image_tag</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></code>) creates the queue, the table, the repository and the
+client policy. Then build and push the image (<a class="reference internal" href="runner-image.html"><span class="doc">Runner image (ECR)</span></a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">REPO</span><span class="o">=</span><span class="k">$(</span>terraform<span class="w"> </span>output<span class="w"> </span>-raw<span class="w"> </span>repository_url<span class="k">)</span>
+aws<span class="w"> </span>ecr<span class="w"> </span>get-login-password<span class="w"> </span>--region<span class="w"> </span>eu-central-1<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>docker<span class="w"> </span>login<span class="w"> </span>--username<span class="w"> </span>AWS<span class="w"> </span>--password-stdin<span class="w"> </span><span class="si">${</span><span class="nv">REPO</span><span class="p">%%/*</span><span class="si">}</span>
+docker<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64<span class="w"> </span>--provenance<span class="o">=</span><span class="nb">false</span><span class="w"> </span>-t<span class="w"> </span><span class="nv">$REPO</span>:1<span class="w"> </span>.
+docker<span class="w"> </span>push<span class="w"> </span><span class="nv">$REPO</span>:1
+</pre></div>
+</div>
+<p>Set <code class="docutils literal notranslate"><span class="pre">runner_image_tag</span> <span class="pre">=</span> <span class="pre">&quot;1&quot;</span></code> and apply again: it creates the function and connects the
+queue. Tags are immutable, so a new image is a new tag followed by an <code class="docutils literal notranslate"><span class="pre">apply</span></code>.</p>
+<p>Then try the client with the outputs (<code class="docutils literal notranslate"><span class="pre">queue_url</span></code>, <code class="docutils literal notranslate"><span class="pre">results_table</span></code>,
+<code class="docutils literal notranslate"><span class="pre">runner_log_group</span></code>) as in <a class="reference internal" href="../user-guide/client-basic.html"><span class="doc">Client: sending a task</span></a>, and clean up with
+<code class="docutils literal notranslate"><span class="pre">terraform</span> <span class="pre">destroy</span></code> when you are done.</p>
+</section>
+<section id="checks">
+<h2>Checks<a class="headerlink" href="#checks" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">infra-check</span></code> (or <code class="docutils literal notranslate"><span class="pre">infra/terraform/check.sh</span></code>) runs <code class="docutils literal notranslate"><span class="pre">terraform</span> <span class="pre">fmt</span> <span class="pre">-check</span></code>,
+<code class="docutils literal notranslate"><span class="pre">validate</span></code> in every module and in the stack, and <code class="docutils literal notranslate"><span class="pre">terraform</span> <span class="pre">test</span></code> with a mocked AWS
+provider. It needs no credentials and no state.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lambda-function.html" class="btn btn-neutral float-left" title="Lambda function and event source" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="periodic-tasks.html" class="btn btn-neutral float-right" title="Periodic tasks (replacing celery beat)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

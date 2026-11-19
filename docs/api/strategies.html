@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task execution &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/api/strategies.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Workflows and built-in tasks" href="canvas.html" />
+    <link rel="prev" title="Lambda handler" href="runners.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tasks.html">Task API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signals.html">Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.html">Client helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runners.html">Lambda handler</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Task execution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-celery_cloud.runners.task_executor">Executor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.runners.task_executor.TaskExecutor"><code class="docutils literal notranslate"><span class="pre">TaskExecutor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-celery_cloud.runners.task_execution_strategy">Strategy interface</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy"><code class="docutils literal notranslate"><span class="pre">TaskExecutionStrategy</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-celery_cloud.runners.local_strategy">Local strategy (<code class="docutils literal notranslate"><span class="pre">task://</span></code>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.runners.local_strategy.LocalTaskExecutionStrategy"><code class="docutils literal notranslate"><span class="pre">LocalTaskExecutionStrategy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.runners.local_strategy.load_function"><code class="docutils literal notranslate"><span class="pre">load_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.runners.local_strategy.task_options"><code class="docutils literal notranslate"><span class="pre">task_options()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-celery_cloud.runners.lambda_strategy">Lambda strategy (<code class="docutils literal notranslate"><span class="pre">lambda://</span></code>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.runners.lambda_strategy.LambdaFunctionError"><code class="docutils literal notranslate"><span class="pre">LambdaFunctionError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.runners.lambda_strategy.LambdaInvocationError"><code class="docutils literal notranslate"><span class="pre">LambdaInvocationError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.runners.lambda_strategy.LambdaTaskExecutionStrategy"><code class="docutils literal notranslate"><span class="pre">LambdaTaskExecutionStrategy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.runners.lambda_strategy.get_breaker"><code class="docutils literal notranslate"><span class="pre">get_breaker()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="canvas.html">Workflows and built-in tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="messaging.html">Messaging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Result backend model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deadline.html">Time limits and metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="entities.html">Entities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html">Settings</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Task execution</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/strategies.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="task-execution">
+<h1>Task execution<a class="headerlink" href="#task-execution" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">TaskExecutor</span></code> chooses an execution strategy from the scheme of the route
+(<code class="docutils literal notranslate"><span class="pre">task://</span></code> or <code class="docutils literal notranslate"><span class="pre">lambda://</span></code>). To support a new scheme, subclass
+<code class="docutils literal notranslate"><span class="pre">TaskExecutionStrategy</span></code> and register it in <code class="docutils literal notranslate"><span class="pre">TaskExecutor.strategies</span></code>.</p>
+<section id="module-celery_cloud.runners.task_executor">
+<span id="executor"></span><h2>Executor<a class="headerlink" href="#module-celery_cloud.runners.task_executor" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="celery_cloud.runners.task_executor.TaskExecutor">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.runners.task_executor.</span></span><span class="sig-name descname"><span class="pre">TaskExecutor</span></span><a class="reference internal" href="../_modules/celery_cloud/runners/task_executor.html#TaskExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.task_executor.TaskExecutor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.runners.task_executor.TaskExecutor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/runners/task_executor.html#TaskExecutor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.task_executor.TaskExecutor.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.runners.task_executor.TaskExecutor.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entities.html#celery_cloud.entities.task.Task" title="celery_cloud.entities.task.Task"><span class="pre">Task</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">route</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entities.html#celery_cloud.entities.task_route.TaskRoute" title="celery_cloud.entities.task_route.TaskRoute"><span class="pre">TaskRoute</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/runners/task_executor.html#TaskExecutor.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.task_executor.TaskExecutor.execute" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-celery_cloud.runners.task_execution_strategy">
+<span id="strategy-interface"></span><h2>Strategy interface<a class="headerlink" href="#module-celery_cloud.runners.task_execution_strategy" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.runners.task_execution_strategy.</span></span><span class="sig-name descname"><span class="pre">TaskExecutionStrategy</span></span><a class="reference internal" href="../_modules/celery_cloud/runners/task_execution_strategy.html#TaskExecutionStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy.execute">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entities.html#celery_cloud.entities.task.Task" title="celery_cloud.entities.task.Task"><span class="pre">Task</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">route</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entities.html#celery_cloud.entities.task_route.TaskRoute" title="celery_cloud.entities.task_route.TaskRoute"><span class="pre">TaskRoute</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/runners/task_execution_strategy.html#TaskExecutionStrategy.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy.execute" title="Link to this definition"></a></dt>
+<dd><p>Execute a task based on the strategy</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-celery_cloud.runners.local_strategy">
+<span id="local-strategy-task"></span><h2>Local strategy (<code class="docutils literal notranslate"><span class="pre">task://</span></code>)<a class="headerlink" href="#module-celery_cloud.runners.local_strategy" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="celery_cloud.runners.local_strategy.LocalTaskExecutionStrategy">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.runners.local_strategy.</span></span><span class="sig-name descname"><span class="pre">LocalTaskExecutionStrategy</span></span><a class="reference internal" href="../_modules/celery_cloud/runners/local_strategy.html#LocalTaskExecutionStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.local_strategy.LocalTaskExecutionStrategy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy" title="celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskExecutionStrategy</span></code></a></p>
+<p>Run the task as a python function packaged with the runner.</p>
+<p>The route is <code class="docutils literal notranslate"><span class="pre">task://&lt;module&gt;/&lt;function&gt;</span></code>. The function is called with
+<strong>two positional parameters</strong>: the list of positional arguments and the
+dict of keyword arguments, i.e. <code class="docutils literal notranslate"><span class="pre">function(args,</span> <span class="pre">kwargs)</span></code>. A function decorated
+with <code class="docutils literal notranslate"><span class="pre">celery_cloud.task</span></code> is called with its natural arguments instead (see
+<code class="docutils literal notranslate"><span class="pre">celery_cloud.tasks</span></code>).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.runners.local_strategy.LocalTaskExecutionStrategy.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entities.html#celery_cloud.entities.task.Task" title="celery_cloud.entities.task.Task"><span class="pre">Task</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">route</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entities.html#celery_cloud.entities.task_route.TaskRoute" title="celery_cloud.entities.task_route.TaskRoute"><span class="pre">TaskRoute</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/runners/local_strategy.html#LocalTaskExecutionStrategy.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.local_strategy.LocalTaskExecutionStrategy.execute" title="Link to this definition"></a></dt>
+<dd><p>Execute a task based on the strategy</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="celery_cloud.runners.local_strategy.load_function">
+<span class="sig-prename descclassname"><span class="pre">celery_cloud.runners.local_strategy.</span></span><span class="sig-name descname"><span class="pre">load_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entities.html#celery_cloud.entities.task_route.TaskRoute" title="celery_cloud.entities.task_route.TaskRoute"><span class="pre">TaskRoute</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/runners/local_strategy.html#load_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.local_strategy.load_function" title="Link to this definition"></a></dt>
+<dd><p>Import the function of a <code class="docutils literal notranslate"><span class="pre">task://&lt;module&gt;/&lt;function&gt;</span></code> route.</p>
+<p>Module and function come from the TASKS setting (trusted, deployed with the
+runner), never from the message.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="celery_cloud.runners.local_strategy.task_options">
+<span class="sig-prename descclassname"><span class="pre">celery_cloud.runners.local_strategy.</span></span><span class="sig-name descname"><span class="pre">task_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entities.html#celery_cloud.entities.task_route.TaskRoute" title="celery_cloud.entities.task_route.TaskRoute"><span class="pre">TaskRoute</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="tasks.html#celery_cloud.tasks.TaskOptions" title="celery_cloud.tasks.TaskOptions"><span class="pre">TaskOptions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/runners/local_strategy.html#task_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.local_strategy.task_options" title="Link to this definition"></a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">&#64;task</span></code> options of a local route (None for a plain function).</p>
+<p>Best effort: if the function cannot be imported, None is returned and executing
+the task reports the real error.</p>
+</dd></dl>
+
+</section>
+<section id="module-celery_cloud.runners.lambda_strategy">
+<span id="lambda-strategy-lambda"></span><h2>Lambda strategy (<code class="docutils literal notranslate"><span class="pre">lambda://</span></code>)<a class="headerlink" href="#module-celery_cloud.runners.lambda_strategy" title="Link to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.runners.lambda_strategy.LambdaFunctionError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.runners.lambda_strategy.</span></span><span class="sig-name descname"><span class="pre">LambdaFunctionError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/runners/lambda_strategy.html#LambdaFunctionError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.lambda_strategy.LambdaFunctionError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="exceptions.html#celery_cloud.exceptions.runner_exceptions.TaskExecutionException" title="celery_cloud.exceptions.runner_exceptions.TaskExecutionException"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskExecutionException</span></code></a></p>
+<p>The remote function ran and reported an error.</p>
+<p>It is neither retried (the code already executed and may have side
+effects) nor counted by the circuit breaker (it is a business error, not
+an infrastructure failure).</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.runners.lambda_strategy.LambdaInvocationError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.runners.lambda_strategy.</span></span><span class="sig-name descname"><span class="pre">LambdaInvocationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/runners/lambda_strategy.html#LambdaInvocationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.lambda_strategy.LambdaInvocationError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="exceptions.html#celery_cloud.exceptions.runner_exceptions.TaskExecutionException" title="celery_cloud.exceptions.runner_exceptions.TaskExecutionException"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskExecutionException</span></code></a></p>
+<p>The remote function could not be invoked (throttling, network…).</p>
+<p>It is safe to retry: the function did not run.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="celery_cloud.runners.lambda_strategy.LambdaTaskExecutionStrategy">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.runners.lambda_strategy.</span></span><span class="sig-name descname"><span class="pre">LambdaTaskExecutionStrategy</span></span><a class="reference internal" href="../_modules/celery_cloud/runners/lambda_strategy.html#LambdaTaskExecutionStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.lambda_strategy.LambdaTaskExecutionStrategy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy" title="celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskExecutionStrategy</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.runners.lambda_strategy.LambdaTaskExecutionStrategy.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entities.html#celery_cloud.entities.task.Task" title="celery_cloud.entities.task.Task"><span class="pre">Task</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">route</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="entities.html#celery_cloud.entities.task_route.TaskRoute" title="celery_cloud.entities.task_route.TaskRoute"><span class="pre">TaskRoute</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/runners/lambda_strategy.html#LambdaTaskExecutionStrategy.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.lambda_strategy.LambdaTaskExecutionStrategy.execute" title="Link to this definition"></a></dt>
+<dd><p>Execute a task based on the strategy</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="celery_cloud.runners.lambda_strategy.get_breaker">
+<span class="sig-prename descclassname"><span class="pre">celery_cloud.runners.lambda_strategy.</span></span><span class="sig-name descname"><span class="pre">get_breaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function_arn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">CircuitBreaker</span></span></span><a class="reference internal" href="../_modules/celery_cloud/runners/lambda_strategy.html#get_breaker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.runners.lambda_strategy.get_breaker" title="Link to this definition"></a></dt>
+<dd><p>Get (or create) the circuit breaker of a remote function.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="runners.html" class="btn btn-neutral float-left" title="Lambda handler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="canvas.html" class="btn btn-neutral float-right" title="Workflows and built-in tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

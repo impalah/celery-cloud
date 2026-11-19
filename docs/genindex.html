@@ -1,0 +1,1664 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Index &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/genindex.html" />
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Index</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ 
+</div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.runner_base_exception.RunnerBaseException.__init__">__init__() (celery_cloud.exceptions.runner_base_exception.RunnerBaseException method)</a>
+
+      <ul>
+        <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.Reject.__init__">(celery_cloud.exceptions.task_exceptions.Reject method)</a>
+</li>
+        <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.Retry.__init__">(celery_cloud.exceptions.task_exceptions.Retry method)</a>
+</li>
+        <li><a href="api/strategies.html#celery_cloud.runners.task_executor.TaskExecutor.__init__">(celery_cloud.runners.task_executor.TaskExecutor method)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.runtime.Runtime.__init__">(celery_cloud.runtime.Runtime method)</a>
+</li>
+        <li><a href="api/settings.html#celery_cloud.settings.Settings.__init__">(celery_cloud.settings.Settings method)</a>
+</li>
+        <li><a href="api/signals.html#celery_cloud.signals.Signal.__init__">(celery_cloud.signals.Signal method)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskContext.__init__">(celery_cloud.tasks.TaskContext method)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.__init__">(celery_cloud.tasks.TaskOptions method)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.__init__">(celery_cloud.tasks.TaskRequest method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/messaging.html#celery_cloud.messaging.QueueRef.account">account (celery_cloud.messaging.QueueRef attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSAttributes.ApproximateFirstReceiveTimestamp">ApproximateFirstReceiveTimestamp (celery_cloud.entities.sqs_entities.SQSAttributes attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSAttributes.ApproximateReceiveCount">ApproximateReceiveCount (celery_cloud.entities.sqs_entities.SQSAttributes attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task.args">args (celery_cloud.entities.task.Task attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.args">(celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.args">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.argsrepr">argsrepr (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.attempt">attempt (celery_cloud.models.task_model.TaskModel attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSRecord.attributes">attributes (celery_cloud.entities.sqs_entities.SQSRecord attribute)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.autoretry_for">autoretry_for (celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta.aws_access_key_id">aws_access_key_id (celery_cloud.models.canvas_model.ChordCounter.Meta attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta.aws_access_key_id">(celery_cloud.models.task_model.TaskModel.Meta attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta.aws_secret_access_key">aws_secret_access_key (celery_cloud.models.canvas_model.ChordCounter.Meta attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta.aws_secret_access_key">(celery_cloud.models.task_model.TaskModel.Meta attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta.aws_session_token">aws_session_token (celery_cloud.models.canvas_model.ChordCounter.Meta attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta.aws_session_token">(celery_cloud.models.task_model.TaskModel.Meta attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/client.html#celery_cloud.client.backend_location">backend_location() (in module celery_cloud.client)</a>
+</li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.BackendException">BackendException</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.backoff_countdown">backoff_countdown() (in module celery_cloud.tasks)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.BatchItemFailure">BatchItemFailure (class in celery_cloud.entities.lambda_response)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.batchItemFailures">batchItemFailures (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.bind">bind (celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSMessage.body">body (celery_cloud.entities.sqs_entities.SQSMessage attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSRecord.body">(celery_cloud.entities.sqs_entities.SQSRecord attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Properties.body_encoding">body_encoding (celery_cloud.entities.sqs_entities.Properties attribute)</a>
+</li>
+      <li><a href="api/messaging.html#celery_cloud.messaging.build_message">build_message() (in module celery_cloud.messaging)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/runners.html#celery_cloud.runners.aws_lambda.call_task">call_task() (in module celery_cloud.runners.aws_lambda)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.call_task_function">call_task_function() (in module celery_cloud.tasks)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task.callbacks">callbacks (celery_cloud.entities.task.Task attribute)</a>
+
+      <ul>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.callbacks">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.client
+
+      <ul>
+        <li><a href="api/client.html#module-celery_cloud.client">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.deadline
+
+      <ul>
+        <li><a href="api/deadline.html#module-celery_cloud.deadline">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.entities.lambda_response
+
+      <ul>
+        <li><a href="api/entities.html#module-celery_cloud.entities.lambda_response">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.entities.sqs_entities
+
+      <ul>
+        <li><a href="api/entities.html#module-celery_cloud.entities.sqs_entities">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.entities.task
+
+      <ul>
+        <li><a href="api/entities.html#module-celery_cloud.entities.task">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.entities.task_result
+
+      <ul>
+        <li><a href="api/entities.html#module-celery_cloud.entities.task_result">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.entities.task_route
+
+      <ul>
+        <li><a href="api/entities.html#module-celery_cloud.entities.task_route">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.exceptions.runner_base_exception
+
+      <ul>
+        <li><a href="api/exceptions.html#module-celery_cloud.exceptions.runner_base_exception">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.exceptions.runner_exceptions
+
+      <ul>
+        <li><a href="api/exceptions.html#module-celery_cloud.exceptions.runner_exceptions">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.exceptions.task_exceptions
+
+      <ul>
+        <li><a href="api/exceptions.html#module-celery_cloud.exceptions.task_exceptions">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.logging
+
+      <ul>
+        <li><a href="api/logging.html#module-celery_cloud.logging">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.messaging
+
+      <ul>
+        <li><a href="api/messaging.html#module-celery_cloud.messaging">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.metrics
+
+      <ul>
+        <li><a href="api/deadline.html#module-celery_cloud.metrics">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.models.canvas_model
+
+      <ul>
+        <li><a href="api/models.html#module-celery_cloud.models.canvas_model">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.models.task_model
+
+      <ul>
+        <li><a href="api/models.html#module-celery_cloud.models.task_model">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.runners.builtin_tasks
+
+      <ul>
+        <li><a href="api/canvas.html#module-celery_cloud.runners.builtin_tasks">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.runners.canvas
+
+      <ul>
+        <li><a href="api/canvas.html#module-celery_cloud.runners.canvas">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.runners.lambda_strategy
+
+      <ul>
+        <li><a href="api/strategies.html#module-celery_cloud.runners.lambda_strategy">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    celery_cloud.runners.local_strategy
+
+      <ul>
+        <li><a href="api/strategies.html#module-celery_cloud.runners.local_strategy">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.runners.task_execution_strategy
+
+      <ul>
+        <li><a href="api/strategies.html#module-celery_cloud.runners.task_execution_strategy">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.runners.task_executor
+
+      <ul>
+        <li><a href="api/strategies.html#module-celery_cloud.runners.task_executor">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.runtime
+
+      <ul>
+        <li><a href="api/tasks.html#module-celery_cloud.runtime">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.serialization
+
+      <ul>
+        <li><a href="api/serialization.html#module-celery_cloud.serialization">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.settings
+
+      <ul>
+        <li><a href="api/settings.html#module-celery_cloud.settings">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.signals
+
+      <ul>
+        <li><a href="api/signals.html#module-celery_cloud.signals">module</a>
+</li>
+      </ul></li>
+      <li>
+    celery_cloud.tasks
+
+      <ul>
+        <li><a href="api/tasks.html#module-celery_cloud.tasks">module</a>
+</li>
+      </ul></li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.Ignore.celery_module">celery_module (celery_cloud.exceptions.task_exceptions.Ignore attribute)</a>
+
+      <ul>
+        <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.MaxRetriesExceededError.celery_module">(celery_cloud.exceptions.task_exceptions.MaxRetriesExceededError attribute)</a>
+</li>
+        <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.Reject.celery_module">(celery_cloud.exceptions.task_exceptions.Reject attribute)</a>
+</li>
+        <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.Retry.celery_module">(celery_cloud.exceptions.task_exceptions.Retry attribute)</a>
+</li>
+        <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.SoftTimeLimitExceeded.celery_module">(celery_cloud.exceptions.task_exceptions.SoftTimeLimitExceeded attribute)</a>
+</li>
+        <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.TimeLimitExceeded.celery_module">(celery_cloud.exceptions.task_exceptions.TimeLimitExceeded attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task.chain">chain (celery_cloud.entities.task.Task attribute)</a>
+
+      <ul>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.chain">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.children">children (celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task.chord">chord (celery_cloud.entities.task.Task attribute)</a>
+
+      <ul>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.chord">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.chord_count">chord_count (celery_cloud.models.canvas_model.ChordCounter attribute)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter">ChordCounter (class in celery_cloud.models.canvas_model)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.DoesNotExist">ChordCounter.DoesNotExist</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta">ChordCounter.Meta (class in celery_cloud.models.canvas_model)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.compression">compression (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+</li>
+      <li><a href="api/signals.html#celery_cloud.signals.Signal.connect">connect() (celery_cloud.signals.Signal method)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta.connect_timeout_seconds">connect_timeout_seconds (celery_cloud.models.canvas_model.ChordCounter.Meta attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta.connect_timeout_seconds">(celery_cloud.models.task_model.TaskModel.Meta attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSMessage.content_encoding">content_encoding (celery_cloud.entities.sqs_entities.SQSMessage attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSMessage.content_type">content_type (celery_cloud.entities.sqs_entities.SQSMessage attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Properties.correlation_id">correlation_id (celery_cloud.entities.sqs_entities.Properties attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.date_done">date_done (celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSMessage.decode_body">decode_body() (celery_cloud.entities.sqs_entities.SQSMessage method)</a>
+</li>
+      <li><a href="api/serialization.html#celery_cloud.serialization.decompress">decompress() (in module celery_cloud.serialization)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.default_retry_delay">default_retry_delay (celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+      <li><a href="api/messaging.html#celery_cloud.messaging.delay_message">delay_message() (in module celery_cloud.messaging)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.DelayedTask.delay_seconds">delay_seconds (celery_cloud.entities.lambda_response.DelayedTask attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.delayed_messages">delayed_messages (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.delayed_tasks">delayed_tasks (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.DelayedTask">DelayedTask (class in celery_cloud.entities.lambda_response)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.delete_for">delete_for() (celery_cloud.models.canvas_model.ChordCounter class method)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.delete_group">delete_group() (in module celery_cloud.models.canvas_model)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.delete_task">delete_task() (celery_cloud.models.task_model.TaskModel class method)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Properties.delivery_info">delivery_info (celery_cloud.entities.sqs_entities.Properties attribute)</a>
+
+      <ul>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.delivery_info">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Properties.delivery_mode">delivery_mode (celery_cloud.entities.sqs_entities.Properties attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Properties.delivery_tag">delivery_tag (celery_cloud.entities.sqs_entities.Properties attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.DeliveryInfo">DeliveryInfo (class in celery_cloud.entities.sqs_entities)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.details">details (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+      <li><a href="api/signals.html#celery_cloud.signals.Signal.disconnect">disconnect() (celery_cloud.signals.Signal method)</a>
+</li>
+      <li><a href="api/canvas.html#celery_cloud.runners.canvas.dispatch_failure">dispatch_failure() (in module celery_cloud.runners.canvas)</a>
+</li>
+      <li><a href="api/canvas.html#celery_cloud.runners.canvas.dispatch_success">dispatch_success() (in module celery_cloud.runners.canvas)</a>
+</li>
+      <li><a href="api/serialization.html#celery_cloud.serialization.dumps">dumps() (in module celery_cloud.serialization)</a>
+</li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.DuplicateTaskException">DuplicateTaskException</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/deadline.html#celery_cloud.deadline.effective_limits">effective_limits() (in module celery_cloud.deadline)</a>
+</li>
+      <li><a href="api/deadline.html#celery_cloud.metrics.emit">emit() (in module celery_cloud.metrics)</a>
+</li>
+      <li><a href="api/messaging.html#celery_cloud.messaging.encode_body">encode_body() (in module celery_cloud.messaging)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task.errbacks">errbacks (celery_cloud.entities.task.Task attribute)</a>
+
+      <ul>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.errbacks">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.FailedTask.error">error (celery_cloud.entities.lambda_response.FailedTask attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.eta">eta (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task.Task.eta">(celery_cloud.entities.task.Task attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.eta">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task.eta_seconds">eta_seconds() (celery_cloud.entities.task.Task method)</a>
+</li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.EventDecodeException">EventDecodeException</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSRecord.eventSource">eventSource (celery_cloud.entities.sqs_entities.SQSRecord attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSRecord.eventSourceARN">eventSourceARN (celery_cloud.entities.sqs_entities.SQSRecord attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.DeliveryInfo.exchange">exchange (celery_cloud.entities.sqs_entities.DeliveryInfo attribute)</a>
+</li>
+      <li><a href="api/strategies.html#celery_cloud.runners.lambda_strategy.LambdaTaskExecutionStrategy.execute">execute() (celery_cloud.runners.lambda_strategy.LambdaTaskExecutionStrategy method)</a>
+
+      <ul>
+        <li><a href="api/strategies.html#celery_cloud.runners.local_strategy.LocalTaskExecutionStrategy.execute">(celery_cloud.runners.local_strategy.LocalTaskExecutionStrategy method)</a>
+</li>
+        <li><a href="api/strategies.html#celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy.execute">(celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy method)</a>
+</li>
+        <li><a href="api/strategies.html#celery_cloud.runners.task_executor.TaskExecutor.execute">(celery_cloud.runners.task_executor.TaskExecutor method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.expires">expires (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task.Task.expires">(celery_cloud.entities.task.Task attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.expires">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta.extra_headers">extra_headers (celery_cloud.models.canvas_model.ChordCounter.Meta attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta.extra_headers">(celery_cloud.models.task_model.TaskModel.Meta attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.failed_messages">failed_messages (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.failed_tasks">failed_tasks (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.FailedTask">FailedTask (class in celery_cloud.entities.lambda_response)</a>
+</li>
+      <li><a href="api/messaging.html#celery_cloud.messaging.QueueRef.from_arn">from_arn() (celery_cloud.messaging.QueueRef class method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSEvent.from_lambda">from_lambda() (celery_cloud.entities.sqs_entities.SQSEvent class method)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSMessage.from_record">from_record() (celery_cloud.entities.sqs_entities.SQSMessage class method)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.task_route.TaskRoute.from_url">from_url() (celery_cloud.entities.task_route.TaskRoute class method)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.task_route.TaskRoute.function">function (celery_cloud.entities.task_route.TaskRoute attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/strategies.html#celery_cloud.runners.lambda_strategy.get_breaker">get_breaker() (in module celery_cloud.runners.lambda_strategy)</a>
+</li>
+      <li><a href="api/settings.html#celery_cloud.settings.Settings.get_env_bool">get_env_bool() (celery_cloud.settings.Settings class method)</a>
+</li>
+      <li><a href="api/settings.html#celery_cloud.settings.Settings.get_env_int">get_env_int() (celery_cloud.settings.Settings class method)</a>
+</li>
+      <li><a href="api/settings.html#celery_cloud.settings.Settings.get_env_variable">get_env_variable() (celery_cloud.settings.Settings static method)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSRecord.get_message">get_message() (celery_cloud.entities.sqs_entities.SQSRecord method)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.get_options">get_options() (in module celery_cloud.tasks)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.runtime.get_runtime">get_runtime() (in module celery_cloud.runtime)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSMessage.get_task">get_task() (celery_cloud.entities.sqs_entities.SQSMessage method)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.get_task">(celery_cloud.models.task_model.TaskModel class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.group">group (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task.Task.group">(celery_cloud.entities.task.Task attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.group">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.group_children">group_children() (in module celery_cloud.models.canvas_model)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.group_index">group_index (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task.Task.group_index">(celery_cloud.entities.task.Task attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.group_index">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSMessage.headers">headers (celery_cloud.entities.sqs_entities.SQSMessage attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers">Headers (class in celery_cloud.entities.sqs_entities)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta.host">host (celery_cloud.models.canvas_model.ChordCounter.Meta attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta.host">(celery_cloud.models.task_model.TaskModel.Meta attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.hostname">hostname (celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.id">id (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task.Task.id">(celery_cloud.entities.task.Task attribute)</a>
+</li>
+        <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.id">(celery_cloud.models.canvas_model.ChordCounter attribute)</a>
+</li>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.id">(celery_cloud.models.task_model.TaskModel attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.id">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.Ignore">Ignore</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.ignore_result">ignore_result (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task.Task.ignore_result">(celery_cloud.entities.task.Task attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.increment">increment() (celery_cloud.models.canvas_model.ChordCounter class method)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.insert_task">insert_task() (celery_cloud.models.task_model.TaskModel class method)</a>
+</li>
+      <li><a href="api/client.html#celery_cloud.client.install">install() (in module celery_cloud.client)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.is_eager">is_eager (celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task.is_expired">is_expired() (celery_cloud.entities.task.Task method)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.is_revoked">is_revoked() (celery_cloud.models.task_model.TaskModel class method)</a>
+
+      <ul>
+        <li><a href="api/tasks.html#celery_cloud.runtime.Runtime.is_revoked">(celery_cloud.runtime.Runtime method)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskContext.is_revoked">(celery_cloud.tasks.TaskContext method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.BatchItemFailure.itemIdentifier">itemIdentifier (celery_cloud.entities.lambda_response.BatchItemFailure attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task.kwargs">kwargs (celery_cloud.entities.task.Task attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.kwargs">(celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.kwargs">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.kwargsrepr">kwargsrepr (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/runners.html#celery_cloud.runners.aws_lambda.lambda_handler">lambda_handler() (in module celery_cloud.runners.aws_lambda)</a>
+</li>
+      <li><a href="api/strategies.html#celery_cloud.runners.lambda_strategy.LambdaFunctionError">LambdaFunctionError</a>
+</li>
+      <li><a href="api/strategies.html#celery_cloud.runners.lambda_strategy.LambdaInvocationError">LambdaInvocationError</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse">LambdaResponse (class in celery_cloud.entities.lambda_response)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/strategies.html#celery_cloud.runners.lambda_strategy.LambdaTaskExecutionStrategy">LambdaTaskExecutionStrategy (class in celery_cloud.runners.lambda_strategy)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.lang">lang (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+</li>
+      <li><a href="api/strategies.html#celery_cloud.runners.local_strategy.load_function">load_function() (in module celery_cloud.runners.local_strategy)</a>
+</li>
+      <li><a href="api/serialization.html#celery_cloud.serialization.loads">loads() (in module celery_cloud.serialization)</a>
+</li>
+      <li><a href="api/strategies.html#celery_cloud.runners.local_strategy.LocalTaskExecutionStrategy">LocalTaskExecutionStrategy (class in celery_cloud.runners.local_strategy)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta.max_pool_connections">max_pool_connections (celery_cloud.models.canvas_model.ChordCounter.Meta attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta.max_pool_connections">(celery_cloud.models.task_model.TaskModel.Meta attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskContext.max_retries">max_retries (celery_cloud.tasks.TaskContext property)</a>
+
+      <ul>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.max_retries">(celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta.max_retry_attempts">max_retry_attempts (celery_cloud.models.canvas_model.ChordCounter.Meta attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta.max_retry_attempts">(celery_cloud.models.task_model.TaskModel.Meta attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.MaxRetriesExceededError">MaxRetriesExceededError</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.message">message (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.DelayedTask.message_id">message_id (celery_cloud.entities.lambda_response.DelayedTask attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.lambda_response.FailedTask.message_id">(celery_cloud.entities.lambda_response.FailedTask attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.lambda_response.SkippedTask.message_id">(celery_cloud.entities.lambda_response.SkippedTask attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.MessageDecodeException">MessageDecodeException</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSRecord.messageId">messageId (celery_cloud.entities.sqs_entities.SQSRecord attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.BatchItemFailure.model_config">model_config (celery_cloud.entities.lambda_response.BatchItemFailure attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.lambda_response.DelayedTask.model_config">(celery_cloud.entities.lambda_response.DelayedTask attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.lambda_response.FailedTask.model_config">(celery_cloud.entities.lambda_response.FailedTask attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.model_config">(celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.lambda_response.ProcessedTask.model_config">(celery_cloud.entities.lambda_response.ProcessedTask attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.lambda_response.SkippedTask.model_config">(celery_cloud.entities.lambda_response.SkippedTask attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.DeliveryInfo.model_config">(celery_cloud.entities.sqs_entities.DeliveryInfo attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.model_config">(celery_cloud.entities.sqs_entities.Headers attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Properties.model_config">(celery_cloud.entities.sqs_entities.Properties attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSAttributes.model_config">(celery_cloud.entities.sqs_entities.SQSAttributes attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSEvent.model_config">(celery_cloud.entities.sqs_entities.SQSEvent attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSMessage.model_config">(celery_cloud.entities.sqs_entities.SQSMessage attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSRecord.model_config">(celery_cloud.entities.sqs_entities.SQSRecord attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.task.Task.model_config">(celery_cloud.entities.task.Task attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.model_config">(celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    module
+
+      <ul>
+        <li><a href="api/client.html#module-celery_cloud.client">celery_cloud.client</a>
+</li>
+        <li><a href="api/deadline.html#module-celery_cloud.deadline">celery_cloud.deadline</a>
+</li>
+        <li><a href="api/entities.html#module-celery_cloud.entities.lambda_response">celery_cloud.entities.lambda_response</a>
+</li>
+        <li><a href="api/entities.html#module-celery_cloud.entities.sqs_entities">celery_cloud.entities.sqs_entities</a>
+</li>
+        <li><a href="api/entities.html#module-celery_cloud.entities.task">celery_cloud.entities.task</a>
+</li>
+        <li><a href="api/entities.html#module-celery_cloud.entities.task_result">celery_cloud.entities.task_result</a>
+</li>
+        <li><a href="api/entities.html#module-celery_cloud.entities.task_route">celery_cloud.entities.task_route</a>
+</li>
+        <li><a href="api/exceptions.html#module-celery_cloud.exceptions.runner_base_exception">celery_cloud.exceptions.runner_base_exception</a>
+</li>
+        <li><a href="api/exceptions.html#module-celery_cloud.exceptions.runner_exceptions">celery_cloud.exceptions.runner_exceptions</a>
+</li>
+        <li><a href="api/exceptions.html#module-celery_cloud.exceptions.task_exceptions">celery_cloud.exceptions.task_exceptions</a>
+</li>
+        <li><a href="api/logging.html#module-celery_cloud.logging">celery_cloud.logging</a>
+</li>
+        <li><a href="api/messaging.html#module-celery_cloud.messaging">celery_cloud.messaging</a>
+</li>
+        <li><a href="api/deadline.html#module-celery_cloud.metrics">celery_cloud.metrics</a>
+</li>
+        <li><a href="api/models.html#module-celery_cloud.models.canvas_model">celery_cloud.models.canvas_model</a>
+</li>
+        <li><a href="api/models.html#module-celery_cloud.models.task_model">celery_cloud.models.task_model</a>
+</li>
+        <li><a href="api/canvas.html#module-celery_cloud.runners.builtin_tasks">celery_cloud.runners.builtin_tasks</a>
+</li>
+        <li><a href="api/canvas.html#module-celery_cloud.runners.canvas">celery_cloud.runners.canvas</a>
+</li>
+        <li><a href="api/strategies.html#module-celery_cloud.runners.lambda_strategy">celery_cloud.runners.lambda_strategy</a>
+</li>
+        <li><a href="api/strategies.html#module-celery_cloud.runners.local_strategy">celery_cloud.runners.local_strategy</a>
+</li>
+        <li><a href="api/strategies.html#module-celery_cloud.runners.task_execution_strategy">celery_cloud.runners.task_execution_strategy</a>
+</li>
+        <li><a href="api/strategies.html#module-celery_cloud.runners.task_executor">celery_cloud.runners.task_executor</a>
+</li>
+        <li><a href="api/tasks.html#module-celery_cloud.runtime">celery_cloud.runtime</a>
+</li>
+        <li><a href="api/serialization.html#module-celery_cloud.serialization">celery_cloud.serialization</a>
+</li>
+        <li><a href="api/settings.html#module-celery_cloud.settings">celery_cloud.settings</a>
+</li>
+        <li><a href="api/signals.html#module-celery_cloud.signals">celery_cloud.signals</a>
+</li>
+        <li><a href="api/tasks.html#module-celery_cloud.tasks">celery_cloud.tasks</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.task_route.TaskRoute.module">module (celery_cloud.entities.task_route.TaskRoute attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.name">name (celery_cloud.entities.task_result.TaskResult attribute)</a>
+
+      <ul>
+        <li><a href="api/messaging.html#celery_cloud.messaging.QueueRef.name">(celery_cloud.messaging.QueueRef attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskContext.name">(celery_cloud.tasks.TaskContext property)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.name">(celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/messaging.html#celery_cloud.messaging.QueueRef.named">named() (celery_cloud.messaging.QueueRef method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/canvas.html#celery_cloud.runners.canvas.on_chord_part_return">on_chord_part_return() (in module celery_cloud.runners.canvas)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.on_failure">on_failure (celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.on_retry">on_retry (celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.on_success">on_success (celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.origin">origin (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.parent_id">parent_id (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task.Task.parent_id">(celery_cloud.entities.task.Task attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.parent_id">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/messaging.html#celery_cloud.messaging.QueueRef.partition">partition (celery_cloud.messaging.QueueRef attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Properties.priority">priority (celery_cloud.entities.sqs_entities.Properties attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.processed_messages">processed_messages (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.processed_tasks">processed_tasks (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.ProcessedTask">ProcessedTask (class in celery_cloud.entities.lambda_response)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSMessage.properties">properties (celery_cloud.entities.sqs_entities.SQSMessage attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Properties">Properties (class in celery_cloud.entities.sqs_entities)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.task_route.TaskRoute.query">query (celery_cloud.entities.task_route.TaskRoute attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task.queue">queue (celery_cloud.entities.task.Task attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.queue">(celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/messaging.html#celery_cloud.messaging.QueueRef">QueueRef (class in celery_cloud.messaging)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta.read_timeout_seconds">read_timeout_seconds (celery_cloud.models.canvas_model.ChordCounter.Meta attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta.read_timeout_seconds">(celery_cloud.models.task_model.TaskModel.Meta attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.SkippedTask.reason">reason (celery_cloud.entities.lambda_response.SkippedTask attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSRecord.receiptHandle">receiptHandle (celery_cloud.entities.sqs_entities.SQSRecord attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSEvent.Records">Records (celery_cloud.entities.sqs_entities.SQSEvent attribute)</a>
+</li>
+      <li><a href="api/messaging.html#celery_cloud.messaging.QueueRef.region">region (celery_cloud.messaging.QueueRef attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta.region">(celery_cloud.models.canvas_model.ChordCounter.Meta attribute)</a>
+</li>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta.region">(celery_cloud.models.task_model.TaskModel.Meta attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.Reject">Reject</a>
+</li>
+      <li><a href="api/deadline.html#celery_cloud.deadline.remaining_seconds">remaining_seconds() (in module celery_cloud.deadline)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.replaced_task_nesting">replaced_task_nesting (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Properties.reply_to">reply_to (celery_cloud.entities.sqs_entities.Properties attribute)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.runtime.reset_runtime">reset_runtime() (in module celery_cloud.runtime)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.ProcessedTask.result">result (celery_cloud.entities.lambda_response.ProcessedTask attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.result">(celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.ResultTooLargeException">ResultTooLargeException</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.retries">retries (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task.Task.retries">(celery_cloud.entities.task.Task attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.retries">(celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.retries">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.Retry">Retry</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskContext.retry">retry() (celery_cloud.tasks.TaskContext method)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.retry_backoff">retry_backoff (celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.retry_backoff_max">retry_backoff_max (celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.retry_jitter">retry_jitter (celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+      <li><a href="api/messaging.html#celery_cloud.messaging.retry_message">retry_message() (in module celery_cloud.messaging)</a>
+</li>
+      <li><a href="api/client.html#celery_cloud.client.revoke">revoke() (in module celery_cloud.client)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.revoked">revoked (celery_cloud.models.task_model.TaskModel attribute)</a>
+</li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.RevokedTaskException">RevokedTaskException</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.root_id">root_id (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task.Task.root_id">(celery_cloud.entities.task.Task attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.root_id">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.DeliveryInfo.routing_key">routing_key (celery_cloud.entities.sqs_entities.DeliveryInfo attribute)</a>
+</li>
+      <li><a href="api/canvas.html#celery_cloud.runners.builtin_tasks.run_builtin">run_builtin() (in module celery_cloud.runners.builtin_tasks)</a>
+</li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.runner_base_exception.RunnerBaseException">RunnerBaseException</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.runtime.Runtime">Runtime (class in celery_cloud.runtime)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.task_route.TaskRoute.scheme">scheme (celery_cloud.entities.task_route.TaskRoute attribute)</a>
+</li>
+      <li><a href="api/signals.html#celery_cloud.signals.Signal.send">send() (celery_cloud.signals.Signal method)</a>
+
+      <ul>
+        <li><a href="api/messaging.html#celery_cloud.messaging.send">(in module celery_cloud.messaging)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSAttributes.SentTimestamp">SentTimestamp (celery_cloud.entities.sqs_entities.SQSAttributes attribute)</a>
+</li>
+      <li><a href="api/serialization.html#celery_cloud.serialization.SerializationError">SerializationError</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.runtime.set_runtime">set_runtime() (in module celery_cloud.runtime)</a>
+</li>
+      <li><a href="api/settings.html#celery_cloud.settings.Settings">Settings (class in celery_cloud.settings)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.shadow">shadow (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+</li>
+      <li><a href="api/signals.html#celery_cloud.signals.Signal">Signal (class in celery_cloud.signals)</a>
+</li>
+      <li><a href="api/deadline.html#celery_cloud.deadline.signals_available">signals_available() (in module celery_cloud.deadline)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.skipped_messages">skipped_messages (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.skipped_tasks">skipped_tasks (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.SkippedTask">SkippedTask (class in celery_cloud.entities.lambda_response)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task.soft_time_limit">soft_time_limit (celery_cloud.entities.task.Task attribute)</a>
+
+      <ul>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.soft_time_limit">(celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.soft_time_limit">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.SoftTimeLimitExceeded">SoftTimeLimitExceeded</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSAttributes">SQSAttributes (class in celery_cloud.entities.sqs_entities)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSEvent">SQSEvent (class in celery_cloud.entities.sqs_entities)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSMessage">SQSMessage (class in celery_cloud.entities.sqs_entities)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.SQSRecord">SQSRecord (class in celery_cloud.entities.sqs_entities)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.stamped_headers">stamped_headers (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.stamps">stamps (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.LambdaResponse.status">status (celery_cloud.entities.lambda_response.LambdaResponse attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.lambda_response.ProcessedTask.status">(celery_cloud.entities.lambda_response.ProcessedTask attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.status">(celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.store_result">store_result() (celery_cloud.models.task_model.TaskModel class method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.Meta.table_name">table_name (celery_cloud.models.canvas_model.ChordCounter.Meta attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta.table_name">(celery_cloud.models.task_model.TaskModel.Meta attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.task">task (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.task.Task.task">(celery_cloud.entities.task.Task attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.task">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task">Task (class in celery_cloud.entities.task)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.task">task() (in module celery_cloud.tasks)</a>
+</li>
+      <li><a href="api/signals.html#celery_cloud.signals.task_failure">task_failure (in module celery_cloud.signals)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.lambda_response.DelayedTask.task_id">task_id (celery_cloud.entities.lambda_response.DelayedTask attribute)</a>
+
+      <ul>
+        <li><a href="api/entities.html#celery_cloud.entities.lambda_response.FailedTask.task_id">(celery_cloud.entities.lambda_response.FailedTask attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.lambda_response.ProcessedTask.task_id">(celery_cloud.entities.lambda_response.ProcessedTask attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.lambda_response.SkippedTask.task_id">(celery_cloud.entities.lambda_response.SkippedTask attribute)</a>
+</li>
+        <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.task_id">(celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/strategies.html#celery_cloud.runners.local_strategy.task_options">task_options() (in module celery_cloud.runners.local_strategy)</a>
+</li>
+      <li><a href="api/signals.html#celery_cloud.signals.task_postrun">task_postrun (in module celery_cloud.signals)</a>
+</li>
+      <li><a href="api/signals.html#celery_cloud.signals.task_prerun">task_prerun (in module celery_cloud.signals)</a>
+</li>
+      <li><a href="api/signals.html#celery_cloud.signals.task_retry">task_retry (in module celery_cloud.signals)</a>
+</li>
+      <li><a href="api/signals.html#celery_cloud.signals.task_success">task_success (in module celery_cloud.signals)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskContext">TaskContext (class in celery_cloud.tasks)</a>
+</li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.TaskDecodeException">TaskDecodeException</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.runner_exceptions.TaskExecutionException">TaskExecutionException</a>
+</li>
+      <li><a href="api/strategies.html#celery_cloud.runners.task_execution_strategy.TaskExecutionStrategy">TaskExecutionStrategy (class in celery_cloud.runners.task_execution_strategy)</a>
+</li>
+      <li><a href="api/strategies.html#celery_cloud.runners.task_executor.TaskExecutor">TaskExecutor (class in celery_cloud.runners.task_executor)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel">TaskModel (class in celery_cloud.models.task_model)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.DoesNotExist">TaskModel.DoesNotExist</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.Meta">TaskModel.Meta (class in celery_cloud.models.task_model)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions">TaskOptions (class in celery_cloud.tasks)</a>
+</li>
+      <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest">TaskRequest (class in celery_cloud.tasks)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult">TaskResult (class in celery_cloud.entities.task_result)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.task_route.TaskRoute">TaskRoute (class in celery_cloud.entities.task_route)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.task.Task.time_limit">time_limit (celery_cloud.entities.task.Task attribute)</a>
+
+      <ul>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskOptions.time_limit">(celery_cloud.tasks.TaskOptions attribute)</a>
+</li>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskRequest.time_limit">(celery_cloud.tasks.TaskRequest attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/deadline.html#celery_cloud.deadline.time_limits">time_limits() (in module celery_cloud.deadline)</a>
+</li>
+      <li><a href="api/entities.html#celery_cloud.entities.sqs_entities.Headers.timelimit">timelimit (celery_cloud.entities.sqs_entities.Headers attribute)</a>
+</li>
+      <li><a href="api/exceptions.html#celery_cloud.exceptions.task_exceptions.TimeLimitExceeded">TimeLimitExceeded</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.canvas_model.ChordCounter.timestamp">timestamp (celery_cloud.models.canvas_model.ChordCounter attribute)</a>
+
+      <ul>
+        <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.timestamp">(celery_cloud.models.task_model.TaskModel attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.traceback">traceback (celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+      <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.ttl">ttl (celery_cloud.models.task_model.TaskModel attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/tasks.html#celery_cloud.runtime.Runtime.update_state">update_state() (celery_cloud.runtime.Runtime method)</a>
+
+      <ul>
+        <li><a href="api/tasks.html#celery_cloud.tasks.TaskContext.update_state">(celery_cloud.tasks.TaskContext method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/models.html#celery_cloud.models.task_model.TaskModel.update_task">update_task() (celery_cloud.models.task_model.TaskModel class method)</a>
+</li>
+      <li><a href="api/messaging.html#celery_cloud.messaging.QueueRef.url">url() (celery_cloud.messaging.QueueRef method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/entities.html#celery_cloud.entities.task_result.TaskResult.worker">worker (celery_cloud.entities.task_result.TaskResult attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

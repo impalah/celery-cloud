@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exceptions &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/api/exceptions.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Client helpers" href="client.html" />
+    <link rel="prev" title="Logging" href="logging.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tasks.html">Task API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signals.html">Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Exceptions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException"><code class="docutils literal notranslate"><span class="pre">RunnerBaseException</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException.__init__"><code class="docutils literal notranslate"><span class="pre">RunnerBaseException.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.exceptions.runner_exceptions.BackendException"><code class="docutils literal notranslate"><span class="pre">BackendException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.exceptions.runner_exceptions.DuplicateTaskException"><code class="docutils literal notranslate"><span class="pre">DuplicateTaskException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.exceptions.runner_exceptions.EventDecodeException"><code class="docutils literal notranslate"><span class="pre">EventDecodeException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.exceptions.runner_exceptions.MessageDecodeException"><code class="docutils literal notranslate"><span class="pre">MessageDecodeException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.exceptions.runner_exceptions.ResultTooLargeException"><code class="docutils literal notranslate"><span class="pre">ResultTooLargeException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.exceptions.runner_exceptions.RevokedTaskException"><code class="docutils literal notranslate"><span class="pre">RevokedTaskException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.exceptions.runner_exceptions.TaskDecodeException"><code class="docutils literal notranslate"><span class="pre">TaskDecodeException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.exceptions.runner_exceptions.TaskExecutionException"><code class="docutils literal notranslate"><span class="pre">TaskExecutionException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exceptions-for-task-code">Exceptions for task code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.exceptions.task_exceptions.Ignore"><code class="docutils literal notranslate"><span class="pre">Ignore</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.exceptions.task_exceptions.MaxRetriesExceededError"><code class="docutils literal notranslate"><span class="pre">MaxRetriesExceededError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.exceptions.task_exceptions.Reject"><code class="docutils literal notranslate"><span class="pre">Reject</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.exceptions.task_exceptions.Retry"><code class="docutils literal notranslate"><span class="pre">Retry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.exceptions.task_exceptions.SoftTimeLimitExceeded"><code class="docutils literal notranslate"><span class="pre">SoftTimeLimitExceeded</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.exceptions.task_exceptions.TimeLimitExceeded"><code class="docutils literal notranslate"><span class="pre">TimeLimitExceeded</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="client.html">Client helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runners.html">Lambda handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="strategies.html">Task execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="canvas.html">Workflows and built-in tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="messaging.html">Messaging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Result backend model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deadline.html">Time limits and metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="entities.html">Entities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html">Settings</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Exceptions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/exceptions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="exceptions">
+<h1>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading"></a></h1>
+<p>All the exceptions of the runner derive from <code class="docutils literal notranslate"><span class="pre">RunnerBaseException</span></code>. The
+handler never lets them escape: it converts them into a <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code> state in the
+backend, a failed task in the response, or an entry in <code class="docutils literal notranslate"><span class="pre">batchItemFailures</span></code>
+(see <a class="reference internal" href="../concepts.html"><span class="doc">Concepts and behaviour</span></a>).</p>
+<dl class="py exception" id="module-celery_cloud.exceptions.runner_base_exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.runner_base_exception.RunnerBaseException">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.runner_base_exception.</span></span><span class="sig-name descname"><span class="pre">RunnerBaseException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/exceptions/runner_base_exception.html#RunnerBaseException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Base Domain exception for runner errors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – Human readable description of the error.</p></li>
+<li><p><strong>detail</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em>) – Extra information (original error, payload…).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.runner_base_exception.RunnerBaseException.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/exceptions/runner_base_exception.html#RunnerBaseException.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception" id="module-celery_cloud.exceptions.runner_exceptions">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.runner_exceptions.BackendException">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.runner_exceptions.</span></span><span class="sig-name descname"><span class="pre">BackendException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/exceptions/runner_exceptions.html#BackendException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.runner_exceptions.BackendException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException" title="celery_cloud.exceptions.runner_base_exception.RunnerBaseException"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunnerBaseException</span></code></a></p>
+<p>Domain exception for backend errors</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.runner_exceptions.DuplicateTaskException">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.runner_exceptions.</span></span><span class="sig-name descname"><span class="pre">DuplicateTaskException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/exceptions/runner_exceptions.html#DuplicateTaskException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.runner_exceptions.DuplicateTaskException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException" title="celery_cloud.exceptions.runner_base_exception.RunnerBaseException"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunnerBaseException</span></code></a></p>
+<p>Domain exception: the task already exists in the backend.</p>
+<p>SQS delivers messages at least once, so this is the expected way a
+duplicate delivery shows up. It must not be executed again.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.runner_exceptions.EventDecodeException">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.runner_exceptions.</span></span><span class="sig-name descname"><span class="pre">EventDecodeException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/exceptions/runner_exceptions.html#EventDecodeException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.runner_exceptions.EventDecodeException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException" title="celery_cloud.exceptions.runner_base_exception.RunnerBaseException"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunnerBaseException</span></code></a></p>
+<p>Domain exception for message decoding errors</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.runner_exceptions.MessageDecodeException">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.runner_exceptions.</span></span><span class="sig-name descname"><span class="pre">MessageDecodeException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/exceptions/runner_exceptions.html#MessageDecodeException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.runner_exceptions.MessageDecodeException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException" title="celery_cloud.exceptions.runner_base_exception.RunnerBaseException"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunnerBaseException</span></code></a></p>
+<p>Domain exception for message decoding errors</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.runner_exceptions.ResultTooLargeException">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.runner_exceptions.</span></span><span class="sig-name descname"><span class="pre">ResultTooLargeException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/exceptions/runner_exceptions.html#ResultTooLargeException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.runner_exceptions.ResultTooLargeException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException" title="celery_cloud.exceptions.runner_base_exception.RunnerBaseException"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunnerBaseException</span></code></a></p>
+<p>Domain exception: the task result does not fit in a backend item.</p>
+<p>Retrying cannot help, so it is stored as a task failure instead of being
+treated as a backend outage.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.runner_exceptions.RevokedTaskException">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.runner_exceptions.</span></span><span class="sig-name descname"><span class="pre">RevokedTaskException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/exceptions/runner_exceptions.html#RevokedTaskException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.runner_exceptions.RevokedTaskException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException" title="celery_cloud.exceptions.runner_base_exception.RunnerBaseException"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunnerBaseException</span></code></a></p>
+<p>Domain exception: the task was revoked before it started.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.runner_exceptions.TaskDecodeException">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.runner_exceptions.</span></span><span class="sig-name descname"><span class="pre">TaskDecodeException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/exceptions/runner_exceptions.html#TaskDecodeException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.runner_exceptions.TaskDecodeException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException" title="celery_cloud.exceptions.runner_base_exception.RunnerBaseException"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunnerBaseException</span></code></a></p>
+<p>Domain exception for task decoding errors</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.runner_exceptions.TaskExecutionException">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.runner_exceptions.</span></span><span class="sig-name descname"><span class="pre">TaskExecutionException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/exceptions/runner_exceptions.html#TaskExecutionException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.runner_exceptions.TaskExecutionException" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#celery_cloud.exceptions.runner_base_exception.RunnerBaseException" title="celery_cloud.exceptions.runner_base_exception.RunnerBaseException"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunnerBaseException</span></code></a></p>
+<p>Domain exception for execution exceptions</p>
+</dd></dl>
+
+<section id="exceptions-for-task-code">
+<h2>Exceptions for task code<a class="headerlink" href="#exceptions-for-task-code" title="Link to this heading"></a></h2>
+<p>Raised or used <em>inside</em> tasks (<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">celery_cloud</span> <span class="pre">import</span> <span class="pre">...</span></code>). The client receives the
+Celery classes of the same name.</p>
+<p id="module-celery_cloud.exceptions.task_exceptions">Exceptions raised <em>inside</em> task code by the runner itself.</p>
+<p>They are plain <code class="docutils literal notranslate"><span class="pre">Exception</span></code> subclasses (not <code class="docutils literal notranslate"><span class="pre">RunnerBaseException</span></code>) because
+user code can catch them, exactly as with Celery’s own classes of the same name.
+<code class="docutils literal notranslate"><span class="pre">celery_module</span></code> tells the runner which module to report in a <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code> result:
+the Celery client rebuilds the exception from <code class="docutils literal notranslate"><span class="pre">exc_module</span></code> + <code class="docutils literal notranslate"><span class="pre">exc_type</span></code>, so
+reporting <code class="docutils literal notranslate"><span class="pre">celery.exceptions</span></code> makes <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">celery.exceptions.SoftTimeLimitExceeded</span></code>
+work on the client.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.Ignore">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.task_exceptions.</span></span><span class="sig-name descname"><span class="pre">Ignore</span></span><a class="reference internal" href="../_modules/celery_cloud/exceptions/task_exceptions.html#Ignore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.Ignore" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Raised by a task to end without storing any result (the state is left as is).</p>
+<p>Typical use: update the state yourself with <code class="docutils literal notranslate"><span class="pre">update_state</span></code> and then
+<code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">Ignore()</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.Ignore.celery_module">
+<span class="sig-name descname"><span class="pre">celery_module</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'celery.exceptions'</span></span><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.Ignore.celery_module" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.MaxRetriesExceededError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.task_exceptions.</span></span><span class="sig-name descname"><span class="pre">MaxRetriesExceededError</span></span><a class="reference internal" href="../_modules/celery_cloud/exceptions/task_exceptions.html#MaxRetriesExceededError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.MaxRetriesExceededError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p><code class="docutils literal notranslate"><span class="pre">retry()</span></code> was called more times than <code class="docutils literal notranslate"><span class="pre">max_retries</span></code> allows.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.MaxRetriesExceededError.celery_module">
+<span class="sig-name descname"><span class="pre">celery_module</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'celery.exceptions'</span></span><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.MaxRetriesExceededError.celery_module" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.Reject">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.task_exceptions.</span></span><span class="sig-name descname"><span class="pre">Reject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requeue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/exceptions/task_exceptions.html#Reject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.Reject" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Raised by a task to reject its message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reason</strong> – Why it was rejected.</p></li>
+<li><p><strong>requeue</strong> – When True the message goes back to SQS and the task runs again.
+When False the task is stored as <code class="docutils literal notranslate"><span class="pre">REJECTED</span></code> and dropped.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.Reject.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requeue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/exceptions/task_exceptions.html#Reject.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.Reject.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.Reject.celery_module">
+<span class="sig-name descname"><span class="pre">celery_module</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'celery.exceptions'</span></span><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.Reject.celery_module" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.Retry">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.task_exceptions.</span></span><span class="sig-name descname"><span class="pre">Retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(in Python v3.15)"><span class="pre">BaseException</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">countdown</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.15)"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/exceptions/task_exceptions.html#Retry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.Retry" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Raised by <code class="docutils literal notranslate"><span class="pre">retry()</span></code>: the runner re-sends the task instead of failing it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exc</strong> – The exception that caused the retry (reported if retries run out).</p></li>
+<li><p><strong>countdown</strong> – Seconds to wait before the next attempt.</p></li>
+<li><p><strong>eta</strong> – Absolute time (<code class="docutils literal notranslate"><span class="pre">datetime</span></code>) of the next attempt; wins over <code class="docutils literal notranslate"><span class="pre">countdown</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.Retry.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(in Python v3.15)"><span class="pre">BaseException</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">countdown</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.15)"><span class="pre">datetime</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/exceptions/task_exceptions.html#Retry.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.Retry.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.Retry.celery_module">
+<span class="sig-name descname"><span class="pre">celery_module</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'celery.exceptions'</span></span><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.Retry.celery_module" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.SoftTimeLimitExceeded">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.task_exceptions.</span></span><span class="sig-name descname"><span class="pre">SoftTimeLimitExceeded</span></span><a class="reference internal" href="../_modules/celery_cloud/exceptions/task_exceptions.html#SoftTimeLimitExceeded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.SoftTimeLimitExceeded" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>The soft time limit of the task expired (the task may clean up).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.SoftTimeLimitExceeded.celery_module">
+<span class="sig-name descname"><span class="pre">celery_module</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'celery.exceptions'</span></span><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.SoftTimeLimitExceeded.celery_module" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.TimeLimitExceeded">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.exceptions.task_exceptions.</span></span><span class="sig-name descname"><span class="pre">TimeLimitExceeded</span></span><a class="reference internal" href="../_modules/celery_cloud/exceptions/task_exceptions.html#TimeLimitExceeded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.TimeLimitExceeded" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>The hard time limit expired, or the Lambda function is about to time out.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.exceptions.task_exceptions.TimeLimitExceeded.celery_module">
+<span class="sig-name descname"><span class="pre">celery_module</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'celery.exceptions'</span></span><a class="headerlink" href="#celery_cloud.exceptions.task_exceptions.TimeLimitExceeded.celery_module" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="logging.html" class="btn btn-neutral float-left" title="Logging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="client.html" class="btn btn-neutral float-right" title="Client helpers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1281 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>celery_cloud.runners.aws_lambda &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/_modules/celery_cloud/runners/aws_lambda.html" />
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">celery_cloud.runners.aws_lambda</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for celery_cloud.runners.aws_lambda</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextvars</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextvars</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContextVar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ksuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ksuid</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud</span><span class="w"> </span><span class="kn">import</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">signals</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.deadline</span><span class="w"> </span><span class="kn">import</span> <span class="n">effective_limits</span><span class="p">,</span> <span class="n">remaining_seconds</span><span class="p">,</span> <span class="n">time_limits</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.entities</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BatchItemFailure</span><span class="p">,</span>
+    <span class="n">DelayedTask</span><span class="p">,</span>
+    <span class="n">FailedTask</span><span class="p">,</span>
+    <span class="n">LambdaResponse</span><span class="p">,</span>
+    <span class="n">ProcessedTask</span><span class="p">,</span>
+    <span class="n">SkippedTask</span><span class="p">,</span>
+    <span class="n">SQSEvent</span><span class="p">,</span>
+    <span class="n">SQSMessage</span><span class="p">,</span>
+    <span class="n">SQSRecord</span><span class="p">,</span>
+    <span class="n">Task</span><span class="p">,</span>
+    <span class="n">TaskRoute</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BackendException</span><span class="p">,</span>
+    <span class="n">DuplicateTaskException</span><span class="p">,</span>
+    <span class="n">EventDecodeException</span><span class="p">,</span>
+    <span class="n">Ignore</span><span class="p">,</span>
+    <span class="n">MessageDecodeException</span><span class="p">,</span>
+    <span class="n">Reject</span><span class="p">,</span>
+    <span class="n">Retry</span><span class="p">,</span>
+    <span class="n">RevokedTaskException</span><span class="p">,</span>
+    <span class="n">RunnerBaseException</span><span class="p">,</span>
+    <span class="n">TaskDecodeException</span><span class="p">,</span>
+    <span class="n">TaskExecutionException</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">trace_id_context</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.messaging</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueueRef</span><span class="p">,</span> <span class="n">delay_message</span><span class="p">,</span> <span class="n">retry_message</span><span class="p">,</span> <span class="n">send</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.models.task_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">reset_runtime</span><span class="p">,</span> <span class="n">set_runtime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">canvas</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.builtin_tasks</span><span class="w"> </span><span class="kn">import</span> <span class="n">BUILTIN_TASKS</span><span class="p">,</span> <span class="n">run_builtin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.lambda_strategy</span><span class="w"> </span><span class="kn">import</span> <span class="n">LambdaFunctionError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.local_strategy</span><span class="w"> </span><span class="kn">import</span> <span class="n">task_options</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.task_executor</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskExecutor</span>
+
+<span class="c1"># Names kept importable from this module (public API used by callers and tests)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"BackendException"</span><span class="p">,</span>
+    <span class="s2">"EventDecodeException"</span><span class="p">,</span>
+    <span class="s2">"MessageDecodeException"</span><span class="p">,</span>
+    <span class="s2">"TaskDecodeException"</span><span class="p">,</span>
+    <span class="s2">"TaskExecutionException"</span><span class="p">,</span>
+    <span class="s2">"TaskRoute"</span><span class="p">,</span>
+    <span class="s2">"call_task"</span><span class="p">,</span>
+    <span class="s2">"lambda_handler"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="call_task">
+<a class="viewcode-back" href="../../../api/runners.html#celery_cloud.runners.aws_lambda.call_task">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">call_task</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">,</span> <span class="n">seconds_left</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Execute a Celery task and return the result.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        task: The task to run.</span>
+<span class="sd">        seconds_left: Seconds before AWS stops the invocation (None = unknown).</span>
+<span class="sd">            The task is stopped before that, with the time limits of the message.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">executor</span> <span class="o">=</span> <span class="n">TaskExecutor</span><span class="p">()</span>
+        <span class="n">route</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="n">BUILTIN_TASKS</span>
+            <span class="k">else</span> <span class="n">TaskRoute</span><span class="o">.</span><span class="n">from_url</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TASKS</span><span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="p">])</span>
+        <span class="p">)</span>
+
+        <span class="c1"># The limits of the message win; the ones of @task(...) are the default</span>
+        <span class="n">soft</span><span class="p">,</span> <span class="n">hard</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">soft_time_limit</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">time_limit</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">task_options</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="k">if</span> <span class="n">route</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">soft</span> <span class="o">=</span> <span class="n">soft</span> <span class="k">if</span> <span class="n">soft</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">options</span><span class="o">.</span><span class="n">soft_time_limit</span>
+            <span class="n">hard</span> <span class="o">=</span> <span class="n">hard</span> <span class="k">if</span> <span class="n">hard</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">options</span><span class="o">.</span><span class="n">time_limit</span>
+        <span class="n">soft</span><span class="p">,</span> <span class="n">hard</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="n">effective_limits</span><span class="p">(</span>
+            <span class="n">soft</span><span class="p">,</span> <span class="n">hard</span><span class="p">,</span> <span class="n">seconds_left</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TIMEOUT_MARGIN_SECONDS</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="n">time_limits</span><span class="p">(</span><span class="n">soft</span><span class="p">,</span> <span class="n">hard</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">route</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">task_result</span> <span class="o">=</span> <span class="n">run_builtin</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">executor</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">task_result</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">route</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Executed task: </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2"> with ID </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">task_result</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="n">Retry</span><span class="p">,</span> <span class="n">Ignore</span><span class="p">,</span> <span class="n">Reject</span><span class="p">):</span>
+        <span class="c1"># Control flow of the task, not errors: the runner handles them</span>
+        <span class="k">raise</span>
+
+    <span class="k">except</span> <span class="n">TaskExecutionException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># Already a domain error with its own message: do not hide it.</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Exception executing task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">TaskExecutionException</span><span class="p">(</span>
+            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Exception executing task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">detail</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">detail</span> <span class="k">else</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Exception executing task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">TaskExecutionException</span><span class="p">(</span>
+            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Exception executing task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_original_error</span><span class="p">(</span><span class="n">error</span><span class="p">:</span> <span class="ne">BaseException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="ne">BaseException</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The error raised by the task itself, under the runner's wrappers."""</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">TaskExecutionException</span><span class="p">)</span> <span class="ow">and</span> <span class="n">error</span><span class="o">.</span><span class="n">__cause__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">__cause__</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">error</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_json_args</span><span class="p">(</span><span class="n">error</span><span class="p">:</span> <span class="ne">BaseException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""``error.args`` as JSON values (Celery rebuilds ``cls(*exc_message)``)."""</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">RunnerBaseException</span><span class="p">):</span>
+        <span class="c1"># (message, detail) is an implementation detail: the text is what matters</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)]</span>
+    <span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">error</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">args</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_lambda_error_payload</span><span class="p">(</span><span class="n">error</span><span class="p">:</span> <span class="n">LambdaFunctionError</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Failure of a remote function, from the error document Lambda returns."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">document</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">detail</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">document</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">document</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"errorType"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"LambdaFunctionError"</span><span class="p">)</span>
+    <span class="n">candidate</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">builtins</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">is_builtin</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="ne">BaseException</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"exc_type"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+        <span class="s2">"exc_message"</span><span class="p">:</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"errorMessage"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="p">)],</span>
+        <span class="s2">"exc_module"</span><span class="p">:</span> <span class="s2">"builtins"</span> <span class="k">if</span> <span class="n">is_builtin</span> <span class="k">else</span> <span class="s2">"remote_lambda"</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_failure_payload</span><span class="p">(</span><span class="n">error</span><span class="p">:</span> <span class="ne">BaseException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Build the ``result`` Celery expects for a task in FAILURE state.</span>
+
+<span class="sd">    It describes the **original** exception, so the client can do</span>
+<span class="sd">    ``except ValueError``: Celery rebuilds the class from ``exc_module`` and</span>
+<span class="sd">    ``exc_type`` (or creates one with that name if it cannot import it).</span>
+<span class="sd">    """</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">_original_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">LambdaFunctionError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_lambda_error_payload</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"exc_type"</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="s2">"exc_message"</span><span class="p">:</span> <span class="n">_json_args</span><span class="p">(</span><span class="n">error</span><span class="p">),</span>
+        <span class="s2">"exc_module"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">),</span> <span class="s2">"celery_module"</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="vm">__module__</span><span class="p">),</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_extended_meta</span><span class="p">(</span><span class="n">record</span><span class="p">:</span> <span class="n">SQSRecord</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Extra meta Celery's ``result_extended`` reads (opt-in: args may be secret)."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESULT_EXTENDED</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"name"</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="p">,</span>
+        <span class="s2">"args"</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+        <span class="s2">"kwargs"</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="s2">"worker"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"AWS_LAMBDA_FUNCTION_NAME"</span><span class="p">,</span> <span class="s2">"celery-cloud"</span><span class="p">),</span>
+        <span class="s2">"retries"</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">retries</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"queue"</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">eventSourceARN</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">":"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_revoked_payload</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Build the ``result`` Celery expects for a REVOKED (expired) task."""</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"exc_type"</span><span class="p">:</span> <span class="s2">"TaskRevokedError"</span><span class="p">,</span>
+        <span class="s2">"exc_message"</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"expired at </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">expires</span><span class="si">}</span><span class="s2">"</span><span class="p">],</span>
+        <span class="s2">"exc_module"</span><span class="p">:</span> <span class="s2">"celery.exceptions"</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_queue</span><span class="p">(</span><span class="n">record</span><span class="p">:</span> <span class="n">SQSRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueueRef</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">QueueRef</span><span class="o">.</span><span class="n">from_arn</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">eventSourceARN</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_meta_kwargs</span><span class="p">(</span><span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""``meta`` keyword for the backend calls, only when there is extended meta."""</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"meta"</span><span class="p">:</span> <span class="n">meta</span><span class="p">}</span> <span class="k">if</span> <span class="n">meta</span> <span class="k">else</span> <span class="p">{}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_record_failure</span><span class="p">(</span>
+    <span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="ne">BaseException</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Store the FAILURE state of a task, never raising.</span>
+
+<span class="sd">    The original error is what matters: if the backend is also down we only</span>
+<span class="sd">    log it, so the caller can still report the task as failed. Nothing is</span>
+<span class="sd">    stored for tasks sent with ``ignore_result``.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">ignore_result</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">TaskModel</span><span class="o">.</span><span class="n">update_task</span><span class="p">(</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">=</span><span class="s2">"FAILURE"</span><span class="p">,</span>
+            <span class="n">result</span><span class="o">=</span><span class="n">_failure_payload</span><span class="p">(</span><span class="n">error</span><span class="p">),</span>
+            <span class="n">traceback</span><span class="o">=</span><span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">),</span> <span class="n">error</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="o">**</span><span class="n">_meta_kwargs</span><span class="p">(</span><span class="n">meta</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">backend_error</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Could not store FAILURE state of task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">backend_error</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_guarded</span><span class="p">(</span><span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">,</span> <span class="n">call</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Run a follow-up step (callbacks, chord...) without ever raising.</span>
+
+<span class="sd">    The task itself already has its final state; a problem sending the next messages</span>
+<span class="sd">    is logged, it must not turn a finished task into a failed one.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">call</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2"> for task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_fail_task</span><span class="p">(</span>
+    <span class="n">record</span><span class="p">:</span> <span class="n">SQSRecord</span><span class="p">,</span>
+    <span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">,</span>
+    <span class="n">error</span><span class="p">:</span> <span class="ne">BaseException</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Store the failure and run the errbacks and the chord accounting."""</span>
+    <span class="n">signals</span><span class="o">.</span><span class="n">task_failure</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+        <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="p">,</span>
+        <span class="n">exception</span><span class="o">=</span><span class="n">_original_error</span><span class="p">(</span><span class="n">error</span><span class="p">),</span>
+        <span class="n">traceback</span><span class="o">=</span><span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">),</span> <span class="n">error</span><span class="p">,</span> <span class="n">error</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">_record_failure</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span>
+    <span class="n">_guarded</span><span class="p">(</span>
+        <span class="s2">"run the error callbacks"</span><span class="p">,</span>
+        <span class="n">task</span><span class="p">,</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="n">canvas</span><span class="o">.</span><span class="n">dispatch_failure</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">_queue</span><span class="p">(</span><span class="n">record</span><span class="p">)),</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Runtime</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""What the running task can reach: custom states and revocation."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="n">task</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span> <span class="o">=</span> <span class="n">meta</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">ignore_result</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">TaskModel</span><span class="o">.</span><span class="n">update_task</span><span class="p">(</span>
+            <span class="n">task_id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">state</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="n">meta</span><span class="p">,</span> <span class="o">**</span><span class="n">_meta_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_revoked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">TaskModel</span><span class="o">.</span><span class="n">is_revoked</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Outcome</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Result of processing one record."""</span>
+
+    <span class="n">result</span><span class="p">:</span> <span class="n">ProcessedTask</span> <span class="o">|</span> <span class="n">FailedTask</span> <span class="o">|</span> <span class="n">SkippedTask</span> <span class="o">|</span> <span class="n">DelayedTask</span>
+    <span class="c1"># True when SQS must deliver the message again (backend failure)</span>
+    <span class="n">retry</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_delay_until_eta</span><span class="p">(</span><span class="n">record</span><span class="p">:</span> <span class="n">SQSRecord</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Outcome</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Hold a task whose ``eta`` is still in the future.</span>
+
+<span class="sd">    SQS can delay a message at most 15 minutes, so the message is sent back to the</span>
+<span class="sd">    queue with the largest delay that does not overshoot, as many times as needed</span>
+<span class="sd">    until the ``eta`` arrives. The task is not registered meanwhile (the client sees</span>
+<span class="sd">    it as pending, as with a Celery worker that has not reached it yet).</span>
+<span class="sd">    """</span>
+    <span class="n">remaining</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">eta_seconds</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">remaining</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">remaining</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">delay</span> <span class="o">=</span> <span class="n">delay_message</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">remaining</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> holds until </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">eta</span><span class="si">}</span><span class="s2">: delayed </span><span class="si">{</span><span class="n">delay</span><span class="si">}</span><span class="s2"> s"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+        <span class="n">DelayedTask</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">delay_seconds</span><span class="o">=</span><span class="n">delay</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_register_task</span><span class="p">(</span>
+    <span class="n">record</span><span class="p">:</span> <span class="n">SQSRecord</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"_Outcome | None"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Store the STARTED state and decide whether the task must be skipped.</span>
+
+<span class="sd">    The write is conditional: a duplicate delivery of the same message is not</span>
+<span class="sd">    executed again, while the message of a retry takes the task over. Nothing is</span>
+<span class="sd">    stored for tasks sent with ``ignore_result``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An ``_Outcome`` with a SkippedTask when the task must not run, None</span>
+<span class="sd">        when it can be executed.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">ignore_result</span><span class="p">:</span>
+        <span class="n">extra</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">_meta_kwargs</span><span class="p">(</span><span class="n">meta</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">retries</span><span class="p">:</span>
+            <span class="n">extra</span><span class="p">[</span><span class="s2">"retries"</span><span class="p">]</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">retries</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">TaskModel</span><span class="o">.</span><span class="n">insert_task</span><span class="p">(</span><span class="n">task_uuid</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DuplicateTaskException</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> already received, skipping"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+                <span class="n">SkippedTask</span><span class="p">(</span>
+                    <span class="n">message_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">,</span>
+                    <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">reason</span><span class="o">=</span><span class="s2">"duplicate message: the task already exists"</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">RevokedTaskException</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> was revoked, skipping"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+                <span class="n">SkippedTask</span><span class="p">(</span>
+                    <span class="n">message_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">,</span>
+                    <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">reason</span><span class="o">=</span><span class="s2">"task revoked"</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="c1"># A task received after its expiration time is not run</span>
+    <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">is_expired</span><span class="p">():</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> expired at </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">expires</span><span class="si">}</span><span class="s2">, skipping"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">ignore_result</span><span class="p">:</span>
+            <span class="n">TaskModel</span><span class="o">.</span><span class="n">update_task</span><span class="p">(</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">status</span><span class="o">=</span><span class="s2">"REVOKED"</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">=</span><span class="n">_revoked_payload</span><span class="p">(</span><span class="n">task</span><span class="p">),</span>
+                <span class="o">**</span><span class="n">_meta_kwargs</span><span class="p">(</span><span class="n">meta</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+            <span class="n">SkippedTask</span><span class="p">(</span>
+                <span class="n">message_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">,</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">"task expired at </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">expires</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_retry_countdown</span><span class="p">(</span><span class="n">retry</span><span class="p">:</span> <span class="n">Retry</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""When the next attempt runs, and how many seconds from now."""</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">retry</span><span class="o">.</span><span class="n">eta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">eta</span> <span class="o">=</span> <span class="n">retry</span><span class="o">.</span><span class="n">eta</span> <span class="k">if</span> <span class="n">retry</span><span class="o">.</span><span class="n">eta</span><span class="o">.</span><span class="n">tzinfo</span> <span class="k">else</span> <span class="n">retry</span><span class="o">.</span><span class="n">eta</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">eta</span> <span class="o">=</span> <span class="n">now</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">retry</span><span class="o">.</span><span class="n">countdown</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">eta</span><span class="p">,</span> <span class="nb">max</span><span class="p">((</span><span class="n">eta</span> <span class="o">-</span> <span class="n">now</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">(),</span> <span class="mf">0.0</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_handle_retry</span><span class="p">(</span>
+    <span class="n">record</span><span class="p">:</span> <span class="n">SQSRecord</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">,</span> <span class="n">retry</span><span class="p">:</span> <span class="n">Retry</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Outcome</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Schedule another attempt: the same message with ``retries + 1`` and an eta."""</span>
+    <span class="n">eta</span><span class="p">,</span> <span class="n">wait</span> <span class="o">=</span> <span class="n">_retry_countdown</span><span class="p">(</span><span class="n">retry</span><span class="p">)</span>
+    <span class="n">next_retries</span> <span class="o">=</span> <span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">retries</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">send</span><span class="p">(</span>
+            <span class="n">_queue</span><span class="p">(</span><span class="n">record</span><span class="p">),</span>
+            <span class="n">retry_message</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">next_retries</span><span class="p">,</span> <span class="n">eta</span><span class="p">),</span>
+            <span class="n">delay_seconds</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">wait</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not schedule the retry of task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">_fail_task</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">retry</span><span class="o">.</span><span class="n">exc</span> <span class="ow">or</span> <span class="n">e</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+            <span class="n">FailedTask</span><span class="p">(</span>
+                <span class="n">message_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">,</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Could not schedule the retry: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">ignore_result</span><span class="p">:</span>
+        <span class="n">reason</span> <span class="o">=</span> <span class="n">retry</span><span class="o">.</span><span class="n">exc</span> <span class="ow">or</span> <span class="n">retry</span>
+        <span class="n">TaskModel</span><span class="o">.</span><span class="n">update_task</span><span class="p">(</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">=</span><span class="s2">"RETRY"</span><span class="p">,</span>
+            <span class="n">result</span><span class="o">=</span><span class="n">_failure_payload</span><span class="p">(</span><span class="n">reason</span><span class="p">),</span>
+            <span class="n">traceback</span><span class="o">=</span><span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">reason</span><span class="p">),</span> <span class="n">reason</span><span class="p">,</span> <span class="n">reason</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="o">**</span><span class="n">_meta_kwargs</span><span class="p">(</span><span class="n">meta</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> will run again (retry </span><span class="si">{</span><span class="n">next_retries</span><span class="si">}</span><span class="s2">) at </span><span class="si">{</span><span class="n">eta</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span><span class="n">ProcessedTask</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">"RETRY"</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_handle_reject</span><span class="p">(</span>
+    <span class="n">record</span><span class="p">:</span> <span class="n">SQSRecord</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">,</span> <span class="n">reject</span><span class="p">:</span> <span class="n">Reject</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Outcome</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The task rejected its message: give it back to SQS, or drop it."""</span>
+    <span class="k">if</span> <span class="n">reject</span><span class="o">.</span><span class="n">requeue</span><span class="p">:</span>
+        <span class="c1"># forget the task so the redelivered message runs it again</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">ignore_result</span><span class="p">:</span>
+            <span class="n">TaskModel</span><span class="o">.</span><span class="n">delete_task</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+            <span class="n">FailedTask</span><span class="p">(</span>
+                <span class="n">message_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">,</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Rejected, requeued: </span><span class="si">{</span><span class="n">reject</span><span class="o">.</span><span class="n">reason</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">retry</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">ignore_result</span><span class="p">:</span>
+        <span class="n">TaskModel</span><span class="o">.</span><span class="n">update_task</span><span class="p">(</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">=</span><span class="s2">"REJECTED"</span><span class="p">,</span>
+            <span class="n">result</span><span class="o">=</span><span class="n">reject</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">_meta_kwargs</span><span class="p">(</span><span class="n">meta</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span><span class="n">ProcessedTask</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">"REJECTED"</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_postrun</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">retval</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">signals</span><span class="o">.</span><span class="n">task_postrun</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+        <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="n">retval</span><span class="o">=</span><span class="n">retval</span><span class="p">,</span>
+        <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_run_task</span><span class="p">(</span>
+    <span class="n">record</span><span class="p">:</span> <span class="n">SQSRecord</span><span class="p">,</span>
+    <span class="n">task</span><span class="p">:</span> <span class="n">Task</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">deadline</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Outcome</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Execute the task and store how it ended."""</span>
+    <span class="n">seconds_left</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">deadline</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+    <span class="n">started</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">set_runtime</span><span class="p">(</span><span class="n">_Runtime</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">meta</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">signals</span><span class="o">.</span><span class="n">task_prerun</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="n">task_result</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">call_task</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">seconds_left</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">Ignore</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> ignored its result"</span><span class="p">)</span>
+        <span class="n">_postrun</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s2">"IGNORED"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span><span class="n">ProcessedTask</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">"IGNORED"</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span>
+    <span class="k">except</span> <span class="n">Reject</span> <span class="k">as</span> <span class="n">reject</span><span class="p">:</span>
+        <span class="n">_postrun</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s2">"REJECTED"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_handle_reject</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">reject</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">Retry</span> <span class="k">as</span> <span class="n">retry</span><span class="p">:</span>
+        <span class="n">signals</span><span class="o">.</span><span class="n">task_retry</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+            <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">retry</span><span class="o">.</span><span class="n">exc</span> <span class="ow">or</span> <span class="n">retry</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="n">retry</span><span class="o">.</span><span class="n">eta</span>
+        <span class="p">)</span>
+        <span class="n">_postrun</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s2">"RETRY"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_handle_retry</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">retry</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">_postrun</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s2">"FAILURE"</span><span class="p">)</span>
+        <span class="k">raise</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">_run_info</span><span class="p">()[</span><span class="s2">"duration"</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">started</span>
+        <span class="n">reset_runtime</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">ignore_result</span><span class="p">:</span>
+        <span class="n">TaskModel</span><span class="o">.</span><span class="n">update_task</span><span class="p">(</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">"SUCCESS"</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="n">task_result</span><span class="p">,</span> <span class="o">**</span><span class="n">_meta_kwargs</span><span class="p">(</span><span class="n">meta</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">signals</span><span class="o">.</span><span class="n">task_success</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="n">task_result</span><span class="p">)</span>
+    <span class="n">_postrun</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s2">"SUCCESS"</span><span class="p">,</span> <span class="n">task_result</span><span class="p">)</span>
+    <span class="n">_guarded</span><span class="p">(</span>
+        <span class="s2">"run the callbacks"</span><span class="p">,</span>
+        <span class="n">task</span><span class="p">,</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="n">canvas</span><span class="o">.</span><span class="n">dispatch_success</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">task_result</span><span class="p">,</span> <span class="n">_queue</span><span class="p">(</span><span class="n">record</span><span class="p">)),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+        <span class="n">ProcessedTask</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">"SUCCESS"</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="n">task_result</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># Per-record scratch data for the metrics (task name, how long it ran)</span>
+<span class="n">_info</span><span class="p">:</span> <span class="n">ContextVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">ContextVar</span><span class="p">(</span><span class="s2">"celery_cloud_info"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_run_info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">_info</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">info</span> <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+
+
+<span class="n">_OUTCOME_METRICS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"SUCCESS"</span><span class="p">:</span> <span class="s2">"TaskSucceeded"</span><span class="p">,</span>
+    <span class="s2">"RETRY"</span><span class="p">:</span> <span class="s2">"TaskRetried"</span><span class="p">,</span>
+    <span class="s2">"IGNORED"</span><span class="p">:</span> <span class="s2">"TaskIgnored"</span><span class="p">,</span>
+    <span class="s2">"REJECTED"</span><span class="p">:</span> <span class="s2">"TaskRejected"</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_emit_metric</span><span class="p">(</span><span class="n">outcome</span><span class="p">:</span> <span class="n">_Outcome</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">outcome</span><span class="o">.</span><span class="n">result</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">ProcessedTask</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">_OUTCOME_METRICS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="s2">"TaskSucceeded"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">FailedTask</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">"TaskFailed"</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">SkippedTask</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">"TaskSkipped"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">"TaskDelayed"</span>
+    <span class="n">metrics</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"task"</span><span class="p">],</span> <span class="n">name</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">"duration"</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_process_record</span><span class="p">(</span><span class="n">record</span><span class="p">:</span> <span class="n">SQSRecord</span><span class="p">,</span> <span class="n">deadline</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Outcome</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Process one SQS record and report metrics. It never raises."""</span>
+    <span class="n">info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"task"</span><span class="p">:</span> <span class="s2">"unknown"</span><span class="p">,</span> <span class="s2">"duration"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">_info</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">outcome</span> <span class="o">=</span> <span class="n">_process_record_inner</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">deadline</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">_info</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+    <span class="n">_guarded_metric</span><span class="p">(</span><span class="n">outcome</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">outcome</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_guarded_metric</span><span class="p">(</span><span class="n">outcome</span><span class="p">:</span> <span class="n">_Outcome</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_emit_metric</span><span class="p">(</span><span class="n">outcome</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># metrics must never break the processing</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not write the metrics: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_process_record_inner</span><span class="p">(</span>
+    <span class="n">record</span><span class="p">:</span> <span class="n">SQSRecord</span><span class="p">,</span> <span class="n">deadline</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Outcome</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Process one SQS record. It never raises.</span>
+
+<span class="sd">    A failing record must not prevent the rest of the batch from being</span>
+<span class="sd">    processed, and must not be silently lost.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        record: The SQS record.</span>
+<span class="sd">        deadline: ``time.monotonic()`` value at which AWS stops the invocation</span>
+<span class="sd">            (None when unknown).</span>
+<span class="sd">    """</span>
+    <span class="n">task</span><span class="p">:</span> <span class="n">Task</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Not enough time left to run anything: hand the message back to SQS</span>
+    <span class="k">if</span> <span class="n">deadline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">settings</span><span class="o">.</span><span class="n">TIMEOUT_MARGIN_SECONDS</span>
+    <span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Not starting message </span><span class="si">{</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="si">}</span><span class="s2">: the Lambda timeout is close"</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+            <span class="n">FailedTask</span><span class="p">(</span>
+                <span class="n">message_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">,</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="s2">"Not started: the Lambda function is about to time out"</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">retry</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 1. Decode message and task</span>
+        <span class="n">sqs_message</span> <span class="o">=</span> <span class="n">SQSMessage</span><span class="o">.</span><span class="n">from_record</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processing message </span><span class="si">{</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="n">task</span> <span class="o">=</span> <span class="n">sqs_message</span><span class="o">.</span><span class="n">get_task</span><span class="p">()</span>
+        <span class="n">_run_info</span><span class="p">()[</span><span class="s2">"task"</span><span class="p">]</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">task</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processing task: </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2"> with ID </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">_extended_meta</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">task</span><span class="p">)</span>
+
+        <span class="c1"># 2. A task with a future eta is held back, not run</span>
+        <span class="n">delayed</span> <span class="o">=</span> <span class="n">_delay_until_eta</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">task</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">delayed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">delayed</span>
+
+        <span class="c1"># 3. Register the task; duplicates, revoked and expired tasks are not run</span>
+        <span class="n">skipped</span> <span class="o">=</span> <span class="n">_register_task</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">skipped</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">skipped</span>
+
+        <span class="c1"># 4. Check if task is supported</span>
+        <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">task</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">TASKS</span> <span class="ow">and</span> <span class="n">task</span><span class="o">.</span><span class="n">task</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">BUILTIN_TASKS</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task '</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2">' not supported"</span><span class="p">)</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task '</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2">' not supported"</span><span class="p">)</span>
+            <span class="n">_fail_task</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+                <span class="n">FailedTask</span><span class="p">(</span>
+                    <span class="n">message_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">,</span>
+                    <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">error</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Task '</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2">' not supported"</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># 5. Run it and store the outcome</span>
+        <span class="k">return</span> <span class="n">_run_task</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">deadline</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">BackendException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># The state could not be stored: report it so the message is retried</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Backend error processing message </span><span class="si">{</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+            <span class="n">FailedTask</span><span class="p">(</span>
+                <span class="n">message_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">,</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">task</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">retry</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">RunnerBaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error processing message </span><span class="si">{</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_fail_task</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+            <span class="n">FailedTask</span><span class="p">(</span>
+                <span class="n">message_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">,</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">task</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unexpected error processing message </span><span class="si">{</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_fail_task</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_Outcome</span><span class="p">(</span>
+            <span class="n">FailedTask</span><span class="p">(</span>
+                <span class="n">message_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">,</span>
+                <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="n">task</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Unexpected error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="n">_init_done</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_init_modules</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Import the ``INIT_MODULES`` once (they register signals and the like)."""</span>
+    <span class="k">global</span> <span class="n">_init_done</span>
+    <span class="k">if</span> <span class="n">_init_done</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">_init_done</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">INIT_MODULES</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Imported init module </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not import init module </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_process_all</span><span class="p">(</span><span class="n">records</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SQSRecord</span><span class="p">],</span> <span class="n">deadline</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">_Outcome</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Process the records one after the other, or in threads (BATCH_CONCURRENCY)."""</span>
+    <span class="n">workers</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BATCH_CONCURRENCY</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">workers</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_process_record</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">deadline</span><span class="p">)</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="c1"># each record runs in a copy of the context (trace id, runtime...)</span>
+        <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                <span class="n">contextvars</span><span class="o">.</span><span class="n">copy_context</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="n">_process_record</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">deadline</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">futures</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="lambda_handler">
+<a class="viewcode-back" href="../../../api/runners.html#celery_cloud.runners.aws_lambda.lambda_handler">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Lambda handler for processing Celery Broker events</span>
+
+<span class="sd">    Every record of the batch is processed independently. Failures are</span>
+<span class="sd">    reported in the response and, when the task state could not be stored in</span>
+<span class="sd">    the backend, in ``batchItemFailures`` so SQS delivers the message again</span>
+<span class="sd">    (requires ``ReportBatchItemFailures`` in the event source mapping).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        event: AWS Lambda event (only SQS is supported by now).</span>
+<span class="sd">        context: AWS Lambda context.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, Any]: A serialized ``LambdaResponse``.</span>
+<span class="sd">    """</span>
+
+    <span class="c1"># Logging: Generate KSUID as trace_id and assign it to the context</span>
+    <span class="n">trace_id_context</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Ksuid</span><span class="p">()))</span>
+
+    <span class="c1"># When AWS stops this invocation (None outside Lambda, e.g. in tests)</span>
+    <span class="n">seconds_left</span> <span class="o">=</span> <span class="n">remaining_seconds</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="n">deadline</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">seconds_left</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">seconds_left</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processing lambda event with context: </span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="c1"># TODO: Only SQS managed by now, add more event types</span>
+        <span class="n">sqs_event</span><span class="p">:</span> <span class="n">SQSEvent</span> <span class="o">=</span> <span class="n">SQSEvent</span><span class="o">.</span><span class="n">from_lambda</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Received </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">sqs_event</span><span class="o">.</span><span class="n">Records</span><span class="p">)</span><span class="si">}</span><span class="s2"> records"</span><span class="p">)</span>
+
+        <span class="n">processed_tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ProcessedTask</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">failed_tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FailedTask</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">skipped_tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SkippedTask</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">delayed_tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DelayedTask</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">retry_items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BatchItemFailure</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">_load_init_modules</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">record</span><span class="p">,</span> <span class="n">outcome</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">sqs_event</span><span class="o">.</span><span class="n">Records</span><span class="p">,</span>
+            <span class="n">_process_all</span><span class="p">(</span><span class="n">sqs_event</span><span class="o">.</span><span class="n">Records</span><span class="p">,</span> <span class="n">deadline</span><span class="p">),</span>
+            <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">):</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outcome</span><span class="o">.</span><span class="n">result</span><span class="p">,</span> <span class="n">ProcessedTask</span><span class="p">):</span>
+                <span class="n">processed_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">outcome</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outcome</span><span class="o">.</span><span class="n">result</span><span class="p">,</span> <span class="n">SkippedTask</span><span class="p">):</span>
+                <span class="n">skipped_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">outcome</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outcome</span><span class="o">.</span><span class="n">result</span><span class="p">,</span> <span class="n">DelayedTask</span><span class="p">):</span>
+                <span class="n">delayed_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">outcome</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">failed_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">outcome</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">outcome</span><span class="o">.</span><span class="n">retry</span><span class="p">:</span>
+                <span class="n">retry_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BatchItemFailure</span><span class="p">(</span><span class="n">itemIdentifier</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">messageId</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">LambdaResponse</span><span class="p">(</span>
+            <span class="n">status</span><span class="o">=</span><span class="s2">"completed"</span><span class="p">,</span>
+            <span class="n">processed_messages</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">processed_tasks</span><span class="p">),</span>
+            <span class="n">failed_messages</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">failed_tasks</span><span class="p">),</span>
+            <span class="n">skipped_messages</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">skipped_tasks</span><span class="p">),</span>
+            <span class="n">delayed_messages</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">delayed_tasks</span><span class="p">)</span> <span class="k">if</span> <span class="n">delayed_tasks</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">delayed_tasks</span><span class="o">=</span><span class="n">delayed_tasks</span> <span class="k">if</span> <span class="n">delayed_tasks</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">skipped_tasks</span><span class="o">=</span><span class="n">skipped_tasks</span> <span class="k">if</span> <span class="n">skipped_tasks</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">processed_tasks</span><span class="o">=</span><span class="n">processed_tasks</span> <span class="k">if</span> <span class="n">processed_tasks</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">failed_tasks</span><span class="o">=</span><span class="n">failed_tasks</span> <span class="k">if</span> <span class="n">failed_tasks</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">batchItemFailures</span><span class="o">=</span><span class="n">retry_items</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="n">EventDecodeException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">LambdaResponse</span><span class="p">(</span>
+            <span class="n">status</span><span class="o">=</span><span class="s2">"error"</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+            <span class="n">details</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">detail</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">"Unexpected error in lambda handler"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">LambdaResponse</span><span class="p">(</span>
+            <span class="n">status</span><span class="o">=</span><span class="s2">"error"</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">"General error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">details</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="c1"># Clear context before finishing the function</span>
+        <span class="n">trace_id_context</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

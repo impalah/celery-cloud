@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client: errors, timeouts and states &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/user-guide/client-errors.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Client: structured data" href="client-structured.html" />
+    <link rel="prev" title="Client: sending a task" href="client-basic.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user-guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="server-local-tasks.html">Server: local tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-task-api.html">Server: the Celery-like task API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-remote-lambda.html">Server: remote Lambda tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-local-debugging.html">Server: debugging locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-basic.html">Client: sending a task</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Client: errors, timeouts and states</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#failures">Failures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#always-use-a-timeout">Always use a timeout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#state-reference">State reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#time-limits">Time limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#retrying-from-the-client">Retrying from the client</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="client-structured.html">Client: structured data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-retries-progress.html">Client: retries, progress and delayed tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-canvas.html">Client: workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-revoke.html">Client: revoking tasks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user-guide.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Client: errors, timeouts and states</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/client-errors.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="client-errors-timeouts-and-states">
+<h1>Client: errors, timeouts and states<a class="headerlink" href="#client-errors-timeouts-and-states" title="Link to this heading"></a></h1>
+<p>A task can fail, and the runner can disappear. The client has to cope with both.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">errors.py</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Handle failing tasks and tasks that take too long."""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="ne">TimeoutError</span> <span class="k">as</span> <span class="n">CeleryTimeoutError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_app</span><span class="w"> </span><span class="kn">import</span> <span class="n">divide</span><span class="p">,</span> <span class="n">subtract</span>
+
+<span class="c1"># 1. A task that raises: get() re-raises an exception with the original message</span>
+<span class="n">failing</span> <span class="o">=</span> <span class="n">subtract</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,))</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">failing</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>  <span class="c1"># the ORIGINAL exception type reaches the client</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task failed: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>  <span class="c1"># subtract needs at least 2 values</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"State: </span><span class="si">{</span><span class="n">failing</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>  <span class="c1"># FAILURE</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">failing</span><span class="o">.</span><span class="n">traceback</span><span class="p">)</span>  <span class="c1"># traceback captured on the runner</span>
+
+<span class="c1"># 2. Check the outcome without raising</span>
+<span class="n">other</span> <span class="o">=</span> <span class="n">divide</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">other</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">propagate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">failed</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"divide failed: </span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">result</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># 3. Poll with your own deadline instead of blocking</span>
+<span class="n">pending</span> <span class="o">=</span> <span class="n">divide</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="mi">30</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="n">pending</span><span class="o">.</span><span class="n">ready</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">deadline</span><span class="p">:</span>
+        <span class="c1"># The runner may be down: revoke() would do nothing, so give up locally</span>
+        <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task </span><span class="si">{</span><span class="n">pending</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> not finished (state </span><span class="si">{</span><span class="n">pending</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pending</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">pending</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"divide result: </span><span class="si">{</span><span class="n">pending</span><span class="o">.</span><span class="n">get</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>  <span class="c1"># 2.5</span>
+
+<span class="c1"># 4. get(timeout=...) raises celery.exceptions.TimeoutError when nothing arrives</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">divide</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">CeleryTimeoutError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Still running after the timeout"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="failures">
+<h2>Failures<a class="headerlink" href="#failures" title="Link to this heading"></a></h2>
+<p>When the task raises, or its name is not in <code class="docutils literal notranslate"><span class="pre">TASKS</span></code>, the runner stores <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code>
+with the exception in Celery’s format. On the client:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">result.get()</span></code> raises <strong>the original exception</strong> with its arguments: the task
+raised <code class="docutils literal notranslate"><span class="pre">ValueError(&quot;subtract</span> <span class="pre">needs</span> <span class="pre">at</span> <span class="pre">least</span> <span class="pre">2</span> <span class="pre">values&quot;)</span></code> and the client can
+<code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">ValueError</span></code>. An exception class that the client cannot import is
+recreated with the same name and arguments, so <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span></code> and the
+message always work.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result.traceback</span></code> is the traceback captured <strong>on the runner</strong>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result.failed()</span></code> / <code class="docutils literal notranslate"><span class="pre">result.state</span> <span class="pre">==</span> <span class="pre">&quot;FAILURE&quot;</span></code> let you check without
+raising; <code class="docutils literal notranslate"><span class="pre">result.wait(propagate=False)</span></code> returns the error instead of raising.</p></li>
+</ul>
+</section>
+<section id="always-use-a-timeout">
+<h2>Always use a timeout<a class="headerlink" href="#always-use-a-timeout" title="Link to this heading"></a></h2>
+<p>A task that is too slow is stopped by the runner (see <a class="reference internal" href="../concepts.html#execution-time-limit"><span class="std std-ref">Execution time limit</span></a>) and
+ends as <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code>. If the runner <strong>dies</strong> in the middle of a task (out of memory,
+a crash), the item stays in <code class="docutils literal notranslate"><span class="pre">STARTED</span></code> and SQS’
+redelivery is discarded as a duplicate (see <a class="reference internal" href="../concepts.html"><span class="doc">Concepts and behaviour</span></a>). <code class="docutils literal notranslate"><span class="pre">result.get()</span></code>
+without <code class="docutils literal notranslate"><span class="pre">timeout</span></code> would wait forever. Use <code class="docutils literal notranslate"><span class="pre">get(timeout=...)</span></code> or poll with your
+own deadline, as in the example.</p>
+<p><code class="docutils literal notranslate"><span class="pre">result.revoke()</span></code> is accepted but does nothing: the runner implements no remote
+control. To stop waiting, give up on the client side.</p>
+</section>
+<section id="state-reference">
+<h2>State reference<a class="headerlink" href="#state-reference" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">result.state</span></code></p></th>
+<th class="head"><p>What it means for the client</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PENDING</span></code></p></td>
+<td><p>No item yet: the message is queued, the runner has not received it, or the
+task id is unknown. Celery cannot tell these apart.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">STARTED</span></code></p></td>
+<td><p>The runner is executing it (or died while executing it).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SUCCESS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">result.result</span></code> holds the value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FAILURE</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">result.result</span></code> is the exception, <code class="docutils literal notranslate"><span class="pre">result.traceback</span></code> the traceback.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">REVOKED</span></code></p></td>
+<td><p>The task expired before it ran (<code class="docutils literal notranslate"><span class="pre">expires</span></code>).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="time-limits">
+<h2>Time limits<a class="headerlink" href="#time-limits" title="Link to this heading"></a></h2>
+<p>Ask for limits per call with Celery’s options; the runner interrupts the task and the
+client receives the Celery exceptions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">celery.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SoftTimeLimitExceeded</span><span class="p">,</span> <span class="n">TimeLimitExceeded</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">divide</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">soft_time_limit</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">time_limit</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">SoftTimeLimitExceeded</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"the task ran longer than 30 s"</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">TimeLimitExceeded</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"the task was stopped after 60 s"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="retrying-from-the-client">
+<h2>Retrying from the client<a class="headerlink" href="#retrying-from-the-client" title="Link to this heading"></a></h2>
+<p>The runner does not retry a failed task, and <code class="docutils literal notranslate"><span class="pre">max_retries</span></code> / <code class="docutils literal notranslate"><span class="pre">self.retry()</span></code> of
+Celery tasks do not apply because the body never runs on the client. If a task is
+safe to repeat, retry it from the application:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">divide</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">outcome</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">propagate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">failed</span><span class="p">():</span>
+        <span class="k">break</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"divide kept failing: </span><span class="si">{</span><span class="n">outcome</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Each attempt has a new task id, so the duplicate protection does not interfere.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="client-basic.html" class="btn btn-neutral float-left" title="Client: sending a task" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="client-structured.html" class="btn btn-neutral float-right" title="Client: structured data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

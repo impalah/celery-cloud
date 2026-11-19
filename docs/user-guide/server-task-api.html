@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Server: the Celery-like task API &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/user-guide/server-task-api.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Server: remote Lambda tasks" href="server-remote-lambda.html" />
+    <link rel="prev" title="Server: local tasks" href="server-local-tasks.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user-guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="server-local-tasks.html">Server: local tasks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Server: the Celery-like task API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-decorator">The decorator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-context-self">The context (<code class="docutils literal notranslate"><span class="pre">self</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ending-a-task-in-other-ways">Ending a task in other ways</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#time-limits">Time limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hooks">Hooks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#signals">Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metrics">Metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="server-remote-lambda.html">Server: remote Lambda tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-local-debugging.html">Server: debugging locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-basic.html">Client: sending a task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-errors.html">Client: errors, timeouts and states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-structured.html">Client: structured data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-retries-progress.html">Client: retries, progress and delayed tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-canvas.html">Client: workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-revoke.html">Client: revoking tasks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user-guide.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Server: the Celery-like task API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/server-task-api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="server-the-celery-like-task-api">
+<h1>Server: the Celery-like task API<a class="headerlink" href="#server-the-celery-like-task-api" title="Link to this heading"></a></h1>
+<p>A function decorated with <code class="docutils literal notranslate"><span class="pre">&#64;celery_cloud.task</span></code> is a <em>Celery-like</em> task. It keeps working
+side by side with the plain <code class="docutils literal notranslate"><span class="pre">f(args,</span> <span class="pre">kwargs)</span></code> functions of
+<a class="reference internal" href="server-local-tasks.html"><span class="doc">Server: local tasks</span></a>: the decorator is what switches the convention.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 35.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Plain function</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">&#64;task</span></code> function</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Signature</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">f(args,</span> <span class="pre">kwargs)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">y=0)</span></code>, the natural arguments (<code class="docutils literal notranslate"><span class="pre">f(self,</span> <span class="pre">x,</span> <span class="pre">y=0)</span></code> with <code class="docutils literal notranslate"><span class="pre">bind=True</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Retries, progress, revocation</p></td>
+<td><p>no</p></td>
+<td><p>yes (<code class="docutils literal notranslate"><span class="pre">self.retry</span></code>, <code class="docutils literal notranslate"><span class="pre">self.update_state</span></code>, <code class="docutils literal notranslate"><span class="pre">self.is_revoked</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>Options</p></td>
+<td><p>none</p></td>
+<td><p>retries, backoff, time limits, hooks</p></td>
+</tr>
+</tbody>
+</table>
+<p>The route in <code class="docutils literal notranslate"><span class="pre">TASKS</span></code> is the same: <code class="docutils literal notranslate"><span class="pre">task://jobs/fetch</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">jobs.py</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Tasks written with the Celery-like API (``@task``).</span>
+
+<span class="sd">Unlike the plain ``f(args, kwargs)`` functions of ``calculator.py``, a decorated task</span>
+<span class="sd">is called with its natural arguments and can be *bound*: ``self`` gives access to the</span>
+<span class="sd">request, ``retry()``, ``update_state()`` and ``is_revoked()``.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud</span><span class="w"> </span><span class="kn">import</span> <span class="n">SoftTimeLimitExceeded</span><span class="p">,</span> <span class="n">task</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+
+
+<span class="nd">@task</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">default_retry_delay</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Pretend to download a page; ``flaky`` URLs fail twice before working."""</span>
+    <span class="k">if</span> <span class="s2">"flaky"</span> <span class="ow">in</span> <span class="n">url</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">retries</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># a retry: the runner sends the same task again after 5 seconds</span>
+        <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">retry</span><span class="p">(</span><span class="n">exc</span><span class="o">=</span><span class="ne">ConnectionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"cannot reach </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">"</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"url"</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span>
+        <span class="s2">"attempts"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">retries</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"bytes"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="nd">@task</span><span class="p">(</span>
+    <span class="n">autoretry_for</span><span class="o">=</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,),</span>  <span class="c1"># retry without writing try/except</span>
+    <span class="n">retry_backoff</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># 1 s, 2 s, 4 s... (with jitter), at most...</span>
+    <span class="n">retry_backoff_max</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>  <span class="c1"># ...60 s between attempts</span>
+    <span class="n">max_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sync_account</span><span class="p">(</span><span class="n">account_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">attempts_needed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A call that raises ``ConnectionError`` until it is retried enough times."""</span>
+    <span class="k">if</span> <span class="n">sync_account</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">account_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">attempts_needed</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">sync_account</span><span class="o">.</span><span class="n">calls</span><span class="p">[</span><span class="n">account_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">sync_account</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">account_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s2">"the service is down"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"account </span><span class="si">{</span><span class="n">account_id</span><span class="si">}</span><span class="s2"> synchronised"</span>
+
+
+<span class="n">sync_account</span><span class="o">.</span><span class="n">calls</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: ignore[attr-defined]</span>
+
+
+<span class="nd">@task</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">import_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Report progress while working: the client reads it with ``result.info``."""</span>
+    <span class="k">for</span> <span class="n">done</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>  <span class="c1"># the real work for one row</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s2">"PROGRESS"</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="p">{</span><span class="s2">"done"</span><span class="p">:</span> <span class="n">done</span><span class="p">,</span> <span class="s2">"of"</span><span class="p">:</span> <span class="n">rows</span><span class="p">})</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"imported"</span><span class="p">:</span> <span class="n">rows</span><span class="p">}</span>
+
+
+<span class="nd">@task</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">soft_time_limit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">export_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Stopped by the soft time limit; it can still return something useful."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span>  <span class="c1"># the real work</span>
+        <span class="k">return</span> <span class="s2">"complete report"</span>
+    <span class="k">except</span> <span class="n">SoftTimeLimitExceeded</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"report </span><span class="si">{}</span><span class="s2"> ran out of time"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">"partial report (stopped by the soft time limit)"</span>
+
+
+<span class="nd">@task</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">long_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Cooperative cancellation: look at ``is_revoked()`` between the steps."""</span>
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_revoked</span><span class="p">():</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"stopped after </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2"> steps because it was revoked"</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># the real work of one step</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"finished all </span><span class="si">{</span><span class="n">steps</span><span class="si">}</span><span class="s2"> steps"</span>
+</pre></div>
+</div>
+</div>
+<section id="the-decorator">
+<h2>The decorator<a class="headerlink" href="#the-decorator" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud</span><span class="w"> </span><span class="kn">import</span> <span class="n">task</span>
+
+<span class="nd">@task</span>                                     <span class="c1"># natural arguments</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span> <span class="o">...</span>
+
+<span class="nd">@task</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>           <span class="c1"># bind=True: the first parameter is the context</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>The functions stay directly callable, which makes them easy to unit test (for a bound
+task pass any object as <code class="docutils literal notranslate"><span class="pre">self</span></code>).</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 28.0%" />
+<col style="width: 14.0%" />
+<col style="width: 58.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bind</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p>The first parameter is a <code class="docutils literal notranslate"><span class="pre">TaskContext</span></code> (<code class="docutils literal notranslate"><span class="pre">self</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_retries</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">3</span></code></p></td>
+<td><p>Retries before the task fails (<code class="docutils literal notranslate"><span class="pre">None</span></code> = forever)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">default_retry_delay</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">180</span></code></p></td>
+<td><p>Seconds before a retry that does not say otherwise</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">autoretry_for</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">()</span></code></p></td>
+<td><p>Exception classes that are retried automatically</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">retry_backoff</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code> or a number: exponential delay <code class="docutils literal notranslate"><span class="pre">factor</span> <span class="pre">*</span> <span class="pre">2**retries</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">retry_backoff_max</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">600</span></code></p></td>
+<td><p>Largest backoff, in seconds</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">retry_jitter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>Pick a random delay between 0 and the backoff</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">soft_time_limit</span></code>, <code class="docutils literal notranslate"><span class="pre">time_limit</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Limits in seconds; a limit sent by the client wins</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">on_success</span></code>, <code class="docutils literal notranslate"><span class="pre">on_failure</span></code>, <code class="docutils literal notranslate"><span class="pre">on_retry</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Functions called at the end (see below)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-context-self">
+<h2>The context (<code class="docutils literal notranslate"><span class="pre">self</span></code>)<a class="headerlink" href="#the-context-self" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">self.request</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">task</span></code>, <code class="docutils literal notranslate"><span class="pre">args</span></code>, <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>, <code class="docutils literal notranslate"><span class="pre">retries</span></code>, <code class="docutils literal notranslate"><span class="pre">eta</span></code>, <code class="docutils literal notranslate"><span class="pre">expires</span></code>,
+<code class="docutils literal notranslate"><span class="pre">parent_id</span></code>, <code class="docutils literal notranslate"><span class="pre">root_id</span></code>, <code class="docutils literal notranslate"><span class="pre">group</span></code>, <code class="docutils literal notranslate"><span class="pre">hostname</span></code>, <code class="docutils literal notranslate"><span class="pre">delivery_info</span></code> and the canvas
+fields.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">self.retry(exc=None,</span> <span class="pre">countdown=None,</span> <span class="pre">eta=None,</span> <span class="pre">max_retries=None)</span></code></dt><dd><p>Run the task again later. Without <code class="docutils literal notranslate"><span class="pre">countdown</span></code> or <code class="docutils literal notranslate"><span class="pre">eta</span></code> the delay is
+<code class="docutils literal notranslate"><span class="pre">default_retry_delay</span></code>. When the retries run out it raises <code class="docutils literal notranslate"><span class="pre">exc</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">MaxRetriesExceededError</span></code> if there is none). See <a class="reference internal" href="../concepts.html#retries"><span class="std std-ref">Retries</span></a>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">self.update_state(state=...,</span> <span class="pre">meta=...)</span></code></dt><dd><p>Store a custom state, e.g. <code class="docutils literal notranslate"><span class="pre">PROGRESS</span></code>. The client reads it with <code class="docutils literal notranslate"><span class="pre">result.state</span></code>
+and <code class="docutils literal notranslate"><span class="pre">result.info</span></code>. Nothing is stored for tasks sent with <code class="docutils literal notranslate"><span class="pre">ignore_result</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">self.is_revoked()</span></code></dt><dd><p>True when the client revoked the task: use it between the steps of a long job.</p>
+</dd>
+</dl>
+</section>
+<section id="ending-a-task-in-other-ways">
+<h2>Ending a task in other ways<a class="headerlink" href="#ending-a-task-in-other-ways" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ignore</span><span class="p">,</span> <span class="n">Reject</span>
+
+<span class="k">raise</span> <span class="n">Ignore</span><span class="p">()</span>                      <span class="c1"># end without touching the state (set it yourself first)</span>
+<span class="k">raise</span> <span class="n">Reject</span><span class="p">(</span><span class="s2">"busy"</span><span class="p">,</span> <span class="n">requeue</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># give the message back to SQS, the task runs again later</span>
+<span class="k">raise</span> <span class="n">Reject</span><span class="p">(</span><span class="s2">"not for me"</span><span class="p">)</span>          <span class="c1"># drop the message, state REJECTED</span>
+</pre></div>
+</div>
+</section>
+<section id="time-limits">
+<h2>Time limits<a class="headerlink" href="#time-limits" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">soft_time_limit</span></code> raises <code class="docutils literal notranslate"><span class="pre">SoftTimeLimitExceeded</span></code> inside the task, which can catch it
+and return something (see <code class="docutils literal notranslate"><span class="pre">export_report</span></code> above); <code class="docutils literal notranslate"><span class="pre">time_limit</span></code> raises
+<code class="docutils literal notranslate"><span class="pre">TimeLimitExceeded</span></code>. The limits of the client’s <code class="docutils literal notranslate"><span class="pre">apply_async</span></code> win over the decorator’s.
+See <a class="reference internal" href="../concepts.html#execution-time-limit"><span class="std std-ref">Execution time limit</span></a> for how they interact with the Lambda timeout.</p>
+</section>
+<section id="hooks">
+<h2>Hooks<a class="headerlink" href="#hooks" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_failure</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+    <span class="n">alert</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">exc</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="nd">@task</span><span class="p">(</span><span class="n">on_failure</span><span class="o">=</span><span class="n">on_failure</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">charge</span><span class="p">(</span><span class="n">order_id</span><span class="p">):</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">on_success(retval,</span> <span class="pre">task_id,</span> <span class="pre">args,</span> <span class="pre">kwargs)</span></code>, <code class="docutils literal notranslate"><span class="pre">on_failure(exc,</span> <span class="pre">task_id,</span> <span class="pre">args,</span> <span class="pre">kwargs,</span>
+<span class="pre">traceback)</span></code> and <code class="docutils literal notranslate"><span class="pre">on_retry(exc,</span> <span class="pre">task_id,</span> <span class="pre">args,</span> <span class="pre">kwargs,</span> <span class="pre">traceback)</span></code> have the arguments
+of the Celery <code class="docutils literal notranslate"><span class="pre">Task</span></code> methods of the same name. A hook that raises is logged and
+ignored.</p>
+</section>
+<section id="signals">
+<h2>Signals<a class="headerlink" href="#signals" title="Link to this heading"></a></h2>
+<p>For hooks that apply to <em>every</em> task use <code class="docutils literal notranslate"><span class="pre">celery_cloud.signals</span></code> (<code class="docutils literal notranslate"><span class="pre">task_prerun</span></code>,
+<code class="docutils literal notranslate"><span class="pre">task_postrun</span></code>, <code class="docutils literal notranslate"><span class="pre">task_success</span></code>, <code class="docutils literal notranslate"><span class="pre">task_failure</span></code> and <code class="docutils literal notranslate"><span class="pre">task_retry</span></code>). Connect the
+receivers in a module and list it in <code class="docutils literal notranslate"><span class="pre">INIT_MODULES</span></code> so it is imported when the
+function starts:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">signals_setup.py (<code class="docutils literal notranslate"><span class="pre">INIT_MODULES=signals_setup</span></code>)</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Signal receivers, loaded once when the function starts.</span>
+
+<span class="sd">Put the module in the ``INIT_MODULES`` setting (``INIT_MODULES=signals_setup``) so the</span>
+<span class="sd">receivers are connected before the first task runs.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.signals</span><span class="w"> </span><span class="kn">import</span> <span class="n">task_failure</span><span class="p">,</span> <span class="n">task_postrun</span><span class="p">,</span> <span class="n">task_prerun</span>
+
+<span class="n">_started</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<span class="nd">@task_prerun</span><span class="o">.</span><span class="n">connect</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">remember_start</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">_started</span><span class="p">[</span><span class="n">task_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+
+
+<span class="nd">@task_postrun</span><span class="o">.</span><span class="n">connect</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_duration</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">seconds</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">_started</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">())</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2"> [</span><span class="si">{}</span><span class="s2">] </span><span class="si">{}</span><span class="s2"> in </span><span class="si">{:.2f}</span><span class="s2"> s"</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">seconds</span><span class="p">)</span>
+
+
+<span class="nd">@task_failure</span><span class="o">.</span><span class="n">connect</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">alert</span><span class="p">(</span><span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># send it to your alerting system here</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"</span><span class="si">{}</span><span class="s2"> [</span><span class="si">{}</span><span class="s2">] failed: </span><span class="si">{!r}</span><span class="s2">"</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">exception</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Receivers are called with keyword arguments: declare <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>. One that raises is
+logged and does not affect the task. The arguments of each signal are in
+<a class="reference internal" href="../api/signals.html#module-celery_cloud.signals" title="celery_cloud.signals"><code class="xref py py-mod docutils literal notranslate"><span class="pre">celery_cloud.signals</span></code></a>.</p>
+</section>
+<section id="metrics">
+<h2>Metrics<a class="headerlink" href="#metrics" title="Link to this heading"></a></h2>
+<p>With <code class="docutils literal notranslate"><span class="pre">METRICS_ENABLED=true</span></code> the runner writes CloudWatch metrics through the Embedded
+Metric Format, with the task name as dimension: <code class="docutils literal notranslate"><span class="pre">TaskSucceeded</span></code>, <code class="docutils literal notranslate"><span class="pre">TaskFailed</span></code>,
+<code class="docutils literal notranslate"><span class="pre">TaskRetried</span></code>, <code class="docutils literal notranslate"><span class="pre">TaskSkipped</span></code>, <code class="docutils literal notranslate"><span class="pre">TaskDelayed</span></code>, <code class="docutils literal notranslate"><span class="pre">TaskIgnored</span></code>, <code class="docutils literal notranslate"><span class="pre">TaskRejected</span></code> and
+<code class="docutils literal notranslate"><span class="pre">TaskDuration</span></code> (milliseconds). They need no extra IAM permission.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="server-local-tasks.html" class="btn btn-neutral float-left" title="Server: local tasks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="server-remote-lambda.html" class="btn btn-neutral float-right" title="Server: remote Lambda tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

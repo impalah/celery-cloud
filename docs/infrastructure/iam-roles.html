@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IAM roles and permissions &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/infrastructure/iam-roles.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Runner image (ECR)" href="runner-image.html" />
+    <link rel="prev" title="DynamoDB table" href="dynamodb-table.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../infrastructure.html">Infrastructure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sqs-queue.html">SQS queue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamodb-table.html">DynamoDB table</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">IAM roles and permissions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#runner-execution-role">Runner execution role</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-the-role">Create the role</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#client-permissions">Client permissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#least-privilege">Least privilege</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="runner-image.html">Runner image (ECR)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lambda-function.html">Lambda function and event source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="terraform.html">Terraform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="periodic-tasks.html">Periodic tasks (replacing celery beat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queues-and-priorities.html">Several queues, priorities and rate limits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operations.html">Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure.html#conventions-of-the-guides">Conventions of the guides</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../infrastructure.html">Infrastructure</a></li>
+      <li class="breadcrumb-item active">IAM roles and permissions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/infrastructure/iam-roles.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="iam-roles-and-permissions">
+<h1>IAM roles and permissions<a class="headerlink" href="#iam-roles-and-permissions" title="Link to this heading"></a></h1>
+<p>Two identities need permissions: the <strong>runner</strong> (its Lambda execution role) and the
+<strong>client</strong> (whatever identity your application runs as).</p>
+<section id="runner-execution-role">
+<h2>Runner execution role<a class="headerlink" href="#runner-execution-role" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 38.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Service</p></th>
+<th class="head"><p>Actions</p></th>
+<th class="head"><p>Why</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SQS (the queue)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sqs:ReceiveMessage</span></code>, <code class="docutils literal notranslate"><span class="pre">sqs:DeleteMessage</span></code>, <code class="docutils literal notranslate"><span class="pre">sqs:GetQueueAttributes</span></code></p></td>
+<td><p>Read the messages. The managed policy <code class="docutils literal notranslate"><span class="pre">AWSLambdaSQSQueueExecutionRole</span></code>
+includes them, and CloudWatch Logs.</p></td>
+</tr>
+<tr class="row-odd"><td><p>SQS (the queue)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sqs:SendMessage</span></code></p></td>
+<td><p>Hold a task until its <code class="docutils literal notranslate"><span class="pre">eta</span></code>, retries, and the next tasks of a workflow
+(callbacks, chains, chords). Needed on the queue of the event source mapping and
+on any queue named in <code class="docutils literal notranslate"><span class="pre">options.queue</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>DynamoDB (the table)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dynamodb:PutItem</span></code>, <code class="docutils literal notranslate"><span class="pre">dynamodb:GetItem</span></code>, <code class="docutils literal notranslate"><span class="pre">dynamodb:UpdateItem</span></code>,
+<code class="docutils literal notranslate"><span class="pre">dynamodb:DeleteItem</span></code></p></td>
+<td><p>Register the task and store its state and result. <code class="docutils literal notranslate"><span class="pre">DeleteItem</span></code>: forget a task
+rejected with <code class="docutils literal notranslate"><span class="pre">requeue</span></code> and clean up finished chords</p></td>
+</tr>
+<tr class="row-odd"><td><p>Lambda (each remote function)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lambda:InvokeFunction</span></code></p></td>
+<td><p>Only for <code class="docutils literal notranslate"><span class="pre">lambda://</span></code> tasks</p></td>
+</tr>
+</tbody>
+</table>
+<section id="create-the-role">
+<h3>Create the role<a class="headerlink" href="#create-the-role" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>&gt;<span class="w"> </span>trust-policy.json<span class="w"> </span><span class="s">&lt;&lt;'JSON'</span>
+<span class="s">{</span>
+<span class="s">  "Version": "2012-10-17",</span>
+<span class="s">  "Statement": [{</span>
+<span class="s">    "Effect": "Allow",</span>
+<span class="s">    "Principal": {"Service": "lambda.amazonaws.com"},</span>
+<span class="s">    "Action": "sts:AssumeRole"</span>
+<span class="s">  }]</span>
+<span class="s">}</span>
+<span class="s">JSON</span>
+
+aws<span class="w"> </span>iam<span class="w"> </span>create-role<span class="w"> </span>--role-name<span class="w"> </span><span class="nv">$FUNCTION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--assume-role-policy-document<span class="w"> </span>file://trust-policy.json
+
+aws<span class="w"> </span>iam<span class="w"> </span>attach-role-policy<span class="w"> </span>--role-name<span class="w"> </span><span class="nv">$FUNCTION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--policy-arn<span class="w"> </span>arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
+</pre></div>
+</div>
+<p>Add the table (and, if you use remote tasks, the functions) as an inline policy:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>&gt;<span class="w"> </span>runner-policy.json<span class="w"> </span><span class="s">&lt;&lt;JSON</span>
+<span class="s">{</span>
+<span class="s">  "Version": "2012-10-17",</span>
+<span class="s">  "Statement": [</span>
+<span class="s">    {</span>
+<span class="s">      "Effect": "Allow",</span>
+<span class="s">      "Action": [</span>
+<span class="s">        "dynamodb:PutItem", "dynamodb:GetItem",</span>
+<span class="s">        "dynamodb:UpdateItem", "dynamodb:DeleteItem"</span>
+<span class="s">      ],</span>
+<span class="s">      "Resource": "arn:aws:dynamodb:$AWS_REGION:$ACCOUNT_ID:table/$TABLE"</span>
+<span class="s">    },</span>
+<span class="s">    {</span>
+<span class="s">      "Effect": "Allow",</span>
+<span class="s">      "Action": "sqs:SendMessage",</span>
+<span class="s">      "Resource": "$QUEUE_ARN"</span>
+<span class="s">    },</span>
+<span class="s">    {</span>
+<span class="s">      "Effect": "Allow",</span>
+<span class="s">      "Action": "lambda:InvokeFunction",</span>
+<span class="s">      "Resource": "arn:aws:lambda:$AWS_REGION:$ACCOUNT_ID:function:remote-sum"</span>
+<span class="s">    }</span>
+<span class="s">  ]</span>
+<span class="s">}</span>
+<span class="s">JSON</span>
+
+aws<span class="w"> </span>iam<span class="w"> </span>put-role-policy<span class="w"> </span>--role-name<span class="w"> </span><span class="nv">$FUNCTION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--policy-name<span class="w"> </span>runner-access<span class="w"> </span>--policy-document<span class="w"> </span>file://runner-policy.json
+</pre></div>
+</div>
+<p>Drop the second statement if you only use local tasks. If your <strong>local tasks</strong>
+call other AWS services (S3, Secrets Manager…), add their permissions here too:
+they run with the runner’s role.</p>
+</section>
+</section>
+<section id="client-permissions">
+<h2>Client permissions<a class="headerlink" href="#client-permissions" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 38.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Service</p></th>
+<th class="head"><p>Actions</p></th>
+<th class="head"><p>Why</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SQS (the queue)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sqs:SendMessage</span></code></p></td>
+<td><p>Send tasks</p></td>
+</tr>
+<tr class="row-odd"><td><p>DynamoDB (the table)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dynamodb:GetItem</span></code>, <code class="docutils literal notranslate"><span class="pre">dynamodb:DescribeTable</span></code></p></td>
+<td><p>Read results. Celery’s DynamoDB backend checks the table when it starts.</p></td>
+</tr>
+</tbody>
+</table>
+<p>If the client also uses <code class="docutils literal notranslate"><span class="pre">celery_cloud.client.install</span></code> to revoke tasks
+(<a class="reference internal" href="../user-guide/client-revoke.html"><span class="doc">Client: revoking tasks</span></a>), it needs <code class="docutils literal notranslate"><span class="pre">dynamodb:PutItem</span></code> and
+<code class="docutils literal notranslate"><span class="pre">dynamodb:UpdateItem</span></code> on the table.</p>
+<p>If you add <code class="docutils literal notranslate"><span class="pre">?ttl_seconds=...</span></code> to the <code class="docutils literal notranslate"><span class="pre">result_backend</span></code> URL, Celery also checks
+and configures the table’s TTL, which needs <code class="docutils literal notranslate"><span class="pre">dynamodb:DescribeTimeToLive</span></code> and
+<code class="docutils literal notranslate"><span class="pre">dynamodb:UpdateTimeToLive</span></code>.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"Version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2012-10-17"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"Statement"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"Action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sqs:SendMessage"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"arn:aws:sqs:eu-central-1:123456789012:lambda-runner-queue"</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"Action"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"dynamodb:GetItem"</span><span class="p">,</span><span class="w"> </span><span class="s2">"dynamodb:DescribeTable"</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"arn:aws:dynamodb:eu-central-1:123456789012:table/lambda-runner-tasks"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="least-privilege">
+<h2>Least privilege<a class="headerlink" href="#least-privilege" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Scope every <code class="docutils literal notranslate"><span class="pre">Resource</span></code> to the exact ARN, as above.</p></li>
+<li><p>Keep the client and the runner on <strong>different</strong> identities: a client does not
+need to write results and the runner does not need to send tasks.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">TASKS</span></code> allowlist already prevents a message from choosing what runs, but
+anyone who can send to the queue can run any task you listed: restrict
+<code class="docutils literal notranslate"><span class="pre">sqs:SendMessage</span></code> to the applications that should be able to.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dynamodb-table.html" class="btn btn-neutral float-left" title="DynamoDB table" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="runner-image.html" class="btn btn-neutral float-right" title="Runner image (ECR)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

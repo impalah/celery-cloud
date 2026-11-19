@@ -1,148 +1,226 @@
-import pytest
 import json
-from unittest.mock import patch, MagicMock
-from celery_cloud.runners.lambda_strategy import LambdaTaskExecutionStrategy
+from unittest.mock import MagicMock, patch
+
+import pytest
+from botocore.exceptions import ClientError
+
 from celery_cloud.entities import Task, TaskRoute
 from celery_cloud.exceptions import TaskExecutionException
-from pybreaker import CircuitBreakerError
-from tenacity import RetryError
+from celery_cloud.runners import lambda_strategy
+from celery_cloud.runners.lambda_strategy import (
+    LambdaFunctionError,
+    LambdaTaskExecutionStrategy,
+    get_breaker,
+)
+
+ARN = "arn:aws:lambda:us-east-1:123456789012:function:test-fn"
+
+
+def make_route(arn: str = ARN) -> TaskRoute:
+    return TaskRoute(scheme="lambda", module=arn, function="", query={})
+
+
+def make_response(payload, function_error: str | None = None):
+    response = {"Payload": MagicMock(read=lambda: json.dumps(payload).encode())}
+    if function_error:
+        response["FunctionError"] = function_error
+    return response
+
+
+@pytest.fixture(autouse=True)
+def clean_state():
+    lambda_strategy._breakers.clear()
+    lambda_strategy._get_lambda_client.cache_clear()
+    with patch("tenacity.nap.time.sleep"):  # do not really wait between retries
+        yield
+    lambda_strategy._breakers.clear()
+    lambda_strategy._get_lambda_client.cache_clear()
 
 
 @pytest.fixture
-def sample_task_and_route():
-    task = Task(id="abc123", task="test.task", args=[], kwargs={})
-    route = TaskRoute(
-        scheme="lambda",
-        module="arn:aws:lambda:us-east-1:123456:function:test-fn",
-        function="",
-        query={},
+def task():
+    return Task(id="abc", task="t", args=["x"], kwargs={"y": 1})
+
+
+@pytest.fixture
+def lambda_client():
+    with patch.object(lambda_strategy.boto3, "client") as client_factory:
+        client = MagicMock()
+        client_factory.return_value = client
+        client.factory = client_factory
+        yield client
+
+
+def throttling_error():
+    return ClientError(
+        {"Error": {"Code": "TooManyRequestsException", "Message": "slow"}}, "Invoke"
     )
-    return task, route
 
 
-@patch("celery_cloud.runners.lambda_strategy.settings")
-@patch("celery_cloud.runners.lambda_strategy.breaker")
-def test_lambda_strategy_circuit_breaker_open(mock_breaker, mock_settings, sample_task_and_route):
-    mock_settings.MAX_ATTEMPTS = 3
-    mock_settings.CB_FAIL_MAX = 5
-    mock_settings.CB_RESET_TIMEOUT = 60
+def test_success_unwraps_body(task, lambda_client):
+    lambda_client.invoke.return_value = make_response({"body": "ok"})
 
-    # Simular que el breaker está abierto
-    mock_breaker.call.side_effect = CircuitBreakerError("Circuit is open")
+    assert LambdaTaskExecutionStrategy().execute(task, make_route()) == "ok"
 
+    kwargs = lambda_client.invoke.call_args.kwargs
+    assert kwargs["FunctionName"] == ARN
+    assert json.loads(kwargs["Payload"]) == {"args": ["x"], "kwargs": {"y": 1}}
+
+
+def test_success_without_body_key_returns_payload(task, lambda_client):
+    lambda_client.invoke.return_value = make_response([1, 2, 3])
+
+    assert LambdaTaskExecutionStrategy().execute(task, make_route()) == [1, 2, 3]
+
+
+def test_client_is_cached_per_region_with_safe_config(task, lambda_client):
+    lambda_client.invoke.return_value = make_response({"body": 1})
     strategy = LambdaTaskExecutionStrategy()
-    task, route = sample_task_and_route
+
+    strategy.execute(task, make_route())
+    strategy.execute(task, make_route())
+
+    lambda_client.factory.assert_called_once()
+    config = lambda_client.factory.call_args.kwargs["config"]
+    assert lambda_client.factory.call_args.kwargs["region_name"] == "us-east-1"
+    assert config.retries["max_attempts"] == 0  # botocore must not re-invoke
+    assert config.read_timeout == lambda_strategy.settings.LAMBDA_INVOKE_TIMEOUT
+
+
+def test_function_error_is_not_retried_nor_counted_by_breaker(task, lambda_client):
+    lambda_client.invoke.return_value = make_response({"error": "fail"}, "Handled")
+    strategy = LambdaTaskExecutionStrategy()
+
+    for _ in range(lambda_strategy.settings.CB_FAIL_MAX + 2):
+        with pytest.raises(LambdaFunctionError) as exc:
+            strategy.execute(task, make_route())
+
+    assert "returned an error" in exc.value.message
+    # one invocation per call: the function already ran, never re-run it
+    assert lambda_client.invoke.call_count == lambda_strategy.settings.CB_FAIL_MAX + 2
+    assert get_breaker(ARN).current_state == "closed"
+
+
+def test_invocation_errors_are_retried_then_raised(task, lambda_client):
+    lambda_client.invoke.side_effect = throttling_error()
 
     with pytest.raises(TaskExecutionException) as exc:
-        strategy.execute(task, route)
+        LambdaTaskExecutionStrategy().execute(task, make_route())
 
-    assert "Circuit is open" in exc.value.detail
-    assert "Circuit breaker open for Lambda function" in exc.value.message
+    assert "Could not invoke Lambda function" in exc.value.message
+    assert lambda_client.invoke.call_count == lambda_strategy.settings.MAX_ATTEMPTS
 
 
-@patch("celery_cloud.runners.lambda_strategy.settings")
-@patch("celery_cloud.runners.lambda_strategy.breaker")
-@patch("celery_cloud.runners.lambda_strategy.boto3.client")
-def test_lambda_strategy_retry_exhausted(mock_boto_client, mock_breaker, mock_settings, sample_task_and_route):
-    from tenacity import RetryError
-    from tenacity import stop_after_attempt, retry
+def test_invocation_error_recovers(task, lambda_client):
+    lambda_client.invoke.side_effect = [
+        throttling_error(),
+        make_response({"body": "ok"}),
+    ]
 
-    mock_settings.MAX_ATTEMPTS = 2
-    mock_settings.CB_FAIL_MAX = 5
-    mock_settings.CB_RESET_TIMEOUT = 60
+    assert LambdaTaskExecutionStrategy().execute(task, make_route()) == "ok"
+    assert lambda_client.invoke.call_count == 2
 
-    # Simular error permanente en el invoke que nunca se recupera
-    def always_fail_invoke(*args, **kwargs):
-        raise Exception("Permanent failure")
 
-    mock_lambda = MagicMock()
-    mock_lambda.invoke.side_effect = always_fail_invoke
-    mock_boto_client.return_value = mock_lambda
-
-    def pass_through_call(fn, *args, **kwargs):
-        return fn(*args, **kwargs)
-
-    mock_breaker.call.side_effect = pass_through_call
-
+def test_circuit_breaker_opens_per_function(task, lambda_client):
+    lambda_client.invoke.side_effect = throttling_error()
     strategy = LambdaTaskExecutionStrategy()
-    task, route = sample_task_and_route
+
+    for _ in range(lambda_strategy.settings.CB_FAIL_MAX):
+        with pytest.raises(TaskExecutionException):
+            strategy.execute(task, make_route())
+
+    calls = lambda_client.invoke.call_count
+    with pytest.raises(TaskExecutionException) as exc:
+        strategy.execute(task, make_route())
+    assert "Circuit breaker open" in exc.value.message
+    assert lambda_client.invoke.call_count == calls  # circuit open: no invocation
+
+    # A different function is not affected
+    other = "arn:aws:lambda:us-east-1:123456789012:function:other-fn"
+    lambda_client.invoke.side_effect = None
+    lambda_client.invoke.return_value = make_response({"body": "fine"})
+    assert strategy.execute(task, make_route(other)) == "fine"
+
+
+def test_unexpected_error_is_wrapped(task, lambda_client):
+    lambda_client.invoke.return_value = {
+        "Payload": MagicMock(read=lambda: b"not json")
+    }
 
     with pytest.raises(TaskExecutionException) as exc:
-        strategy.execute(task, route)
+        LambdaTaskExecutionStrategy().execute(task, make_route())
 
-    assert "RetryError" in exc.value.detail or "Permanent failure" in exc.value.detail
     assert "Unexpected error calling Lambda function" in exc.value.message
 
-@patch("celery_cloud.runners.lambda_strategy.retry", lambda *a, **kw: (lambda f: f))
-@patch("celery_cloud.runners.lambda_strategy.settings")
-@patch("celery_cloud.runners.lambda_strategy.boto3.client")
-@patch("celery_cloud.runners.lambda_strategy.breaker")  # evita que falle por el estado del breaker
-def test_lambda_strategy_success(mock_breaker, mock_boto_client, mock_settings):
-    # Configurar settings
-    mock_settings.MAX_ATTEMPTS = 3
-    mock_settings.CB_FAIL_MAX = 5
-    mock_settings.CB_RESET_TIMEOUT = 60
 
-    # Simular respuesta exitosa
-    mock_lambda = MagicMock()
-    mock_lambda.invoke.return_value = {
-        "Payload": MagicMock(read=lambda: json.dumps({"body": "ok"}).encode())
-    }
-    mock_boto_client.return_value = mock_lambda
-
-    # El breaker debe simplemente ejecutar el método directamente
-    def pass_through_call(fn, *args, **kwargs):
-        return fn(*args, **kwargs)
-
-    mock_breaker.call.side_effect = pass_through_call
-
-    strategy = LambdaTaskExecutionStrategy()
-    task = Task(id="abc", task="t", args=["x"], kwargs={"y": 1})
-    route = TaskRoute(
-        scheme="lambda",
-        module="arn:aws:lambda:us-east-1:123456:function:my-fn",
-        function="",
-        query={},
-    )
-
-    result = strategy.execute(task, route)
-    assert result == "ok"
-    mock_lambda.invoke.assert_called_once()
-
-
-@patch("celery_cloud.runners.lambda_strategy.retry", lambda *a, **kw: (lambda f: f))
-@patch("celery_cloud.runners.lambda_strategy.settings")
-@patch("celery_cloud.runners.lambda_strategy.boto3.client")
-@patch("celery_cloud.runners.lambda_strategy.breaker")
-def test_lambda_strategy_with_error_response(mock_breaker, mock_boto_client, mock_settings):
-    mock_settings.MAX_ATTEMPTS = 3  # Aun así puedes dejarlo
-    mock_settings.CB_FAIL_MAX = 5
-    mock_settings.CB_RESET_TIMEOUT = 60
-
-    # Simular respuesta con error
-    mock_lambda = MagicMock()
-    mock_lambda.invoke.return_value = {
-        "FunctionError": "Handled",
-        "Payload": MagicMock(read=lambda: json.dumps({"error": "fail"}).encode())
-    }
-    mock_boto_client.return_value = mock_lambda
-
-    def pass_through_call(fn, *args, **kwargs):
-        return fn(*args, **kwargs)
-
-    mock_breaker.call.side_effect = pass_through_call
-
-    strategy = LambdaTaskExecutionStrategy()
-    task = Task(id="abc", task="t", args=[], kwargs={})
-    route = TaskRoute(
-        scheme="lambda",
-        module="arn:aws:lambda:us-east-1:123456:function:bad-fn",
-        function="",
-        query={},
-    )
-
+@pytest.mark.parametrize(
+    "arn", ["", "not-an-arn", "arn:aws:lambda:us-east-1:123:function:x", "lambda"]
+)
+def test_invalid_arn_is_rejected(task, arn):
     with pytest.raises(TaskExecutionException) as exc:
-        strategy.execute(task, route)
+        LambdaTaskExecutionStrategy().execute(task, make_route(arn))
+    assert "Invalid Lambda function ARN" in exc.value.message
 
-    assert "Lambda function" in exc.value.message
-    assert "returned an error" in exc.value.message
+
+def test_arn_with_alias_is_accepted(task, lambda_client):
+    lambda_client.invoke.return_value = make_response({"body": 1})
+    arn = ARN + ":prod"
+    assert LambdaTaskExecutionStrategy().execute(task, make_route(arn)) == 1
+
+
+# ---- exact contracts --------------------------------------------------------
+
+
+def test_breaker_uses_the_configured_values():
+    # not the pybreaker defaults (5 / 60), so ignoring the settings is detected
+    with (
+        patch.object(lambda_strategy.settings, "CB_FAIL_MAX", 7),
+        patch.object(lambda_strategy.settings, "CB_RESET_TIMEOUT", 13),
+    ):
+        breaker = get_breaker(ARN)
+    assert breaker.fail_max == 7
+    assert breaker.reset_timeout == 13
+    assert breaker.name == ARN
+    assert get_breaker(ARN) is breaker  # one breaker per function, reused
+
+
+def test_invalid_arn_detail_is_the_arn(task):
+    with pytest.raises(TaskExecutionException) as exc:
+        LambdaTaskExecutionStrategy().execute(task, make_route("nonsense"))
+    assert exc.value.message == "Invalid Lambda function ARN for task t"
+    assert exc.value.detail == "nonsense"
+
+
+def test_invocation_error_detail_has_the_cause(task, lambda_client):
+    lambda_client.invoke.side_effect = throttling_error()
+    with pytest.raises(TaskExecutionException) as exc:
+        LambdaTaskExecutionStrategy().execute(task, make_route())
+    assert exc.value.message == f"Could not invoke Lambda function {ARN}"
+    assert "TooManyRequestsException" in exc.value.detail
+
+
+def test_function_error_detail_is_the_remote_payload(task, lambda_client):
+    lambda_client.invoke.return_value = make_response({"errorMessage": "bad"}, "Unhandled")
+    with pytest.raises(LambdaFunctionError) as exc:
+        LambdaTaskExecutionStrategy().execute(task, make_route())
+    assert json.loads(exc.value.detail) == {"errorMessage": "bad"}
+
+
+def test_unexpected_error_detail_is_the_cause(task, lambda_client):
+    lambda_client.invoke.return_value = {"Payload": MagicMock(read=lambda: b"not json")}
+    with pytest.raises(TaskExecutionException) as exc:
+        LambdaTaskExecutionStrategy().execute(task, make_route())
+    assert exc.value.message == f"Unexpected error calling Lambda function {ARN}"
+    assert "Expecting value" in exc.value.detail
+
+
+def test_open_circuit_error_contract(task, lambda_client):
+    lambda_client.invoke.side_effect = throttling_error()
+    strategy = LambdaTaskExecutionStrategy()
+    for _ in range(lambda_strategy.settings.CB_FAIL_MAX):
+        with pytest.raises(TaskExecutionException):
+            strategy.execute(task, make_route())
+    with pytest.raises(TaskExecutionException) as exc:
+        strategy.execute(task, make_route())
+    assert exc.value.message == f"Circuit breaker open for Lambda function {ARN}"
+    assert "circuit" in exc.value.detail.lower()

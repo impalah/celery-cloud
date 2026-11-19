@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client: sending a task &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/user-guide/client-basic.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Client: errors, timeouts and states" href="client-errors.html" />
+    <link rel="prev" title="Server: debugging locally" href="server-local-debugging.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user-guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="server-local-tasks.html">Server: local tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-task-api.html">Server: the Celery-like task API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-remote-lambda.html">Server: remote Lambda tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-local-debugging.html">Server: debugging locally</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Client: sending a task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configure-the-client">Configure the client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#send-and-wait">Send and wait</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#delay-apply-async-and-send-task"><code class="docutils literal notranslate"><span class="pre">delay</span></code>, <code class="docutils literal notranslate"><span class="pre">apply_async</span></code> and <code class="docutils literal notranslate"><span class="pre">send_task</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#options-the-runner-honours">Options the runner honours</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="client-errors.html">Client: errors, timeouts and states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-structured.html">Client: structured data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-retries-progress.html">Client: retries, progress and delayed tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-canvas.html">Client: workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-revoke.html">Client: revoking tasks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user-guide.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Client: sending a task</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/client-basic.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="client-sending-a-task">
+<h1>Client: sending a task<a class="headerlink" href="#client-sending-a-task" title="Link to this heading"></a></h1>
+<p>Your application uses a <strong>plain Celery client</strong>. It declares the tasks (name and
+signature), sends them to SQS and reads the result from DynamoDB. It does not need
+<code class="docutils literal notranslate"><span class="pre">celery-cloud</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"celery[sqs,dynamodb]"</span>
+</pre></div>
+</div>
+<section id="configure-the-client">
+<h2>Configure the client<a class="headerlink" href="#configure-the-client" title="Link to this heading"></a></h2>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">celery_app.py</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Celery client configuration shared by the examples.</span>
+
+<span class="sd">The client only *declares* the tasks (name and signature). The bodies never run</span>
+<span class="sd">here: they run on the runner, wherever ``TASKS`` points.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery</span><span class="w"> </span><span class="kn">import</span> <span class="n">Celery</span>
+
+<span class="n">REGION</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"AWS_REGION"</span><span class="p">,</span> <span class="s2">"eu-central-1"</span><span class="p">)</span>
+<span class="n">QUEUE_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"CELERY_QUEUE_NAME"</span><span class="p">,</span> <span class="s2">"lambda-runner-queue"</span><span class="p">)</span>
+<span class="n">QUEUE_URL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"CELERY_QUEUE_URL"</span><span class="p">]</span>  <span class="c1"># https://sqs.&lt;region&gt;.amazonaws.com/&lt;account&gt;/&lt;queue&gt;</span>
+<span class="n">TABLE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"CELERY_BACKEND_TABLE"</span><span class="p">,</span> <span class="s2">"lambda-runner-tasks"</span><span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Celery</span><span class="p">(</span><span class="s2">"task_client"</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="n">broker_url</span><span class="o">=</span><span class="s2">"sqs://"</span><span class="p">,</span>
+    <span class="n">result_backend</span><span class="o">=</span><span class="sa">f</span><span class="s2">"dynamodb://@</span><span class="si">{</span><span class="n">REGION</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">TABLE</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="n">task_default_queue</span><span class="o">=</span><span class="n">QUEUE_NAME</span><span class="p">,</span>
+    <span class="n">broker_connection_retry_on_startup</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">broker_transport_options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"region"</span><span class="p">:</span> <span class="n">REGION</span><span class="p">,</span>
+        <span class="c1"># The queue must already exist: the client does not create it</span>
+        <span class="s2">"predefined_queues"</span><span class="p">:</span> <span class="p">{</span><span class="n">QUEUE_NAME</span><span class="p">:</span> <span class="p">{</span><span class="s2">"url"</span><span class="p">:</span> <span class="n">QUEUE_URL</span><span class="p">}},</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+
+<span class="c1"># The name must be exactly the key used in the TASKS setting of the runner</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"calculator.add"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">extra</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"calculator.subtract"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">subtract</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"calculator.divide"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">divide</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"reports.summarize"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"remote.sum"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">remote_sum</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"calculator.total"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">total</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"calculator.report_error"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">report_error</span><span class="p">(</span><span class="n">task_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"jobs.fetch"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"jobs.sync_account"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sync_account</span><span class="p">(</span><span class="n">account_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">attempts_needed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"jobs.import_rows"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">import_rows</span><span class="p">(</span><span class="n">rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"jobs.export_report"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">export_report</span><span class="p">(</span><span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">task</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"jobs.long_job"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">long_job</span><span class="p">(</span><span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</pre></div>
+</div>
+</div>
+<p>Points that matter:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;app.task(name=...)</span></code> must equal the key of <code class="docutils literal notranslate"><span class="pre">TASKS</span></code> in the runner. If you
+leave the name out, Celery derives it from the module (<code class="docutils literal notranslate"><span class="pre">celery_app.add</span></code>), which
+is easy to get wrong.</p></li>
+<li><p>The task bodies are never executed on the client: they only document the
+signature.</p></li>
+<li><p>The queue must already exist (<code class="docutils literal notranslate"><span class="pre">predefined_queues</span></code>): the client does not
+create it.</p></li>
+<li><p>Credentials and region come from the standard AWS mechanisms (environment,
+profile, role). The client needs <code class="docutils literal notranslate"><span class="pre">sqs:SendMessage</span></code> on the queue and, on the
+table, <code class="docutils literal notranslate"><span class="pre">dynamodb:GetItem</span></code> and <code class="docutils literal notranslate"><span class="pre">dynamodb:DescribeTable</span></code> (see
+<a class="reference internal" href="../infrastructure/iam-roles.html"><span class="doc">IAM roles and permissions</span></a>).</p></li>
+</ul>
+</section>
+<section id="send-and-wait">
+<h2>Send and wait<a class="headerlink" href="#send-and-wait" title="Link to this heading"></a></h2>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">basic.py</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Send a task and wait for its result."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_app</span><span class="w"> </span><span class="kn">import</span> <span class="n">add</span>
+
+<span class="c1"># Positional and keyword arguments both reach the task</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">add</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sent task </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Always use a timeout: if the runner dies the task stays in STARTED forever</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Result: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>  <span class="c1"># 18</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"State:  </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>  <span class="c1"># SUCCESS</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CELERY_QUEUE_URL</span><span class="o">=</span>https://sqs.eu-central-1.amazonaws.com/123456789012/lambda-runner-queue
+<span class="nb">export</span><span class="w"> </span><span class="nv">AWS_PROFILE</span><span class="o">=</span>my-profile
+python<span class="w"> </span>basic.py
+<span class="c1"># Sent task 8d58fa0a-f181-47ff-83e9-9ddfd2ee8af9</span>
+<span class="c1"># Result: 18</span>
+<span class="c1"># State:  SUCCESS</span>
+</pre></div>
+</div>
+</section>
+<section id="delay-apply-async-and-send-task">
+<h2><code class="docutils literal notranslate"><span class="pre">delay</span></code>, <code class="docutils literal notranslate"><span class="pre">apply_async</span></code> and <code class="docutils literal notranslate"><span class="pre">send_task</span></code><a class="headerlink" href="#delay-apply-async-and-send-task" title="Link to this heading"></a></h2>
+<p>All the usual ways to send a task work:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">add</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>                                   <span class="c1"># positional shortcut</span>
+<span class="n">add</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>  <span class="c1"># full control</span>
+<span class="n">app</span><span class="o">.</span><span class="n">send_task</span><span class="p">(</span><span class="s2">"calculator.add"</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>       <span class="c1"># by name, no declaration needed</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">send_task</span></code> is useful when the client should not import the task declarations at
+all.</p>
+</section>
+<section id="options-the-runner-honours">
+<h2>Options the runner honours<a class="headerlink" href="#options-the-runner-honours" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The result is not stored (nothing can be read back, not even failures)</span>
+<span class="n">add</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">ignore_result</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Skip the task (REVOKED) if the runner receives it more than 60 seconds after sending</span>
+<span class="n">add</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">expires</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">countdown</span></code> and <code class="docutils literal notranslate"><span class="pre">eta</span></code> are <strong>not</strong> supported: the task runs as soon as the
+message arrives.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="server-local-debugging.html" class="btn btn-neutral float-left" title="Server: debugging locally" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="client-errors.html" class="btn btn-neutral float-right" title="Client: errors, timeouts and states" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

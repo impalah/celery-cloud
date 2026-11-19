@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any
+
 from celery_cloud.entities import Task, TaskRoute
 
 

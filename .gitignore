@@ -174,3 +174,23 @@ cython_debug/
 
 # Ruff cache
 .ruff_cache/
+
+# Terraform: provider cache, state, plans and the files you create from the templates
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+infra/terraform/stacks/*/application.backend.conf
+infra/terraform/stacks/*/application.configuration.tfvars
+
+# mutmut
+mutants/
+
+# Sphinx doctrees cache (the HTML in docs/ IS committed: GitHub Pages)
+pages_source/_build/
+
+# Terraform override files (local tweaks, e.g. a local backend for a throwaway test)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

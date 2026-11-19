@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Periodic tasks (replacing celery beat) &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/infrastructure/periodic-tasks.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Several queues, priorities and rate limits" href="queues-and-priorities.html" />
+    <link rel="prev" title="Terraform" href="terraform.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../infrastructure.html">Infrastructure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sqs-queue.html">SQS queue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamodb-table.html">DynamoDB table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iam-roles.html">IAM roles and permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runner-image.html">Runner image (ECR)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lambda-function.html">Lambda function and event source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="terraform.html">Terraform</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Periodic tasks (replacing celery beat)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-message">The message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#results-of-every-run">Results of every run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-the-schedules-with-terraform">Create the schedules with Terraform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-crontab-to-eventbridge">From <code class="docutils literal notranslate"><span class="pre">crontab</span></code> to EventBridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operations">Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="queues-and-priorities.html">Several queues, priorities and rate limits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operations.html">Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure.html#conventions-of-the-guides">Conventions of the guides</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../infrastructure.html">Infrastructure</a></li>
+      <li class="breadcrumb-item active">Periodic tasks (replacing celery beat)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/infrastructure/periodic-tasks.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="periodic-tasks-replacing-celery-beat">
+<h1>Periodic tasks (replacing celery beat)<a class="headerlink" href="#periodic-tasks-replacing-celery-beat" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">celery</span> <span class="pre">beat</span></code> is a process that sends tasks on a schedule. There is no such process
+here, and the schedule belongs to AWS: <strong>Amazon EventBridge Scheduler</strong> sends a message
+to the queue on a <code class="docutils literal notranslate"><span class="pre">cron</span></code> or <code class="docutils literal notranslate"><span class="pre">rate</span></code> expression, and the runner treats it like any
+other task.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Terraform module <code class="docutils literal notranslate"><span class="pre">infra/terraform/modules/schedules</span></code> creates all of this (group,
+role, dead-letter queue and the schedules with their message): see
+<a class="reference internal" href="#terraform-schedules"><span class="std std-ref">Create the schedules with Terraform</span></a> below. The Terraform module and the de-duplication behaviour
+below were checked on a real account; the manual <code class="docutils literal notranslate"><span class="pre">aws</span> <span class="pre">iam</span></code> and <code class="docutils literal notranslate"><span class="pre">aws</span> <span class="pre">scheduler</span></code> commands were run too.</p>
+</div>
+<section id="the-message">
+<h2>The message<a class="headerlink" href="#the-message" title="Link to this heading"></a></h2>
+<p>The queue receives what a Celery client would send: <code class="docutils literal notranslate"><span class="pre">base64(json(envelope))</span></code>. Build
+it once with the helper the runner uses for its own messages:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.messaging</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_message</span>
+
+<span class="n">task_id</span><span class="p">,</span> <span class="n">body</span> <span class="o">=</span> <span class="n">build_message</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">"task"</span><span class="p">:</span> <span class="s2">"calculator.add"</span><span class="p">,</span>
+        <span class="s2">"args"</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="s2">"kwargs"</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">"options"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"ignore_result"</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="p">},</span>
+    <span class="n">queue</span><span class="o">=</span><span class="s2">"lambda-runner-queue"</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>   <span class="c1"># the Input of the schedule</span>
+</pre></div>
+</div>
+</section>
+<section id="results-of-every-run">
+<h2>Results of every run<a class="headerlink" href="#results-of-every-run" title="Link to this heading"></a></h2>
+<p>The runner de-duplicates by <strong>task id</strong>, and a schedule sends the <em>same</em> message every
+time, so the id is repeated. Two ways to deal with it:</p>
+<ul class="simple">
+<li><p><strong>Send the task with</strong> <code class="docutils literal notranslate"><span class="pre">ignore_result:</span> <span class="pre">True</span></code> (as above). A task whose result is
+ignored is not registered in the backend, so it is never taken as a duplicate: every
+message runs. This is the usual case for periodic jobs, and it is the way verified
+by the tests of this project.</p></li>
+<li><p>If you need a result per run, the id must change in every run. EventBridge Scheduler
+can put context attributes in the input (for example <code class="docutils literal notranslate"><span class="pre">&lt;aws.scheduler.execution-id&gt;</span></code>),
+but a base64 body cannot hold a placeholder, so this needs a small function of your own
+that builds the message (<code class="docutils literal notranslate"><span class="pre">build_message</span></code> above) on every invocation. Using Scheduler
+with a Lambda target and that function is the robust option.</p></li>
+</ul>
+</section>
+<section id="create-the-schedules-with-terraform">
+<span id="terraform-schedules"></span><h2>Create the schedules with Terraform<a class="headerlink" href="#create-the-schedules-with-terraform" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">schedules</span></code> variable of <code class="docutils literal notranslate"><span class="pre">stacks/example</span></code> (module <code class="docutils literal notranslate"><span class="pre">modules/schedules</span></code>) takes
+the equivalent of <code class="docutils literal notranslate"><span class="pre">beat_schedule</span></code>; the module builds the message, the role the
+scheduler assumes (it can only <code class="docutils literal notranslate"><span class="pre">sqs:SendMessage</span></code> to the queue) and a dead-letter queue:</p>
+<div class="highlight-hcl notranslate"><div class="highlight"><pre><span></span><span class="nb">schedules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nb">nightly-report</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="na">task</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">"reports.summarize"</span>
+<span class="w">    </span><span class="na">expression</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cron(0 3 * * ? *)"</span>
+<span class="w">    </span><span class="na">timezone</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">"Europe/Madrid"</span>
+<span class="w">    </span><span class="na">args</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>With no entries nothing is created. Create one by hand instead:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># the role EventBridge Scheduler assumes, allowed only to send to the queue</span>
+aws<span class="w"> </span>iam<span class="w"> </span>create-role<span class="w"> </span>--role-name<span class="w"> </span>scheduler-sqs<span class="w"> </span>--assume-role-policy-document<span class="w"> </span><span class="s1">'{</span>
+<span class="s1">  "Version": "2012-10-17",</span>
+<span class="s1">  "Statement": [{"Effect": "Allow",</span>
+<span class="s1">    "Principal": {"Service": "scheduler.amazonaws.com"},</span>
+<span class="s1">    "Action": "sts:AssumeRole",</span>
+<span class="s1">    "Condition": {"StringEquals": {"aws:SourceAccount": "'</span><span class="nv">$ACCOUNT_ID</span><span class="s1">'"}}}]}'</span>
+aws<span class="w"> </span>iam<span class="w"> </span>put-role-policy<span class="w"> </span>--role-name<span class="w"> </span>scheduler-sqs<span class="w"> </span>--policy-name<span class="w"> </span>send-tasks<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--policy-document<span class="w"> </span><span class="s1">'{"Version": "2012-10-17", "Statement": [{"Effect": "Allow",</span>
+<span class="s1">    "Action": "sqs:SendMessage", "Resource": "'</span><span class="nv">$QUEUE_ARN</span><span class="s1">'"}]}'</span>
+
+<span class="c1"># a new role can need a few seconds before the scheduler accepts it</span>
+
+aws<span class="w"> </span>scheduler<span class="w"> </span>create-schedule<span class="w"> </span>--name<span class="w"> </span>nightly-report<span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--schedule-expression<span class="w"> </span><span class="s2">"cron(0 3 * * ? *)"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--schedule-expression-timezone<span class="w"> </span><span class="s2">"Europe/Madrid"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--flexible-time-window<span class="w"> </span><span class="nv">Mode</span><span class="o">=</span>OFF<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--target<span class="w"> </span><span class="s2">"{\"Arn\": \"</span><span class="nv">$QUEUE_ARN</span><span class="s2">\", \"RoleArn\": \"arn:aws:iam::</span><span class="nv">$ACCOUNT_ID</span><span class="s2">:role/scheduler-sqs\", \"Input\": \"</span><span class="nv">$BODY</span><span class="s2">\"}"</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">$BODY</span></code> is the string printed by <code class="docutils literal notranslate"><span class="pre">build_message</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not add an <code class="docutils literal notranslate"><span class="pre">aws:SourceArn</span></code> condition to the trust policy of the role: EventBridge
+Scheduler then refuses to create the schedule (“the execution role you provide must
+allow AWS EventBridge Scheduler to assume the role”). <code class="docutils literal notranslate"><span class="pre">aws:SourceAccount</span></code> is enough.</p>
+</div>
+</section>
+<section id="from-crontab-to-eventbridge">
+<h2>From <code class="docutils literal notranslate"><span class="pre">crontab</span></code> to EventBridge<a class="headerlink" href="#from-crontab-to-eventbridge" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Celery beat</p></th>
+<th class="head"><p>EventBridge Scheduler</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timedelta(minutes=5)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rate(5</span> <span class="pre">minutes)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">crontab(minute=0,</span> <span class="pre">hour=3)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cron(0</span> <span class="pre">3</span> <span class="pre">*</span> <span class="pre">*</span> <span class="pre">?</span> <span class="pre">*)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">crontab(minute='*/15')</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cron(0/15</span> <span class="pre">*</span> <span class="pre">*</span> <span class="pre">*</span> <span class="pre">?</span> <span class="pre">*)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">crontab(day_of_week='mon',</span> <span class="pre">hour=8)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cron(0</span> <span class="pre">8</span> <span class="pre">?</span> <span class="pre">*</span> <span class="pre">MON</span> <span class="pre">*)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">crontab(day_of_month=1,</span> <span class="pre">hour=0)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cron(0</span> <span class="pre">0</span> <span class="pre">1</span> <span class="pre">*</span> <span class="pre">?</span> <span class="pre">*)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>the app’s <code class="docutils literal notranslate"><span class="pre">timezone</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--schedule-expression-timezone</span></code> (explicit; Celery uses UTC by default)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">solar()</span></code>, <code class="docutils literal notranslate"><span class="pre">nowfun</span></code>, <code class="docutils literal notranslate"><span class="pre">schedule(run_every=...)</span></code> with sub-minute intervals</p></td>
+<td><p>no equivalent</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">beat_schedule</span></code> in code, <code class="docutils literal notranslate"><span class="pre">django-celery-beat</span></code></p></td>
+<td><p>infrastructure as code (Terraform, CloudFormation…) next to the queue</p></td>
+</tr>
+</tbody>
+</table>
+<p>EventBridge cron has six fields (<code class="docutils literal notranslate"><span class="pre">minutes</span> <span class="pre">hours</span> <span class="pre">day-of-month</span> <span class="pre">month</span> <span class="pre">day-of-week</span> <span class="pre">year</span></code>)
+and needs a <code class="docutils literal notranslate"><span class="pre">?</span></code> in either day-of-month or day-of-week.</p>
+</section>
+<section id="operations">
+<h2>Operations<a class="headerlink" href="#operations" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Give the schedule a <strong>dead-letter queue</strong> and retry policy for the case that SQS cannot
+be reached.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expires</span></code> in the options of the message makes a late task (for example after an
+outage) be discarded instead of run.</p></li>
+<li><p>A task that must not overlap with its previous run should check for it itself: the
+runner will start one every time the schedule fires.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="terraform.html" class="btn btn-neutral float-left" title="Terraform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="queues-and-priorities.html" class="btn btn-neutral float-right" title="Several queues, priorities and rate limits" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

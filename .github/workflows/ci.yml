@@ -1,0 +1,61 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main  # main is validated by the release workflow
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install the project
+        run: uv sync --all-extras --dev
+
+      - name: Lint
+        run: uv run ruff check src
+
+      - name: Type check
+        run: uv run mypy src
+
+      - name: Security scan
+        run: uv run bandit -r src -q
+
+      - name: Tests
+        run: uv run pytest -q
+
+  docs:
+    # The site must build without warnings (the release of the HTML is docs.yml)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install the project and the documentation tools
+        run: uv sync --group docs
+
+      - name: Build documentation
+        run: uv run sphinx-build -W --keep-going -d /tmp/doctrees pages_source /tmp/site

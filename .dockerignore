@@ -18,6 +18,15 @@ poetry.lock
 Pipfile
 Pipfile.lock
 
+# Ignorar secretos y ficheros que no forman parte de la imagen
+.env
+.env.*
+!.env.template
+tests/
+documentation/
+docs_source/
+.github/
+
 # Ignorar configuraciones de IDEs y editores
 .vscode/
 .idea/

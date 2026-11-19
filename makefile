@@ -8,6 +8,10 @@ PLATFORM="linux/amd64"
 BUILDER_NAME="mybuilder"
 PART ?= patch  # puede sobrescribirse con: make bump-version PART=minor
 
+.PHONY: venv bump-version build clean publish publish-test docker-build release \
+	docker-release lint format type-check security-check check test mutation mutation-report \
+	docs docs-serve infra-check
+
 # Delete the virtual environment and force a sync
 venv:
 	rm -rf .venv && \
@@ -16,15 +20,15 @@ venv:
 	echo "✅ Created virtual environment" && \
 	uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version
 
-# Bump patch/minor/major version
+# Bump patch/minor/major version (pyproject.toml and uv.lock). Explicit only:
+# build/release do NOT bump, nor does the release workflow: bump manually.
 bump-version:
-	@v=$$(uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version) && \
-	echo "🔧 Current version: $$v" && \
-	uvx --from bump2version bumpversion --allow-dirty --current-version "$$v" $(PART) pyproject.toml && \
-	echo "✅ Version bumped to new $(PART)"
+	@echo "🔧 Current version: $$(uv version --short)" && \
+	uv version --bump $(PART) --no-sync && \
+	echo "✅ Version bumped ($(PART)) to $$(uv version --short)"
 
 # Build python package
-build: bump-version
+build:
 	uv build
 
 # Clean build artifacts
@@ -41,9 +45,9 @@ publish-test: build
 	uv publish --repository testpypi
 
 # Build docker image
-docker-build: bump-version
-	@BASE_VERSION=$$(uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version) && \
-	echo "✅ Bumped version to $$BASE_VERSION" && \
+docker-build:
+	@BASE_VERSION=$$(uv version --short) && \
+	echo "✅ Building version $$BASE_VERSION" && \
 	if docker buildx inspect $(BUILDER_NAME) >/dev/null 2>&1; then \
 		echo "✅ Builder '$(BUILDER_NAME)' exists. Activating..."; \
 		docker buildx use $(BUILDER_NAME); \
@@ -93,3 +97,27 @@ check: lint format type-check security-check
 # Test execution	
 test:
 	uv run pytest -v --tb=short --doctest-modules --disable-warnings --maxfail=1 --junitxml=junit.xml --cov-report term-missing --cov-report html:coverage_html_report --cov-report xml:coverage.xml --cov-config=.coveragerc --cov src tests
+
+# Mutation testing (slow, manual: NOT part of `check` nor of the regular CI).
+# Mutates the critical modules (see [tool.mutmut] in pyproject.toml) and reports
+# the mutants that no test detects.
+mutation:
+	uv run mutmut run
+
+# Show the surviving mutants of the last run (`uv run mutmut show <name>` for the diff)
+mutation-report:
+	uv run mutmut results
+
+# Documentation (Sphinx): sources in pages_source/, HTML in docs/ (GitHub Pages).
+# Warnings are errors, as in the CI.
+docs:
+	rm -rf docs
+	uv run --group docs sphinx-build -W --keep-going -d pages_source/_build/.doctrees pages_source docs
+
+# Serve the built site on http://localhost:8000
+docs-serve: docs
+	uv run python -m http.server 8000 --directory docs
+
+# Terraform (infra/terraform): fmt, validate and mocked-provider tests, no credentials needed
+infra-check:
+	./infra/terraform/check.sh

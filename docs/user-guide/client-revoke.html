@@ -1,0 +1,201 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client: revoking tasks &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/user-guide/client-revoke.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Infrastructure" href="../infrastructure.html" />
+    <link rel="prev" title="Client: workflows" href="client-canvas.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user-guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="server-local-tasks.html">Server: local tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-task-api.html">Server: the Celery-like task API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-remote-lambda.html">Server: remote Lambda tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-local-debugging.html">Server: debugging locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-basic.html">Client: sending a task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-errors.html">Client: errors, timeouts and states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-structured.html">Client: structured data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-retries-progress.html">Client: retries, progress and delayed tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-canvas.html">Client: workflows</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Client: revoking tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-it-works">How it works</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#permissions">Permissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#without-install">Without <code class="docutils literal notranslate"><span class="pre">install</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user-guide.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Client: revoking tasks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/client-revoke.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="client-revoking-tasks">
+<h1>Client: revoking tasks<a class="headerlink" href="#client-revoking-tasks" title="Link to this heading"></a></h1>
+<p>A Celery client cannot revoke a task of this runner on its own: <code class="docutils literal notranslate"><span class="pre">revoke()</span></code> broadcasts to
+workers, and there are none. <code class="docutils literal notranslate"><span class="pre">celery_cloud.client.install</span></code> makes it work through the
+result backend. It is <strong>optional</strong> and the only place where the client needs the
+<code class="docutils literal notranslate"><span class="pre">celery-cloud</span></code> package (it only needs <code class="docutils literal notranslate"><span class="pre">boto3</span></code>, no runner settings).</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">revoke.py</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Revoke a task: the optional helper that needs the runner's help."""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_app</span><span class="w"> </span><span class="kn">import</span> <span class="n">add</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">long_job</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">install</span>
+
+<span class="c1"># Once, after configuring the app: result.revoke() / app.control.revoke() now write</span>
+<span class="c1"># the revocation to the result backend, where the runner reads it</span>
+<span class="n">install</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="c1"># 1. A task that has not started never starts</span>
+<span class="n">held</span> <span class="o">=</span> <span class="n">add</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">countdown</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>  <span class="c1"># held by the runner until it is due</span>
+<span class="n">held</span><span class="o">.</span><span class="n">revoke</span><span class="p">()</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">held</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>  <span class="c1"># REVOKED</span>
+
+<span class="c1"># 2. A running task is only flagged: it stops if its code looks at is_revoked()</span>
+<span class="n">job</span> <span class="o">=</span> <span class="n">long_job</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,))</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">job</span><span class="o">.</span><span class="n">revoke</span><span class="p">()</span>  <span class="c1"># terminate=True is accepted, but a running task is never killed</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">))</span>  <span class="c1"># stopped after 6 steps because it was revoked</span>
+</pre></div>
+</div>
+</div>
+<section id="how-it-works">
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">install(app)</span></code> replaces <code class="docutils literal notranslate"><span class="pre">app.control.revoke</span></code>, so <code class="docutils literal notranslate"><span class="pre">result.revoke()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">app.control.revoke(task_id)</span></code> both work. It reads the Region and table from the app’s
+<code class="docutils literal notranslate"><span class="pre">result_backend</span></code> (<code class="docutils literal notranslate"><span class="pre">dynamodb://&#64;region/table</span></code>) and the <code class="docutils literal notranslate"><span class="pre">result_serializer</span></code>.</p>
+<ul class="simple">
+<li><p>If the task <strong>has not started</strong> the helper creates its item with <code class="docutils literal notranslate"><span class="pre">REVOKED</span></code> and a
+<code class="docutils literal notranslate"><span class="pre">revoked</span></code> flag. When the message arrives the runner finds it and skips the task:
+<code class="docutils literal notranslate"><span class="pre">result.state</span></code> is <code class="docutils literal notranslate"><span class="pre">REVOKED</span></code> and <code class="docutils literal notranslate"><span class="pre">get()</span></code> raises <code class="docutils literal notranslate"><span class="pre">TaskRevokedError</span></code>.</p></li>
+<li><p>If the task <strong>already exists</strong> (running or finished) only the flag is set. A task that
+checks <code class="docutils literal notranslate"><span class="pre">self.is_revoked()</span></code> between its steps can stop; nothing interrupts a running
+function, and <code class="docutils literal notranslate"><span class="pre">terminate=True</span></code> / <code class="docutils literal notranslate"><span class="pre">signal=</span></code> are accepted but do not kill anything.</p></li>
+</ul>
+<p>Revoking before the task is queued is also possible: revoke by id, then send the message.</p>
+</section>
+<section id="permissions">
+<h2>Permissions<a class="headerlink" href="#permissions" title="Link to this heading"></a></h2>
+<p>The identity of the client also needs <code class="docutils literal notranslate"><span class="pre">dynamodb:PutItem</span></code> and <code class="docutils literal notranslate"><span class="pre">dynamodb:UpdateItem</span></code> on
+the table (<a class="reference internal" href="../infrastructure/iam-roles.html"><span class="doc">IAM roles and permissions</span></a>).</p>
+</section>
+<section id="without-install">
+<h2>Without <code class="docutils literal notranslate"><span class="pre">install</span></code><a class="headerlink" href="#without-install" title="Link to this heading"></a></h2>
+<p>Everything else keeps working. <code class="docutils literal notranslate"><span class="pre">result.revoke()</span></code> is then accepted but has no effect,
+except that Celery may try to reach a broadcast channel and wait for a timeout.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="client-canvas.html" class="btn btn-neutral float-left" title="Client: workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../infrastructure.html" class="btn btn-neutral float-right" title="Infrastructure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

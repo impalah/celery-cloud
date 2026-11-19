@@ -17,49 +17,61 @@ on:
       tags:
         description: "Manual launch"
 
+# Read-only: the version bump (the only step that pushed) is disabled
+permissions:
+  contents: read
+
 jobs:
   TestBuildAndPublish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Print release information
+        # Event data goes through env, never interpolated into the script
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_BODY: ${{ github.event.release.body }}
         run: |
-          echo "Release tag: ${{ github.event.release.tag_name }}"
-          echo "Release description: ${{ github.event.release.body }}"
+          echo "Release tag: $RELEASE_TAG"
+          echo "Release description: $RELEASE_BODY"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
 
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version-file: "pyproject.toml"
-
-      - name: Update version
-        run: |
-          echo "Bumping version ..."
-          v=$(uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version)
-          part="patch"
-          uvx --from bump2version bumpversion --allow-dirty --current-version "$v" "$part" pyproject.toml
-          BASE_VERSION=$(uvx --from=toml-cli toml get --toml-path=pyproject.toml project.version)
-          echo "✅ Bumped version to $BASE_VERSION"
-
-      - name: Commit and push version update
-        run: |
-          git config --global user.name 'GitHub Action'
-          git config --global user.email 'action@github.com'
-          git add pyproject.toml
-          git commit -m "Update version" || echo "No changes to commit"
-          git push origin HEAD
 
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      # - name: Run tests
-      #   # For example, using `pytest`
-      #   run: uv run pytest tests
+      - name: Quality gate (lint, types, security, tests)
+        run: |
+          uv run ruff check src
+          uv run mypy src
+          uv run bandit -r src -q
+          uv run pytest -q
+
+      # Automatic version bump disabled: the version is evolved manually
+      # (`make bump-version PART=patch|minor|major`) and committed before releasing.
+      # - name: Update version
+      #   run: |
+      #     echo "Bumping version ..."
+      #     uv version --bump patch --no-sync
+      #     echo "✅ Bumped version to $(uv version --short)"
+      #
+      # - name: Commit and push version update
+      #   # A release event runs on a tag (detached HEAD): there is no branch to push
+      #   if: github.ref_type == 'branch'
+      #   run: |
+      #     git config --global user.name 'GitHub Action'
+      #     git config --global user.email 'action@github.com'
+      #     git add pyproject.toml uv.lock
+      #     git commit -m "Update version" || echo "No changes to commit"
+      #     git push origin HEAD
 
       # - name: Build documentation
       #   run: |
@@ -78,5 +90,7 @@ jobs:
           uv build
 
       - name: Publish on pypi
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
-          uv publish --token ${{ secrets.PYPI_TOKEN }}
+          uv publish

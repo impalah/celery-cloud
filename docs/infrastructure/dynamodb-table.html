@@ -1,0 +1,208 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DynamoDB table &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/infrastructure/dynamodb-table.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="IAM roles and permissions" href="iam-roles.html" />
+    <link rel="prev" title="SQS queue" href="sqs-queue.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../infrastructure.html">Infrastructure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sqs-queue.html">SQS queue</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">DynamoDB table</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-the-table">Create the table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enable-automatic-expiration-recommended">Enable automatic expiration (recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#check">Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#several-environments">Several environments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="iam-roles.html">IAM roles and permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runner-image.html">Runner image (ECR)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lambda-function.html">Lambda function and event source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="terraform.html">Terraform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="periodic-tasks.html">Periodic tasks (replacing celery beat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queues-and-priorities.html">Several queues, priorities and rate limits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operations.html">Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure.html#conventions-of-the-guides">Conventions of the guides</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../infrastructure.html">Infrastructure</a></li>
+      <li class="breadcrumb-item active">DynamoDB table</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/infrastructure/dynamodb-table.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dynamodb-table">
+<h1>DynamoDB table<a class="headerlink" href="#dynamodb-table" title="Link to this heading"></a></h1>
+<p>The table is the Celery <strong>result backend</strong>. The runner writes the state and result
+of each task; the client reads them with <code class="docutils literal notranslate"><span class="pre">AsyncResult</span></code>.</p>
+<section id="create-the-table">
+<h2>Create the table<a class="headerlink" href="#create-the-table" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>dynamodb<span class="w"> </span>create-table<span class="w"> </span>--table-name<span class="w"> </span><span class="nv">$TABLE</span><span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--attribute-definitions<span class="w"> </span><span class="nv">AttributeName</span><span class="o">=</span>id,AttributeType<span class="o">=</span>S<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--key-schema<span class="w"> </span><span class="nv">AttributeName</span><span class="o">=</span>id,KeyType<span class="o">=</span>HASH<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--billing-mode<span class="w"> </span>PAY_PER_REQUEST
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The table must have a <strong>single string hash key named</strong> <code class="docutils literal notranslate"><span class="pre">id</span></code> and <strong>no sort
+key</strong>. Both the Celery client and the runner use exactly that layout. Any other
+schema makes reads and writes fail.</p>
+</div>
+<p>On-demand billing (<code class="docutils literal notranslate"><span class="pre">PAY_PER_REQUEST</span></code>) fits this workload: you pay per task and
+nothing while idle, which is the point of a serverless runner. The client URL
+<code class="docutils literal notranslate"><span class="pre">dynamodb://&#64;region/table?read=5&amp;write=5</span></code> only matters if the <em>client</em> creates
+the table; with an existing table those values are ignored.</p>
+</section>
+<section id="enable-automatic-expiration-recommended">
+<h2>Enable automatic expiration (recommended)<a class="headerlink" href="#enable-automatic-expiration-recommended" title="Link to this heading"></a></h2>
+<p>Without a TTL the table grows forever. The runner writes the <code class="docutils literal notranslate"><span class="pre">ttl</span></code> attribute
+(see <a class="reference internal" href="../concepts.html#result-expiration"><span class="std std-ref">Result expiration</span></a>), but DynamoDB only deletes expired items when TTL is
+enabled for that attribute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>dynamodb<span class="w"> </span>update-time-to-live<span class="w"> </span>--table-name<span class="w"> </span><span class="nv">$TABLE</span><span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--time-to-live-specification<span class="w"> </span><span class="nv">Enabled</span><span class="o">=</span>true,AttributeName<span class="o">=</span>ttl
+</pre></div>
+</div>
+<p>Choose the retention with <code class="docutils literal notranslate"><span class="pre">RESULT_TTL_SECONDS</span></code> on the function (default 24 h).
+Deletion is not instantaneous: expired items can remain visible for a while.</p>
+</section>
+<section id="check">
+<h2>Check<a class="headerlink" href="#check" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>dynamodb<span class="w"> </span>describe-table<span class="w"> </span>--table-name<span class="w"> </span><span class="nv">$TABLE</span><span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--query<span class="w"> </span><span class="s2">"Table.[TableStatus,KeySchema,BillingModeSummary.BillingMode]"</span>
+aws<span class="w"> </span>dynamodb<span class="w"> </span>describe-time-to-live<span class="w"> </span>--table-name<span class="w"> </span><span class="nv">$TABLE</span><span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span>
+</pre></div>
+</div>
+<p>After the first task you can inspect what the runner wrote:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>dynamodb<span class="w"> </span>scan<span class="w"> </span>--table-name<span class="w"> </span><span class="nv">$TABLE</span><span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span>--max-items<span class="w"> </span><span class="m">3</span>
+</pre></div>
+</div>
+<p>Items look like this (the <code class="docutils literal notranslate"><span class="pre">result</span></code> binary is the JSON of
+<a class="reference internal" href="../concepts.html#backend-item-format"><span class="std std-ref">Backend item format</span></a>):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"S"</span><span class="p">:</span><span class="w"> </span><span class="s2">"b'celery-task-meta-8d58fa0a-f181-47ff-83e9-9ddfd2ee8af9'"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"result"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"B"</span><span class="p">:</span><span class="w"> </span><span class="s2">"..."</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"N"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1767261600"</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"ttl"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"N"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1767348000"</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="several-environments">
+<h2>Several environments<a class="headerlink" href="#several-environments" title="Link to this heading"></a></h2>
+<p>Use <strong>one table per environment</strong> (or at least per application) and point the
+<code class="docutils literal notranslate"><span class="pre">result_backend</span></code> of that application and <code class="docutils literal notranslate"><span class="pre">CELERY_BACKEND_TABLE</span></code> of its runner to
+it. Several queues can share one table because task ids are unique, but separating
+them keeps permissions and expiration simple.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sqs-queue.html" class="btn btn-neutral float-left" title="SQS queue" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="iam-roles.html" class="btn btn-neutral float-right" title="IAM roles and permissions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,498 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Result backend model &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/api/models.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Serialization" href="serialization.html" />
+    <link rel="prev" title="Messaging" href="messaging.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tasks.html">Task API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signals.html">Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.html">Client helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runners.html">Lambda handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="strategies.html">Task execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="canvas.html">Workflows and built-in tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="messaging.html">Messaging</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Result backend model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel"><code class="docutils literal notranslate"><span class="pre">TaskModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TaskModel.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.Meta"><code class="docutils literal notranslate"><span class="pre">TaskModel.Meta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.attempt"><code class="docutils literal notranslate"><span class="pre">TaskModel.attempt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.delete_task"><code class="docutils literal notranslate"><span class="pre">TaskModel.delete_task()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.get_task"><code class="docutils literal notranslate"><span class="pre">TaskModel.get_task()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.id"><code class="docutils literal notranslate"><span class="pre">TaskModel.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.insert_task"><code class="docutils literal notranslate"><span class="pre">TaskModel.insert_task()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.is_revoked"><code class="docutils literal notranslate"><span class="pre">TaskModel.is_revoked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.revoked"><code class="docutils literal notranslate"><span class="pre">TaskModel.revoked</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.store_result"><code class="docutils literal notranslate"><span class="pre">TaskModel.store_result()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.timestamp"><code class="docutils literal notranslate"><span class="pre">TaskModel.timestamp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.ttl"><code class="docutils literal notranslate"><span class="pre">TaskModel.ttl</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel.update_task"><code class="docutils literal notranslate"><span class="pre">TaskModel.update_task()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#chords">Chords</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.canvas_model.ChordCounter"><code class="docutils literal notranslate"><span class="pre">ChordCounter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.canvas_model.delete_group"><code class="docutils literal notranslate"><span class="pre">delete_group()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#celery_cloud.models.canvas_model.group_children"><code class="docutils literal notranslate"><span class="pre">group_children()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deadline.html">Time limits and metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="entities.html">Entities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html">Settings</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Result backend model</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/models.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="result-backend-model">
+<h1>Result backend model<a class="headerlink" href="#result-backend-model" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">TaskModel</span></code> is the <a class="reference external" href="https://pynamodb.readthedocs.io">PynamoDB</a> model of the
+DynamoDB table. It writes the same item layout as Celery’s own DynamoDB backend
+(see <a class="reference internal" href="../concepts.html#backend-item-format"><span class="std std-ref">Backend item format</span></a>).</p>
+<dl class="py class" id="module-celery_cloud.models.task_model">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.models.task_model.</span></span><span class="sig-name descname"><span class="pre">TaskModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hash_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_user_instantiated</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/models/task_model.html#TaskModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Dynamodb model to store Celery tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Model</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.DoesNotExist">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cause</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.15)"><span class="pre">Exception</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="../_modules/celery_cloud/models/task_model.html#TaskModel.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta.aws_access_key_id">
+<span class="sig-name descname"><span class="pre">aws_access_key_id</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta.aws_access_key_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta.aws_secret_access_key">
+<span class="sig-name descname"><span class="pre">aws_secret_access_key</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta.aws_secret_access_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta.aws_session_token">
+<span class="sig-name descname"><span class="pre">aws_session_token</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta.aws_session_token" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta.connect_timeout_seconds">
+<span class="sig-name descname"><span class="pre">connect_timeout_seconds</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta.connect_timeout_seconds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta.extra_headers">
+<span class="sig-name descname"><span class="pre">extra_headers</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta.extra_headers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta.host">
+<span class="sig-name descname"><span class="pre">host</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta.host" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta.max_pool_connections">
+<span class="sig-name descname"><span class="pre">max_pool_connections</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta.max_pool_connections" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta.max_retry_attempts">
+<span class="sig-name descname"><span class="pre">max_retry_attempts</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta.max_retry_attempts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta.read_timeout_seconds">
+<span class="sig-name descname"><span class="pre">read_timeout_seconds</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta.read_timeout_seconds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta.region">
+<span class="sig-name descname"><span class="pre">region</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'eu-west-1'</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta.region" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.Meta.table_name">
+<span class="sig-name descname"><span class="pre">table_name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'celery'</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.Meta.table_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.attempt">
+<span class="sig-name descname"><span class="pre">attempt</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.attempt" title="Link to this definition"></a></dt>
+<dd><p>A number attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.delete_task">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">delete_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/models/task_model.html#TaskModel.delete_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.delete_task" title="Link to this definition"></a></dt>
+<dd><p>Remove the item of a task (so a redelivered message runs it again).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.get_task">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">consistent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/models/task_model.html#TaskModel.get_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.get_task" title="Link to this definition"></a></dt>
+<dd><p>Ges task status and decode result</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_uuid</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – _description_</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)">dict</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.id" title="Link to this definition"></a></dt>
+<dd><p>A unicode attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.insert_task">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">insert_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel" title="celery_cloud.models.task_model.TaskModel"><span class="pre">TaskModel</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/models/task_model.html#TaskModel.insert_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.insert_task" title="Link to this definition"></a></dt>
+<dd><p>Insert a new task with the correct prefix.</p>
+<p>The write is conditional: only the first delivery of a message creates
+the task, so a duplicate SQS delivery is never executed twice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_uuid</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – Celery task id.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#celery_cloud.exceptions.runner_exceptions.DuplicateTaskException" title="celery_cloud.exceptions.runner_exceptions.DuplicateTaskException"><strong>DuplicateTaskException</strong></a> – If the task already exists.</p></li>
+<li><p><a class="reference internal" href="exceptions.html#celery_cloud.exceptions.runner_exceptions.BackendException" title="celery_cloud.exceptions.runner_exceptions.BackendException"><strong>BackendException</strong></a> – On any other backend error.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.is_revoked">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_revoked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/models/task_model.html#TaskModel.is_revoked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.is_revoked" title="Link to this definition"></a></dt>
+<dd><p>True when the client revoked the task.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.revoked">
+<span class="sig-name descname"><span class="pre">revoked</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.revoked" title="Link to this definition"></a></dt>
+<dd><p>A class for boolean attributes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.store_result">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">store_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/models/task_model.html#TaskModel.store_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.store_result" title="Link to this definition"></a></dt>
+<dd><p>Write the state of a task unconditionally (creating the item if needed).</p>
+<p>Used for tasks that never started, such as the body of a chord whose header
+failed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.timestamp">
+<span class="sig-name descname"><span class="pre">timestamp</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.timestamp" title="Link to this definition"></a></dt>
+<dd><p>A number attribute</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.ttl">
+<span class="sig-name descname"><span class="pre">ttl</span></span><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.ttl" title="Link to this definition"></a></dt>
+<dd><p>A number attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.models.task_model.TaskModel.update_task">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">update_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#celery_cloud.models.task_model.TaskModel" title="celery_cloud.models.task_model.TaskModel"><span class="pre">TaskModel</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/models/task_model.html#TaskModel.update_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.task_model.TaskModel.update_task" title="Link to this definition"></a></dt>
+<dd><p>Update task status</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_uuid</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – _description_</p></li>
+<li><p><strong>status</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>) – _description_</p></li>
+<li><p><strong>result</strong> (<em>Optional</em><em>[</em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – Defaults to None.</p></li>
+<li><p><strong>traceback</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>]</em><em>, </em><em>optional</em>) – Defaults to None.</p></li>
+<li><p><strong>meta</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><em>dict</em></a><em>, </em><em>optional</em>) – Extended meta (name, args, kwargs, worker,
+retries, queue) to store with the result.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p><code class="docutils literal notranslate"><span class="pre">TaskModel.result</span></code> is a binary attribute that holds the JSON of the Celery meta
+(<code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">result</span></code>, <code class="docutils literal notranslate"><span class="pre">traceback</span></code>, <code class="docutils literal notranslate"><span class="pre">children</span></code>, <code class="docutils literal notranslate"><span class="pre">date_done</span></code>, <code class="docutils literal notranslate"><span class="pre">task_id</span></code>).</p>
+<section id="chords">
+<h2>Chords<a class="headerlink" href="#chords" title="Link to this heading"></a></h2>
+<p>The group and counter items that Celery’s DynamoDB backend keeps for chords.</p>
+<p id="module-celery_cloud.models.canvas_model">Backend items that Celery uses to run groups and chords.</p>
+<p>Celery’s DynamoDB backend keeps two kinds of items next to the task results, in the
+same table and with the same <code class="docutils literal notranslate"><span class="pre">id</span></code> hash key:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">b'celery-taskset-meta-&lt;group</span> <span class="pre">id&gt;'</span></code>: written by the client when it starts a chord,
+it lists the ids of the header tasks (<code class="docutils literal notranslate"><span class="pre">result</span></code> holds the JSON of the group result).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">b'chord-unlock-&lt;group</span> <span class="pre">id&gt;'</span></code>: a counter (<code class="docutils literal notranslate"><span class="pre">chord_count</span></code>) that every header task
+increments when it finishes; the one that reaches the size of the group runs the
+chord body.</p></li>
+</ul>
+<p>The runner reads and updates them exactly as Celery’s worker does.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">celery_cloud.models.canvas_model.</span></span><span class="sig-name descname"><span class="pre">ChordCounter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hash_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_user_instantiated</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/celery_cloud/models/canvas_model.html#ChordCounter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>The counter item of a chord (<code class="docutils literal notranslate"><span class="pre">chord_count</span></code>, as in Celery’s backend).</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.DoesNotExist">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cause</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.15)"><span class="pre">Exception</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.DoesNotExist" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="../_modules/celery_cloud/models/canvas_model.html#ChordCounter.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta.aws_access_key_id">
+<span class="sig-name descname"><span class="pre">aws_access_key_id</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta.aws_access_key_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta.aws_secret_access_key">
+<span class="sig-name descname"><span class="pre">aws_secret_access_key</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta.aws_secret_access_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta.aws_session_token">
+<span class="sig-name descname"><span class="pre">aws_session_token</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta.aws_session_token" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta.connect_timeout_seconds">
+<span class="sig-name descname"><span class="pre">connect_timeout_seconds</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta.connect_timeout_seconds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta.extra_headers">
+<span class="sig-name descname"><span class="pre">extra_headers</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta.extra_headers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta.host">
+<span class="sig-name descname"><span class="pre">host</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta.host" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta.max_pool_connections">
+<span class="sig-name descname"><span class="pre">max_pool_connections</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta.max_pool_connections" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta.max_retry_attempts">
+<span class="sig-name descname"><span class="pre">max_retry_attempts</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta.max_retry_attempts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta.read_timeout_seconds">
+<span class="sig-name descname"><span class="pre">read_timeout_seconds</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta.read_timeout_seconds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta.region">
+<span class="sig-name descname"><span class="pre">region</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'eu-west-1'</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta.region" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.Meta.table_name">
+<span class="sig-name descname"><span class="pre">table_name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'celery'</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.Meta.table_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.chord_count">
+<span class="sig-name descname"><span class="pre">chord_count</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.chord_count" title="Link to this definition"></a></dt>
+<dd><p>A number attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.delete_for">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">delete_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/models/canvas_model.html#ChordCounter.delete_for"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.delete_for" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.id" title="Link to this definition"></a></dt>
+<dd><p>A unicode attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.increment">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">increment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/models/canvas_model.html#ChordCounter.increment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.increment" title="Link to this definition"></a></dt>
+<dd><p>Atomically add one to the counter and return the new value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.ChordCounter.timestamp">
+<span class="sig-name descname"><span class="pre">timestamp</span></span><a class="headerlink" href="#celery_cloud.models.canvas_model.ChordCounter.timestamp" title="Link to this definition"></a></dt>
+<dd><p>A number attribute</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.delete_group">
+<span class="sig-prename descclassname"><span class="pre">celery_cloud.models.canvas_model.</span></span><span class="sig-name descname"><span class="pre">delete_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/models/canvas_model.html#delete_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.canvas_model.delete_group" title="Link to this definition"></a></dt>
+<dd><p>Remove the group item once the chord is finished.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="celery_cloud.models.canvas_model.group_children">
+<span class="sig-prename descclassname"><span class="pre">celery_cloud.models.canvas_model.</span></span><span class="sig-name descname"><span class="pre">group_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/models/canvas_model.html#group_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.models.canvas_model.group_children" title="Link to this definition"></a></dt>
+<dd><p>Ids of the tasks of a group, in order (None when the group does not exist).</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="messaging.html" class="btn btn-neutral float-left" title="Messaging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="serialization.html" class="btn btn-neutral float-right" title="Serialization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

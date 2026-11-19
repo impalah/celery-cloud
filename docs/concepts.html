@@ -1,0 +1,568 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concepts and behaviour &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/concepts.html" />
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User Guide" href="user-guide.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Concepts and behaviour</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#how-a-message-is-processed">How a message is processed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#task-states">Task states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#celery-options-honoured-by-the-runner">Celery options honoured by the runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend-item-format">Backend item format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#result-expiration">Result expiration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#delayed-tasks">Delayed tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#retries">Retries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workflows">Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#revoking">Revoking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#serializers-and-compression">Serializers and compression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#duplicate-deliveries">Duplicate deliveries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#partial-batch-responses">Partial batch responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#remote-lambda-tasks">Remote Lambda tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution-time-limit">Execution time limit</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#time-limits-of-the-task">Time limits of the task</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#known-limitations">Known limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#differences-from-a-celery-worker">Differences from a Celery worker</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Concepts and behaviour</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/concepts.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="concepts-and-behaviour">
+<h1>Concepts and behaviour<a class="headerlink" href="#concepts-and-behaviour" title="Link to this heading"></a></h1>
+<p>This page explains what the runner does with every message. Read it once: it
+answers most “why did my task…?” questions.</p>
+<section id="how-a-message-is-processed">
+<h2>How a message is processed<a class="headerlink" href="#how-a-message-is-processed" title="Link to this heading"></a></h2>
+<p>For every record of an SQS batch, <strong>independently</strong> of the others (one bad
+message never blocks the rest of the batch), the runner:</p>
+<ol class="arabic simple">
+<li><p>Decodes the SQS record and the Celery message inside it. Arguments are read
+from the message <strong>body</strong> (<code class="docutils literal notranslate"><span class="pre">[args,</span> <span class="pre">kwargs,</span> <span class="pre">embed]</span></code>). JSON, MessagePack and YAML
+(and compression) are understood, see <a class="reference internal" href="#serializers-and-compression">Serializers and compression</a>.</p></li>
+<li><p>If the task has a future <code class="docutils literal notranslate"><span class="pre">eta</span></code> it is <strong>held</strong>: the message goes back to the queue
+with a delay (see <a class="reference internal" href="#delayed-tasks">Delayed tasks</a>) and nothing else happens yet.</p></li>
+<li><p>Registers the task in DynamoDB with a <em>conditional write</em> and the state
+<code class="docutils literal notranslate"><span class="pre">STARTED</span></code>. If the task id already exists the message is a duplicate (or a task
+that was revoked) and it is skipped; the message of a <em>retry</em> takes the task over
+(see <a class="reference internal" href="#retries">Retries</a>).</p></li>
+<li><p>Looks the task <strong>name</strong> up in <code class="docutils literal notranslate"><span class="pre">TASKS</span></code> (the allowlist) and executes it:
+<code class="docutils literal notranslate"><span class="pre">task://</span></code> calls a Python function, <code class="docutils literal notranslate"><span class="pre">lambda://</span></code> invokes a Lambda function.</p></li>
+<li><p>Stores how it ended: <code class="docutils literal notranslate"><span class="pre">SUCCESS</span></code> with the result, <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code> with the exception,
+or <code class="docutils literal notranslate"><span class="pre">RETRY</span></code>.</p></li>
+<li><p>Sends the messages that must follow: callbacks, the next step of a chain, the
+body of a chord (see <a class="reference internal" href="#workflows">Workflows</a>).</p></li>
+<li><p>Returns a response with counters and the lists of processed, failed, skipped and
+delayed tasks.</p></li>
+</ol>
+</section>
+<section id="task-states">
+<h2>Task states<a class="headerlink" href="#task-states" title="Link to this heading"></a></h2>
+<p>The runner writes the standard Celery states so that <code class="docutils literal notranslate"><span class="pre">AsyncResult</span></code> works as
+usual:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 18.0%" />
+<col style="width: 82.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>State</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">STARTED</span></code></p></td>
+<td><p>The message was received and the task is running.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SUCCESS</span></code></p></td>
+<td><p>The task returned. <code class="docutils literal notranslate"><span class="pre">result.get()</span></code> returns its value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FAILURE</span></code></p></td>
+<td><p>The task raised, was not listed in <code class="docutils literal notranslate"><span class="pre">TASKS</span></code>, exceeded a time limit, or could
+not be decoded. <code class="docutils literal notranslate"><span class="pre">result.get()</span></code> raises <strong>the original exception</strong>
+(<code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">ValueError</span></code> works; a class the client cannot import is recreated
+with the same name and arguments); <code class="docutils literal notranslate"><span class="pre">result.traceback</span></code> holds the traceback
+of the runner.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RETRY</span></code></p></td>
+<td><p>The task asked to run again (<code class="docutils literal notranslate"><span class="pre">self.retry()</span></code> or <code class="docutils literal notranslate"><span class="pre">autoretry_for</span></code>); its
+message was sent again. <code class="docutils literal notranslate"><span class="pre">result.result</span></code> is the exception that caused it.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">REVOKED</span></code></p></td>
+<td><p>The task arrived after its <code class="docutils literal notranslate"><span class="pre">expires</span></code> time, or the client revoked it, and it
+was not executed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">REJECTED</span></code></p></td>
+<td><p>The task raised <code class="docutils literal notranslate"><span class="pre">Reject</span></code> without <code class="docutils literal notranslate"><span class="pre">requeue</span></code>: the message was dropped.</p></td>
+</tr>
+<tr class="row-even"><td><p><em>your own</em></p></td>
+<td><p>Whatever the task stored with <code class="docutils literal notranslate"><span class="pre">self.update_state(state=...)</span></code>, for example
+<code class="docutils literal notranslate"><span class="pre">PROGRESS</span></code> (<code class="docutils literal notranslate"><span class="pre">result.info</span></code> is the <code class="docutils literal notranslate"><span class="pre">meta</span></code> it gave). <code class="docutils literal notranslate"><span class="pre">Ignore</span></code> leaves it
+as the task set it.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Failures never block the batch and are <strong>not</strong> retried by SQS: they are reported
+as <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code>, like Celery does.</p>
+</section>
+<section id="celery-options-honoured-by-the-runner">
+<h2>Celery options honoured by the runner<a class="headerlink" href="#celery-options-honoured-by-the-runner" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ignore_result</span></code>: nothing is written to the backend (not even failures).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">soft_time_limit</span></code> / <code class="docutils literal notranslate"><span class="pre">time_limit</span></code>: see <a class="reference internal" href="#id5">Execution time limit</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expires</span></code>: a task received after its expiration time is not executed and is
+stored as <code class="docutils literal notranslate"><span class="pre">REVOKED</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eta</span></code> / <code class="docutils literal notranslate"><span class="pre">countdown</span></code>: the task is held until then, see <a class="reference internal" href="#delayed-tasks">Delayed tasks</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">link</span></code>, <code class="docutils literal notranslate"><span class="pre">link_error</span></code>, <code class="docutils literal notranslate"><span class="pre">chain</span></code>, <code class="docutils literal notranslate"><span class="pre">chord</span></code>, <code class="docutils literal notranslate"><span class="pre">group</span></code>, <code class="docutils literal notranslate"><span class="pre">map</span></code>, <code class="docutils literal notranslate"><span class="pre">starmap</span></code> and
+<code class="docutils literal notranslate"><span class="pre">chunks</span></code>: see <a class="reference internal" href="#workflows">Workflows</a>.</p></li>
+</ul>
+<p>Results that JSON cannot represent (<code class="docutils literal notranslate"><span class="pre">datetime</span></code>, <code class="docutils literal notranslate"><span class="pre">Decimal</span></code>…) are stored as
+their <code class="docutils literal notranslate"><span class="pre">str()</span></code>. A result larger than about 380 KB does not fit in a DynamoDB item
+(400 KB limit): the task is stored as <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code> with a
+<code class="docutils literal notranslate"><span class="pre">ResultTooLargeException</span></code> explaining the size, and it is not retried.</p>
+</section>
+<section id="backend-item-format">
+<span id="id1"></span><h2>Backend item format<a class="headerlink" href="#backend-item-format" title="Link to this heading"></a></h2>
+<p>The runner writes the same item layout as Celery’s own DynamoDB backend, so both
+can share the table:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15.0%" />
+<col style="width: 10.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Content</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">id</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Hash key: <code class="docutils literal notranslate"><span class="pre">b'celery-task-meta-&lt;task</span> <span class="pre">id&gt;'</span></code> (the string form of a bytes
+object, which is how Celery builds it).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">result</span></code></p></td>
+<td><p>Binary</p></td>
+<td><p>JSON with <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">result</span></code>, <code class="docutils literal notranslate"><span class="pre">traceback</span></code>, <code class="docutils literal notranslate"><span class="pre">children</span></code>,
+<code class="docutils literal notranslate"><span class="pre">date_done</span></code> and <code class="docutils literal notranslate"><span class="pre">task_id</span></code>. For <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code> the <code class="docutils literal notranslate"><span class="pre">result</span></code> is
+<code class="docutils literal notranslate"><span class="pre">{&quot;exc_type&quot;,</span> <span class="pre">&quot;exc_message&quot;,</span> <span class="pre">&quot;exc_module&quot;}</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timestamp</span></code></p></td>
+<td><p>Number</p></td>
+<td><p>Time of the last change.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ttl</span></code></p></td>
+<td><p>Number</p></td>
+<td><p>Epoch second after which DynamoDB may delete the item (see below).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">attempt</span></code></p></td>
+<td><p>Number</p></td>
+<td><p><strong>Not Celery’s.</strong> Only written for a retry: the <code class="docutils literal notranslate"><span class="pre">retries</span></code> of the message that
+owns the task (see <a class="reference internal" href="#retries">Retries</a>). Celery ignores it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">revoked</span></code></p></td>
+<td><p>Boolean</p></td>
+<td><p><strong>Not Celery’s.</strong> Set by <code class="docutils literal notranslate"><span class="pre">celery_cloud.client.revoke</span></code> (see <a class="reference internal" href="#revoking">Revoking</a>).</p></td>
+</tr>
+</tbody>
+</table>
+<p>For chords the runner also reads and updates the two items that Celery’s backend
+keeps (<code class="docutils literal notranslate"><span class="pre">b'celery-taskset-meta-&lt;group</span> <span class="pre">id&gt;'</span></code> with the ids of the group and
+<code class="docutils literal notranslate"><span class="pre">b'chord-unlock-&lt;group</span> <span class="pre">id&gt;'</span></code> with the <code class="docutils literal notranslate"><span class="pre">chord_count</span></code> counter) and deletes them when
+the chord is done.</p>
+</section>
+<section id="result-expiration">
+<span id="id2"></span><h2>Result expiration<a class="headerlink" href="#result-expiration" title="Link to this heading"></a></h2>
+<p>Every item carries a <code class="docutils literal notranslate"><span class="pre">ttl</span></code> attribute: the epoch second after which the item can
+be deleted, <code class="docutils literal notranslate"><span class="pre">RESULT_TTL_SECONDS</span></code> (default 24 hours) after the <strong>last change of
+state</strong>. It is the same attribute, type and unit that Celery’s DynamoDB backend
+uses.</p>
+<p>The attribute does nothing by itself: <strong>DynamoDB only deletes expired items once
+TTL is enabled on the table for the attribute</strong> <code class="docutils literal notranslate"><span class="pre">ttl</span></code> (see
+<a class="reference internal" href="infrastructure/dynamodb-table.html"><span class="doc">DynamoDB table</span></a>). Until then results are kept forever. Set
+<code class="docutils literal notranslate"><span class="pre">RESULT_TTL_SECONDS=0</span></code> to stop writing the attribute.</p>
+<p>DynamoDB deletes expired items some time after they expire, not at the exact
+second. Failed tasks and tasks stuck in <code class="docutils literal notranslate"><span class="pre">STARTED</span></code> expire too.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Once an item is deleted the runner no longer remembers that task id, so a very
+late redelivery of the same message would run it again. Keep
+<code class="docutils literal notranslate"><span class="pre">RESULT_TTL_SECONDS</span></code> longer than the retention period of the queue if that
+matters to you.</p>
+</div>
+</section>
+<section id="delayed-tasks">
+<span id="concepts-delayed"></span><h2>Delayed tasks<a class="headerlink" href="#delayed-tasks" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">apply_async(countdown=30)</span></code> and <code class="docutils literal notranslate"><span class="pre">eta=...</span></code> are honoured. SQS can delay a message at
+most 15 minutes, so a task that is due later is held in steps: each time the runner
+receives it before its <code class="docutils literal notranslate"><span class="pre">eta</span></code> it sends the <strong>same message</strong> back to the queue with
+the longest delay that does not overshoot (rounded up: a task never runs early), and
+deletes the received one. The task is not registered meanwhile, so the client sees it
+as <code class="docutils literal notranslate"><span class="pre">PENDING</span></code>, as with a Celery worker that has not reached it yet.</p>
+<ul class="simple">
+<li><p>One extra SQS request every 15 minutes while it waits: waiting a day costs about a
+hundred messages.</p></li>
+<li><p>The precision is a second or two plus the SQS latency.</p></li>
+<li><p>The runner needs <code class="docutils literal notranslate"><span class="pre">sqs:SendMessage</span></code> on the queue (see <a class="reference internal" href="infrastructure/iam-roles.html"><span class="doc">IAM roles and permissions</span></a>).
+If the message cannot be sent back, the original is returned to SQS
+(<code class="docutils literal notranslate"><span class="pre">batchItemFailures</span></code>) and nothing is lost.</p></li>
+<li><p>For exact schedules weeks ahead, EventBridge Scheduler is a better tool (see
+<a class="reference internal" href="infrastructure/periodic-tasks.html"><span class="doc">Periodic tasks (replacing celery beat)</span></a>).</p></li>
+</ul>
+</section>
+<section id="retries">
+<span id="id3"></span><h2>Retries<a class="headerlink" href="#retries" title="Link to this heading"></a></h2>
+<p>A decorated task (see <a class="reference internal" href="user-guide/server-task-api.html"><span class="doc">Server: the Celery-like task API</span></a>) can ask to run again with
+<code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">self.retry(exc=exc,</span> <span class="pre">countdown=30)</span></code> or declare <code class="docutils literal notranslate"><span class="pre">autoretry_for</span></code>. The runner
+sends the same message again, with <code class="docutils literal notranslate"><span class="pre">retries</span></code> increased and an <code class="docutils literal notranslate"><span class="pre">eta</span></code>, stores the
+state <code class="docutils literal notranslate"><span class="pre">RETRY</span></code> and ends the invocation successfully (SQS must not redeliver it).
+<code class="docutils literal notranslate"><span class="pre">max_retries</span></code> (default 3) counts the retries; when they run out the last exception
+is the <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code>.</p>
+<p>The retry has the <strong>same task id</strong>, so it must not be discarded as a duplicate. The
+conditional write that protects against duplicates takes this into account: the item
+records the <code class="docutils literal notranslate"><span class="pre">retries</span></code> of the message that owns the task (the extra <code class="docutils literal notranslate"><span class="pre">attempt</span></code>
+attribute) and a message with a <em>higher</em> <code class="docutils literal notranslate"><span class="pre">retries</span></code> takes the task over, once (the
+update is conditional too). A second copy of the same retry, or a late duplicate of the
+original message, is skipped as usual.</p>
+<p>If the retry message cannot be sent the task is stored as <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code> with the error
+that caused the retry.</p>
+</section>
+<section id="workflows">
+<span id="id4"></span><h2>Workflows<a class="headerlink" href="#workflows" title="Link to this heading"></a></h2>
+<p>Celery’s worker starts the next tasks of a workflow when a task ends. The runner does
+the same, sending the next messages to the queue (it needs <code class="docutils literal notranslate"><span class="pre">sqs:SendMessage</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">link</span></code> callbacks receive the result of the task as first argument.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chain</span></code>: the next task receives the result of the previous one. If a task fails
+the chain stops.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">group</span></code>: tasks are independent messages, nothing special is needed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chord</span></code>: every task of the header counts itself in the backend when it ends
+(Celery’s own <code class="docutils literal notranslate"><span class="pre">chord_count</span></code> counter); the last one collects the results of the
+whole header, in order, and sends the body with the list as its only argument. If a
+header task failed, the body is stored as <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code> with <code class="docutils literal notranslate"><span class="pre">ChordError</span></code>
+(<code class="docutils literal notranslate"><span class="pre">Dependency</span> <span class="pre">&lt;id&gt;</span> <span class="pre">raised</span> <span class="pre">ValueError(...)</span></code>) and its <code class="docutils literal notranslate"><span class="pre">link_error</span></code> callbacks run.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">link_error</span></code>: the errback receives the id of the failed task (the classic form of
+Celery errbacks; the new-style <code class="docutils literal notranslate"><span class="pre">(request,</span> <span class="pre">exc,</span> <span class="pre">traceback)</span></code> form is not used).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">map</span></code>, <code class="docutils literal notranslate"><span class="pre">starmap</span></code> and <code class="docutils literal notranslate"><span class="pre">chunks</span></code> run as <code class="docutils literal notranslate"><span class="pre">celery.map</span></code> / <code class="docutils literal notranslate"><span class="pre">celery.starmap</span></code>
+tasks: the runner calls the named task once per item inside the same invocation
+(the task must be in <code class="docutils literal notranslate"><span class="pre">TASKS</span></code>). All the items must fit in the time limit.</p></li>
+</ul>
+<p>A callback can go to another queue with <code class="docutils literal notranslate"><span class="pre">options.queue</span></code>. If sending the next
+messages fails (SQS unavailable) the finished task keeps its <code class="docutils literal notranslate"><span class="pre">SUCCESS</span></code> and the
+problem is only logged: the callback is lost. The AWS SDK already retries these calls
+a few times.</p>
+</section>
+<section id="revoking">
+<h2>Revoking<a class="headerlink" href="#revoking" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">result.revoke()</span></code> of a plain Celery client does nothing (it broadcasts to workers
+that do not exist). After <code class="docutils literal notranslate"><span class="pre">celery_cloud.client.install(app)</span></code> (see
+<a class="reference internal" href="user-guide/client-revoke.html"><span class="doc">Client: revoking tasks</span></a>) it writes a <code class="docutils literal notranslate"><span class="pre">REVOKED</span></code> result with a <code class="docutils literal notranslate"><span class="pre">revoked</span></code>
+flag to the backend:</p>
+<ul class="simple">
+<li><p>A task that <strong>has not started</strong> is never executed (the runner finds the flag when it
+registers the task).</p></li>
+<li><p>A task that is <strong>running</strong> is only flagged: a Python function cannot be stopped
+safely from outside. It stops if its code checks <code class="docutils literal notranslate"><span class="pre">self.is_revoked()</span></code>.</p></li>
+</ul>
+</section>
+<section id="serializers-and-compression">
+<h2>Serializers and compression<a class="headerlink" href="#serializers-and-compression" title="Link to this heading"></a></h2>
+<p>JSON works out of the box. MessagePack and YAML need an extra
+(<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">celery-cloud[msgpack]</span></code> / <code class="docutils literal notranslate"><span class="pre">[yaml]</span></code>, in the runner image). Compression
+with <code class="docutils literal notranslate"><span class="pre">gzip</span></code> (which kombu implements as zlib; a real gzip stream is accepted too),
+<code class="docutils literal notranslate"><span class="pre">bzip2</span></code> and <code class="docutils literal notranslate"><span class="pre">lzma</span></code> is understood. <code class="docutils literal notranslate"><span class="pre">pickle</span></code> is refused on purpose: unpickling a
+message from a queue executes arbitrary code. Brotli and zstd are not supported.</p>
+<p>Results are written with the serializer set in <code class="docutils literal notranslate"><span class="pre">RESULT_SERIALIZER</span></code>, which must match
+the client’s <code class="docutils literal notranslate"><span class="pre">result_serializer</span></code> (default <code class="docutils literal notranslate"><span class="pre">json</span></code>). Result compression is not
+supported.</p>
+</section>
+<section id="duplicate-deliveries">
+<span id="duplicates"></span><h2>Duplicate deliveries<a class="headerlink" href="#duplicate-deliveries" title="Link to this heading"></a></h2>
+<p>SQS delivers messages at least once. Because each task is registered with a
+conditional write, only the first delivery of a task id is executed; later
+deliveries are reported in <code class="docutils literal notranslate"><span class="pre">skipped_tasks</span></code> and discarded. Consequences:</p>
+<ul class="simple">
+<li><p>If the runner dies while a task is <code class="docutils literal notranslate"><span class="pre">STARTED</span></code> (for example it runs out of memory;
+timeouts are handled by the time limits), SQS redelivers the message but
+it is discarded as a duplicate and the task stays <code class="docutils literal notranslate"><span class="pre">STARTED</span></code>. <strong>Give the client
+a timeout</strong> (<code class="docutils literal notranslate"><span class="pre">result.get(timeout=...)</span></code>).</p></li>
+<li><p>Tasks sent with <code class="docutils literal notranslate"><span class="pre">ignore_result</span></code> have no record in the backend, so they cannot
+be de-duplicated.</p></li>
+<li><p>Re-sending a task with an already used task id is treated as a duplicate.</p></li>
+</ul>
+</section>
+<section id="partial-batch-responses">
+<h2>Partial batch responses<a class="headerlink" href="#partial-batch-responses" title="Link to this heading"></a></h2>
+<p>When the state of a task <strong>could not be stored in the backend</strong> (for example
+DynamoDB is unavailable) the message id is returned in <code class="docutils literal notranslate"><span class="pre">batchItemFailures</span></code>, so
+SQS delivers it again. This only works when the event source mapping has
+<code class="docutils literal notranslate"><span class="pre">ReportBatchItemFailures</span></code> enabled (see
+<a class="reference internal" href="infrastructure/lambda-function.html"><span class="doc">Lambda function and event source</span></a>). Without it, SQS deletes every message of a
+batch whose invocation did not raise, so those messages are not retried.</p>
+<p>A record is also returned to SQS when it could not be started because the Lambda
+timeout is too close (see <a class="reference internal" href="#id5">Execution time limit</a>), when a <code class="docutils literal notranslate"><span class="pre">Reject(requeue=True)</span></code>
+asks for it, or when a task due later could not be sent back to the queue.</p>
+</section>
+<section id="remote-lambda-tasks">
+<h2>Remote Lambda tasks<a class="headerlink" href="#remote-lambda-tasks" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">lambda://&lt;function-arn&gt;</span></code> invokes the function synchronously with
+<code class="docutils literal notranslate"><span class="pre">{&quot;args&quot;:</span> <span class="pre">[...],</span> <span class="pre">&quot;kwargs&quot;:</span> <span class="pre">{...}}</span></code> and uses the <code class="docutils literal notranslate"><span class="pre">body</span></code> key of the response when
+present.</p>
+<ul class="simple">
+<li><p>Invocation errors (throttling, network) are retried up to <code class="docutils literal notranslate"><span class="pre">MAX_ATTEMPTS</span></code> times.</p></li>
+<li><p>An error <strong>returned by the function</strong> is never retried: the function already ran.</p></li>
+<li><p>Each function has its own circuit breaker (<code class="docutils literal notranslate"><span class="pre">CB_FAIL_MAX</span></code>, <code class="docutils literal notranslate"><span class="pre">CB_RESET_TIMEOUT</span></code>).</p></li>
+</ul>
+</section>
+<section id="execution-time-limit">
+<span id="id5"></span><h2>Execution time limit<a class="headerlink" href="#execution-time-limit" title="Link to this heading"></a></h2>
+<p><strong>Every task must finish within the maximum timeout of an AWS Lambda function:
+15 minutes (900 seconds).</strong> The runner is a Lambda function, so this applies to
+local tasks (<code class="docutils literal notranslate"><span class="pre">task://</span></code>) and to remote ones (<code class="docutils literal notranslate"><span class="pre">lambda://</span></code>) alike.</p>
+<p>The runner does not wait for AWS to kill the function. Every task runs with a
+<strong>hard limit of ``timeout - TIMEOUT_MARGIN_SECONDS``</strong> (10 s by default): when it is
+reached the task is interrupted with <code class="docutils literal notranslate"><span class="pre">TimeLimitExceeded</span></code> and stored as <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code>,
+so the client gets an answer instead of a task stuck in <code class="docutils literal notranslate"><span class="pre">STARTED</span></code>. Records of a
+batch that would start with less than the margin left are not started and go back to
+SQS (<code class="docutils literal notranslate"><span class="pre">batchItemFailures</span></code>). The interruption uses <code class="docutils literal notranslate"><span class="pre">SIGALRM</span></code>: it stops Python code
+and blocking calls, but a C extension that never returns control cannot be
+interrupted (AWS still kills the function then, the task stays in <code class="docutils literal notranslate"><span class="pre">STARTED</span></code>).</p>
+<section id="time-limits-of-the-task">
+<h3>Time limits of the task<a class="headerlink" href="#time-limits-of-the-task" title="Link to this heading"></a></h3>
+<p>The client can ask for shorter limits with Celery’s own options; the runner honours
+them and the smaller value wins:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">add</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">soft_time_limit</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">time_limit</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">soft_time_limit</span></code>: after that many seconds <code class="docutils literal notranslate"><span class="pre">SoftTimeLimitExceeded</span></code> is raised
+inside the task, which can catch it to clean up.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_limit</span></code>: after that many seconds <code class="docutils literal notranslate"><span class="pre">TimeLimitExceeded</span></code> is raised; if the
+task ignored the soft limit it ends here as <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code>.</p></li>
+</ul>
+<p>Both exceptions are reported as <code class="docutils literal notranslate"><span class="pre">celery.exceptions.SoftTimeLimitExceeded</span></code> and
+<code class="docutils literal notranslate"><span class="pre">celery.exceptions.TimeLimitExceeded</span></code>, so <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">SoftTimeLimitExceeded</span></code> works on
+the client. They are also importable from <code class="docutils literal notranslate"><span class="pre">celery_cloud.exceptions</span></code> for task code.</p>
+<p>For remote tasks the limit is tighter, because the runner waits for the remote
+function synchronously, and the runner’s own timeout (also at most 900 s) has to
+cover that wait plus its own work. In practice a remote function should finish
+comfortably under 15 minutes, and its timeout must be <strong>lower</strong> than the runner’s.</p>
+<p>The timeouts that interact:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32.0%" />
+<col style="width: 18.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Timeout</p></th>
+<th class="head"><p>Maximum</p></th>
+<th class="head"><p>Rule</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Runner function (<code class="docutils literal notranslate"><span class="pre">--timeout</span></code>)</p></td>
+<td><p>900 s</p></td>
+<td><p>Longer than the slowest task (and than the remote function’s timeout).</p></td>
+</tr>
+<tr class="row-odd"><td><p>Remote function (<code class="docutils literal notranslate"><span class="pre">lambda://</span></code>)</p></td>
+<td><p>900 s</p></td>
+<td><p>Shorter than the runner’s timeout.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LAMBDA_INVOKE_TIMEOUT</span></code></p></td>
+<td><p>no AWS limit</p></td>
+<td><p>How long the runner waits for a remote answer. Default 840 s (14 min), below
+the 900 s maximum of the runner so the failure is recorded instead of the
+whole invocation being killed. Lower it if your runner timeout is lower.</p></td>
+</tr>
+<tr class="row-odd"><td><p>SQS visibility timeout</p></td>
+<td><p>12 h</p></td>
+<td><p>At least the runner’s timeout (see <a class="reference internal" href="infrastructure/sqs-queue.html"><span class="doc">SQS queue</span></a>).</p></td>
+</tr>
+<tr class="row-even"><td><p>Client <code class="docutils literal notranslate"><span class="pre">result.get(timeout=...)</span></code></p></td>
+<td><p>none</p></td>
+<td><p>Your choice: always set it.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Work that can take longer than 15 minutes does not fit this runner. Split it into
+steps that each fit (sending a new task for the next step), or start the long job
+from a short task in a service meant for it (AWS Step Functions, ECS/Fargate, AWS
+Batch) and have the client poll for its outcome.</p>
+</section>
+</section>
+<section id="known-limitations">
+<h2>Known limitations<a class="headerlink" href="#known-limitations" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Every task, local or remote, must finish in less than 15 minutes (see
+<a class="reference internal" href="#id5">Execution time limit</a>).</p></li>
+<li><p>Only SQS events are supported.</p></li>
+<li><p>Celery’s remote control (<code class="docutils literal notranslate"><span class="pre">inspect</span></code>, <code class="docutils literal notranslate"><span class="pre">control</span></code>…) does not exist: there are no
+workers to ask. <code class="docutils literal notranslate"><span class="pre">revoke</span></code> works through the backend with a client helper.</p></li>
+<li><p>No <code class="docutils literal notranslate"><span class="pre">celery</span> <span class="pre">beat</span></code>: schedule periodic tasks with EventBridge Scheduler (see
+<a class="reference internal" href="infrastructure/periodic-tasks.html"><span class="doc">Periodic tasks (replacing celery beat)</span></a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pickle</span></code>, brotli and zstd are not supported; result compression neither.</p></li>
+<li><p>Results above about 380 KB are a <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code> (DynamoDB item limit).</p></li>
+</ul>
+</section>
+<section id="differences-from-a-celery-worker">
+<h2>Differences from a Celery worker<a class="headerlink" href="#differences-from-a-celery-worker" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Celery worker</p></th>
+<th class="head"><p>This runner</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pools, <code class="docutils literal notranslate"><span class="pre">concurrency</span></code>, <code class="docutils literal notranslate"><span class="pre">autoscale</span></code>, <code class="docutils literal notranslate"><span class="pre">prefetch</span></code></p></td>
+<td><p>AWS scales invocations; <code class="docutils literal notranslate"><span class="pre">BATCH_CONCURRENCY</span></code> runs the records of a batch in
+threads</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">self.retry</span></code>, <code class="docutils literal notranslate"><span class="pre">autoretry_for</span></code>, <code class="docutils literal notranslate"><span class="pre">max_retries</span></code></p></td>
+<td><p>Supported for tasks decorated with <code class="docutils literal notranslate"><span class="pre">&#64;celery_cloud.task</span></code> (<a class="reference internal" href="#retries"><span class="std std-ref">Retries</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>Task class, <code class="docutils literal notranslate"><span class="pre">base=</span></code>, <code class="docutils literal notranslate"><span class="pre">Task.run</span></code></p></td>
+<td><p>Not supported: a task is a function</p></td>
+</tr>
+<tr class="row-odd"><td><p>Signals, <code class="docutils literal notranslate"><span class="pre">on_success</span></code> / <code class="docutils literal notranslate"><span class="pre">on_failure</span></code> / <code class="docutils literal notranslate"><span class="pre">on_retry</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">celery_cloud.signals</span></code> and the same options of <code class="docutils literal notranslate"><span class="pre">&#64;task</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rate_limit</span></code></p></td>
+<td><p>Not implemented: limit concurrency (<code class="docutils literal notranslate"><span class="pre">MaximumConcurrency</span></code> of the event
+source mapping, reserved concurrency), see
+<a class="reference internal" href="infrastructure/queues-and-priorities.html"><span class="doc">Several queues, priorities and rate limits</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Queues, routing keys, priorities</p></td>
+<td><p>One queue per event source mapping; priorities are separate queues</p></td>
+</tr>
+<tr class="row-even"><td><p>Events, Flower</p></td>
+<td><p>CloudWatch metrics (<code class="docutils literal notranslate"><span class="pre">METRICS_ENABLED</span></code>) and logs</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">celery</span> <span class="pre">inspect</span></code> / <code class="docutils literal notranslate"><span class="pre">control</span></code></p></td>
+<td><p>Not available</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="configuration.html" class="btn btn-neutral float-left" title="Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="user-guide.html" class="btn btn-neutral float-right" title="User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

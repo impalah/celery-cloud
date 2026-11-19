@@ -44,6 +44,14 @@ class TaskResult(BaseModel):
         },
     )
 
+    # Extended meta (Celery's ``result_extended``): only written when enabled
+    name: str | None = Field(default=None)
+    args: list[Any] | None = Field(default=None)
+    kwargs: dict[str, Any] | None = Field(default=None)
+    worker: str | None = Field(default=None)
+    retries: int | None = Field(default=None)
+    queue: str | None = Field(default=None)
+
     task_id: str = Field(
         ...,
         json_schema_extra={

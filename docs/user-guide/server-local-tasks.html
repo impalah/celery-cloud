@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Server: local tasks &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/user-guide/server-local-tasks.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Server: the Celery-like task API" href="server-task-api.html" />
+    <link rel="prev" title="User Guide" href="../user-guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user-guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Server: local tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-contract">The contract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#register-the-tasks">Register the tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#package-the-tasks">Package the tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tasks-with-structured-data">Tasks with structured data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-the-runner-stores">What the runner stores</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="server-task-api.html">Server: the Celery-like task API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-remote-lambda.html">Server: remote Lambda tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-local-debugging.html">Server: debugging locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-basic.html">Client: sending a task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-errors.html">Client: errors, timeouts and states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-structured.html">Client: structured data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-retries-progress.html">Client: retries, progress and delayed tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-canvas.html">Client: workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-revoke.html">Client: revoking tasks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user-guide.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Server: local tasks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/server-local-tasks.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="server-local-tasks">
+<h1>Server: local tasks<a class="headerlink" href="#server-local-tasks" title="Link to this heading"></a></h1>
+<p>A <em>local task</em> is a Python function packaged inside the runner image. It is the
+simplest and cheapest option: no extra Lambda invocation.</p>
+<section id="the-contract">
+<h2>The contract<a class="headerlink" href="#the-contract" title="Link to this heading"></a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Functions can also be written with the Celery-like API (natural arguments, retries,
+progress, time limits): see <a class="reference internal" href="server-task-api.html"><span class="doc">Server: the Celery-like task API</span></a>. Both styles work in the same
+runner.</p>
+</div>
+<p>A local task is a function with exactly <strong>two positional parameters</strong>: the list of
+positional arguments and the dict of keyword arguments sent by the client. It
+returns the result, which must be JSON serialisable (anything else is stored as
+its <code class="docutils literal notranslate"><span class="pre">str()</span></code>). Raise any exception to make the task fail.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">calculator.py</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Local tasks: plain functions packaged with the runner.</span>
+
+<span class="sd">Every local task receives two parameters: the list of positional arguments and</span>
+<span class="sd">the dict of keyword arguments that the client sent.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Add all the positional arguments (plus the optional ``extra`` keyword)."""</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"add called with args=</span><span class="si">{}</span><span class="s2"> kwargs=</span><span class="si">{}</span><span class="s2">"</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">+</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"extra"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">subtract</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Subtract every value from the first one."""</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># Any exception becomes a FAILURE state that the client can read</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"subtract needs at least 2 values"</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">result</span> <span class="o">-=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">divide</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Divide the first value by the second one (fails when it is zero)."""</span>
+    <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">total</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Chord body: receives ONE argument, the list of results of the header tasks."""</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">report_error</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Error callback (``link_error``): receives the id of the task that failed."""</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"task </span><span class="si">{}</span><span class="s2"> failed"</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"handled failure of </span><span class="si">{</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+</pre></div>
+</div>
+</div>
+<p>A local task runs inside the runner, so it is bound by the <strong>15 minute</strong> limit of a
+Lambda function (see <a class="reference internal" href="../concepts.html#execution-time-limit"><span class="std std-ref">the execution time limit</span></a>).</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">celery_cloud.logging.logger</span></code> so your log lines carry the <code class="docutils literal notranslate"><span class="pre">trace_id</span></code> of the
+invocation (see <a class="reference internal" href="../api/logging.html"><span class="doc">Logging</span></a>).</p>
+</section>
+<section id="register-the-tasks">
+<h2>Register the tasks<a class="headerlink" href="#register-the-tasks" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TASKS</span></code> maps the Celery task name to the function: <code class="docutils literal notranslate"><span class="pre">task://&lt;module&gt;/&lt;function&gt;</span></code>.
+The module path is the one Python can import inside the image.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">env.json (environment of the Lambda function)</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"Variables"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"TASKS"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{\"calculator.add\": \"task://calculator/add\", \"calculator.subtract\": \"task://calculator/subtract\", \"calculator.divide\": \"task://calculator/divide\", \"reports.summarize\": \"task://reports/summarize\", \"remote.sum\": \"lambda://arn:aws:lambda:eu-central-1:123456789012:function:remote-sum\"}"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"CELERY_BACKEND_TABLE"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lambda-runner-tasks"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"CELERY_BACKEND_REGION"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eu-central-1"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"LOG_LEVEL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"INFO"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="package-the-tasks">
+<h2>Package the tasks<a class="headerlink" href="#package-the-tasks" title="Link to this heading"></a></h2>
+<p>Build an image on top of the runner image and copy your modules next to the
+handler:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Dockerfile</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="c"># The runner image already contains celery-cloud and the Lambda handler.</span>
+<span class="c"># Use a tag that exists in https://gallery.ecr.aws/e2b2x4l7/celery-cloud/lambda-runner</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">public.ecr.aws/e2b2x4l7/celery-cloud/lambda-runner:&lt;tag&gt;</span>
+
+<span class="c"># Local tasks: copy them next to the handler so `task://calculator/add` can import them</span>
+<span class="k">COPY</span><span class="w"> </span>calculator.py<span class="w"> </span>reports.py<span class="w"> </span><span class="si">${</span><span class="nv">LAMBDA_TASK_ROOT</span><span class="si">}</span>/
+
+<span class="c"># Extra dependencies of your tasks (reports.py uses pydantic, which the runner</span>
+<span class="c"># already ships, so nothing to install here)</span>
+<span class="c"># RUN pip install --no-cache-dir &lt;package&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64<span class="w"> </span>--provenance<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-t<span class="w"> </span><span class="m">123456789012</span>.dkr.ecr.eu-central-1.amazonaws.com/celery-cloud-runner:2<span class="w"> </span>.
+docker<span class="w"> </span>push<span class="w"> </span><span class="m">123456789012</span>.dkr.ecr.eu-central-1.amazonaws.com/celery-cloud-runner:2
+
+aws<span class="w"> </span>lambda<span class="w"> </span>update-function-code<span class="w"> </span>--function-name<span class="w"> </span>celery-cloud-runner<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-uri<span class="w"> </span><span class="m">123456789012</span>.dkr.ecr.eu-central-1.amazonaws.com/celery-cloud-runner:2
+</pre></div>
+</div>
+<p>The infrastructure around it (queue, table, role, function, event source mapping)
+is explained in <a class="reference internal" href="../infrastructure.html"><span class="doc">Infrastructure</span></a>.</p>
+<p>If your tasks live in a package with its own dependencies, install it in the image
+instead of copying single files (<code class="docutils literal notranslate"><span class="pre">RUN</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--no-cache-dir</span> <span class="pre">.</span></code>) and use the
+dotted module path: <code class="docutils literal notranslate"><span class="pre">task://my_package.domain.calculator/add</span></code>.</p>
+</section>
+<section id="tasks-with-structured-data">
+<h2>Tasks with structured data<a class="headerlink" href="#tasks-with-structured-data" title="Link to this heading"></a></h2>
+<p>Celery serialises arguments as JSON, so a pydantic model arrives as a plain dict:
+validate it on entry and return <code class="docutils literal notranslate"><span class="pre">model_dump()</span></code>. The client side of this example
+is <a class="reference internal" href="client-structured.html"><span class="doc">Client: structured data</span></a>.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">reports.py</span><a class="headerlink" href="#id4" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""A local task that works with structured data.</span>
+
+<span class="sd">Celery serialises the arguments as JSON, so a pydantic model travels as a dict:</span>
+<span class="sd">the client sends ``model_dump()`` and the task validates it with</span>
+<span class="sd">``model_validate()``. The result is returned the same way.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SummaryRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""What the client sends."""</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SummaryResponse</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""What the task returns."""</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">words</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">first_words</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Count the words of a text and return its first five."""</span>
+    <span class="n">request</span> <span class="o">=</span> <span class="n">SummaryRequest</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">SummaryResponse</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">words</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">),</span>
+        <span class="n">first_words</span><span class="o">=</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">words</span><span class="p">[:</span><span class="mi">5</span><span class="p">]),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="what-the-runner-stores">
+<h2>What the runner stores<a class="headerlink" href="#what-the-runner-stores" title="Link to this heading"></a></h2>
+<p>For <code class="docutils literal notranslate"><span class="pre">calculator.add</span></code> with <code class="docutils literal notranslate"><span class="pre">args=[10,</span> <span class="pre">3]</span></code> and <code class="docutils literal notranslate"><span class="pre">kwargs={&quot;extra&quot;:</span> <span class="pre">5}</span></code> the item in
+DynamoDB holds a <code class="docutils literal notranslate"><span class="pre">result</span></code> like this (JSON, decoded):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SUCCESS"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"result"</span><span class="p">:</span><span class="w"> </span><span class="mi">18</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"traceback"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"children"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">"date_done"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2025-01-01T10:00:00.123456+00:00"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"task_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"8d58fa0a-f181-47ff-83e9-9ddfd2ee8af9"</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If the function raises <code class="docutils literal notranslate"><span class="pre">ValueError(&quot;subtract</span> <span class="pre">needs</span> <span class="pre">at</span> <span class="pre">least</span> <span class="pre">2</span> <span class="pre">values&quot;)</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FAILURE"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"result"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"exc_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ValueError"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"exc_message"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"subtract needs at least 2 values"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"exc_module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"builtins"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"traceback"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Traceback (most recent call last): ..."</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The client receives a real <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> with that message (Celery rebuilds the class
+from <code class="docutils literal notranslate"><span class="pre">exc_module</span></code> and <code class="docutils literal notranslate"><span class="pre">exc_type</span></code>).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../user-guide.html" class="btn btn-neutral float-left" title="User Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="server-task-api.html" class="btn btn-neutral float-right" title="Server: the Celery-like task API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

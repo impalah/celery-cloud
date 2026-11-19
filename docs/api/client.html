@@ -1,0 +1,205 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client helpers &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/api/client.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Lambda handler" href="runners.html" />
+    <link rel="prev" title="Exceptions" href="exceptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tasks.html">Task API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signals.html">Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Client helpers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.client.backend_location"><code class="docutils literal notranslate"><span class="pre">backend_location()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.client.install"><code class="docutils literal notranslate"><span class="pre">install()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#celery_cloud.client.revoke"><code class="docutils literal notranslate"><span class="pre">revoke()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="runners.html">Lambda handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="strategies.html">Task execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="canvas.html">Workflows and built-in tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="messaging.html">Messaging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Result backend model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="serialization.html">Serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deadline.html">Time limits and metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="entities.html">Entities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html">Settings</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Client helpers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/client.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="client-helpers">
+<h1>Client helpers<a class="headerlink" href="#client-helpers" title="Link to this heading"></a></h1>
+<p>Optional helpers for the client application (see <a class="reference internal" href="../user-guide/client-revoke.html"><span class="doc">Client: revoking tasks</span></a>). Only
+<code class="docutils literal notranslate"><span class="pre">boto3</span></code> is needed.</p>
+<p id="module-celery_cloud.client">Client-side helpers (optional): the parts of Celery that need the runner’s help.</p>
+<p>A Celery client cannot revoke a task of this runner by itself: <code class="docutils literal notranslate"><span class="pre">app.control.revoke</span></code>
+broadcasts a message to workers, and there are no workers to receive it. The helpers
+here do it through the result backend instead, which the runner already reads:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">celery_cloud.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">install</span>
+
+<span class="n">install</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>               <span class="c1"># once, after configuring the Celery app</span>
+<span class="n">result</span><span class="o">.</span><span class="n">revoke</span><span class="p">()</span>            <span class="c1"># now works: a task that has not started never starts</span>
+</pre></div>
+</div>
+<p>How it works: <code class="docutils literal notranslate"><span class="pre">revoke</span></code> writes a <code class="docutils literal notranslate"><span class="pre">REVOKED</span></code> result for the task with a <code class="docutils literal notranslate"><span class="pre">revoked</span></code>
+flag. A task that has not started yet is skipped by the runner. A task that is already
+running is only <em>flagged</em>: it keeps running unless its code checks
+<code class="docutils literal notranslate"><span class="pre">self.is_revoked()</span></code> (cooperative cancellation), because a running Python function
+cannot be stopped safely from outside.</p>
+<p>Only <code class="docutils literal notranslate"><span class="pre">boto3</span></code> is needed (no runner settings are read).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="celery_cloud.client.backend_location">
+<span class="sig-prename descclassname"><span class="pre">celery_cloud.client.</span></span><span class="sig-name descname"><span class="pre">backend_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/celery_cloud/client.html#backend_location"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.client.backend_location" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(region,</span> <span class="pre">table)</span></code> of a <code class="docutils literal notranslate"><span class="pre">dynamodb://&#64;region/table</span></code> result backend URL.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="celery_cloud.client.install">
+<span class="sig-prename descclassname"><span class="pre">celery_cloud.client.</span></span><span class="sig-name descname"><span class="pre">install</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl_seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">86400</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/client.html#install"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.client.install" title="Link to this definition"></a></dt>
+<dd><p>Make <code class="docutils literal notranslate"><span class="pre">app.control.revoke</span></code> / <code class="docutils literal notranslate"><span class="pre">AsyncResult.revoke</span></code> work with this runner.</p>
+<p>Reads the Region and table from the app’s <code class="docutils literal notranslate"><span class="pre">result_backend</span></code>. <code class="docutils literal notranslate"><span class="pre">terminate</span></code> and
+<code class="docutils literal notranslate"><span class="pre">signal</span></code> are accepted and ignored: a running task is flagged, not killed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="celery_cloud.client.revoke">
+<span class="sig-prename descclassname"><span class="pre">celery_cloud.client.</span></span><span class="sig-name descname"><span class="pre">revoke</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl_seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">86400</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.15)"><span class="pre">Any</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/celery_cloud/client.html#revoke"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#celery_cloud.client.revoke" title="Link to this definition"></a></dt>
+<dd><p>Revoke a task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_id</strong> – The Celery task id.</p></li>
+<li><p><strong>table</strong> – The DynamoDB result table.</p></li>
+<li><p><strong>region</strong> – The Region of the table.</p></li>
+<li><p><strong>ttl_seconds</strong> – How long the <code class="docutils literal notranslate"><span class="pre">REVOKED</span></code> marker is kept (0 = forever; it only
+expires if TTL is enabled on the table for the <code class="docutils literal notranslate"><span class="pre">ttl</span></code> attribute).</p></li>
+<li><p><strong>serializer</strong> – The <code class="docutils literal notranslate"><span class="pre">result_serializer</span></code> of the client (json, msgpack or yaml).</p></li>
+<li><p><strong>client</strong> – A DynamoDB client (for tests); created from <code class="docutils literal notranslate"><span class="pre">region</span></code> by default.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">&quot;revoked&quot;</span></code> when the task had not started (it will never run), or
+<code class="docutils literal notranslate"><span class="pre">&quot;flagged&quot;</span></code> when it had already started or finished (the flag is only seen by
+a task that checks <code class="docutils literal notranslate"><span class="pre">self.is_revoked()</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="exceptions.html" class="btn btn-neutral float-left" title="Exceptions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="runners.html" class="btn btn-neutral float-right" title="Lambda handler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

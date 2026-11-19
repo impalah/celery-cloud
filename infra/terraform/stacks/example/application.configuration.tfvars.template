@@ -1,0 +1,47 @@
+# Copy to application.configuration.tfvars (git-ignored) and edit. Example values only.
+
+aws_account_id = "123456789012"
+region         = "eu-central-1"
+owner          = "CHANGE-ME"
+project        = "celery-cloud"
+environment    = "example"
+
+# Empty on the first apply. After pushing the image (README), set its tag and apply again.
+runner_image_tag = ""
+
+# Where each task runs. The image must contain the modules of the task:// routes
+# (pages_source/examples/server/ has the ones used by the user guide).
+tasks = {
+  "calculator.add"      = "task://calculator/add"
+  "calculator.subtract" = "task://calculator/subtract"
+  "calculator.divide"   = "task://calculator/divide"
+  "calculator.total"    = "task://calculator/total"
+  "jobs.fetch"          = "task://jobs/fetch"
+  "jobs.import_rows"    = "task://jobs/import_rows"
+}
+
+# Other settings of the runner (docs: Configuration)
+runner_environment = {
+  LOG_LEVEL          = "INFO"
+  RESULT_TTL_SECONDS = "86400"
+  METRICS_ENABLED    = "true"
+}
+
+runner_timeout = 300
+runner_memory_mb = 512
+
+# Cap the invocations at once: a safety net for a test (2 to 1000)
+runner_max_concurrency = 5
+
+# An IAM user to try the client from your laptop (no access key is created)
+create_client_user = false
+
+# Periodic tasks (EventBridge Scheduler, what celery beat did). Empty = none created
+# schedules = {
+#   nightly-report = {
+#     task       = "reports.summarize"
+#     expression = "cron(0 3 * * ? *)"
+#     timezone   = "Europe/Madrid"
+#     args       = [1, 2]
+#   }
+# }

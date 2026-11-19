@@ -12,7 +12,7 @@ class TaskRoute(NamedTuple):
     scheme: str  # task / lambda / etc.
     module: str  # module or lambda arn (as host)
     function: str  # function path or callable name
-    query: dict  # parsed query params if any
+    query: dict[str, list[str]]  # parsed query params if any (currently unused)
 
     @classmethod
     def from_url(cls, url: str) -> "TaskRoute":

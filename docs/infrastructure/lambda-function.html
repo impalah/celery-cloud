@@ -1,0 +1,254 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lambda function and event source &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/infrastructure/lambda-function.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Terraform" href="terraform.html" />
+    <link rel="prev" title="Runner image (ECR)" href="runner-image.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../infrastructure.html">Infrastructure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sqs-queue.html">SQS queue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamodb-table.html">DynamoDB table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iam-roles.html">IAM roles and permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runner-image.html">Runner image (ECR)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Lambda function and event source</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-the-function">Create the function</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sizing">Sizing</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#connect-the-queue">Connect the queue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-the-function">Update the function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#smoke-test">Smoke test</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="terraform.html">Terraform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="periodic-tasks.html">Periodic tasks (replacing celery beat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="queues-and-priorities.html">Several queues, priorities and rate limits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operations.html">Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure.html#conventions-of-the-guides">Conventions of the guides</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../infrastructure.html">Infrastructure</a></li>
+      <li class="breadcrumb-item active">Lambda function and event source</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/infrastructure/lambda-function.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="lambda-function-and-event-source">
+<h1>Lambda function and event source<a class="headerlink" href="#lambda-function-and-event-source" title="Link to this heading"></a></h1>
+<p>This step creates the runner and connects the queue to it.</p>
+<section id="create-the-function">
+<h2>Create the function<a class="headerlink" href="#create-the-function" title="Link to this heading"></a></h2>
+<p>The settings go in an <code class="docutils literal notranslate"><span class="pre">env.json</span></code> file, which avoids shell-quoting the <code class="docutils literal notranslate"><span class="pre">TASKS</span></code>
+JSON (see <a class="reference internal" href="../configuration.html"><span class="doc">Configuration</span></a>):</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">env.json</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"Variables"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"TASKS"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{\"calculator.add\": \"task://calculator/add\", \"calculator.subtract\": \"task://calculator/subtract\", \"calculator.divide\": \"task://calculator/divide\", \"reports.summarize\": \"task://reports/summarize\", \"remote.sum\": \"lambda://arn:aws:lambda:eu-central-1:123456789012:function:remote-sum\"}"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"CELERY_BACKEND_TABLE"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lambda-runner-tasks"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"CELERY_BACKEND_REGION"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eu-central-1"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"LOG_LEVEL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"INFO"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>lambda<span class="w"> </span>create-function<span class="w"> </span>--function-name<span class="w"> </span><span class="nv">$FUNCTION</span><span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--package-type<span class="w"> </span>Image<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--code<span class="w"> </span><span class="nv">ImageUri</span><span class="o">=</span><span class="nv">$ACCOUNT_ID</span>.dkr.ecr.<span class="nv">$AWS_REGION</span>.amazonaws.com/celery-cloud-runner:1<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--role<span class="w"> </span>arn:aws:iam::<span class="nv">$ACCOUNT_ID</span>:role/<span class="nv">$FUNCTION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--timeout<span class="w"> </span><span class="m">300</span><span class="w"> </span>--memory-size<span class="w"> </span><span class="m">512</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--environment<span class="w"> </span>file://env.json
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A role created seconds ago may not be usable yet; if <code class="docutils literal notranslate"><span class="pre">create-function</span></code> says it
+cannot assume the role, wait a few seconds and retry.</p>
+</div>
+<section id="sizing">
+<h3>Sizing<a class="headerlink" href="#sizing" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 78.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Guidance</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--timeout</span></code></p></td>
+<td><p>The longest task you expect, plus margin (<strong>maximum 900 s = 15 minutes</strong>,
+the AWS limit: no task can run longer, see <a class="reference internal" href="../concepts.html#execution-time-limit"><span class="std std-ref">Execution time limit</span></a>). If you use
+<code class="docutils literal notranslate"><span class="pre">lambda://</span></code> tasks it must exceed the remote function’s timeout. The queue’s
+visibility timeout must be at least this value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--memory-size</span></code></p></td>
+<td><p>Start at 512 MB and adjust from the <code class="docutils literal notranslate"><span class="pre">Max</span> <span class="pre">Memory</span> <span class="pre">Used</span></code> value of the logs.
+CPU grows with memory.</p></td>
+</tr>
+<tr class="row-even"><td><p>Concurrency</p></td>
+<td><p>Each concurrent invocation handles one batch. Cap it with
+<code class="docutils literal notranslate"><span class="pre">--reserved-concurrent-executions</span></code> (or the <code class="docutils literal notranslate"><span class="pre">ScalingConfig</span></code> of the event
+source mapping) to protect downstream systems.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="connect-the-queue">
+<h2>Connect the queue<a class="headerlink" href="#connect-the-queue" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>lambda<span class="w"> </span>create-event-source-mapping<span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--function-name<span class="w"> </span><span class="nv">$FUNCTION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--event-source-arn<span class="w"> </span><span class="nv">$QUEUE_ARN</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--batch-size<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--function-response-types<span class="w"> </span>ReportBatchItemFailures
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ReportBatchItemFailures</span></code> is <strong>required</strong>: it lets the runner ask SQS to redeliver
+only the messages whose state it could not record (see
+<a class="reference internal" href="../concepts.html#result-expiration"><span class="std std-ref">Result expiration</span></a> and <a class="reference internal" href="../concepts.html"><span class="doc">Concepts and behaviour</span></a>). Without it, messages of a batch
+that did not raise are deleted whatever happened.</p>
+<p>Optional tuning of the mapping:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--maximum-batching-window-in-seconds</span> <span class="pre">5</span></code>: wait up to 5 s to fill a batch (fewer
+invocations, more latency).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--scaling-config</span> <span class="pre">MaximumConcurrency=10</span></code>: limit how many invocations run at
+once.</p></li>
+</ul>
+</section>
+<section id="update-the-function">
+<h2>Update the function<a class="headerlink" href="#update-the-function" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># new code (a new image tag)</span>
+aws<span class="w"> </span>lambda<span class="w"> </span>update-function-code<span class="w"> </span>--function-name<span class="w"> </span><span class="nv">$FUNCTION</span><span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-uri<span class="w"> </span><span class="nv">$ACCOUNT_ID</span>.dkr.ecr.<span class="nv">$AWS_REGION</span>.amazonaws.com/celery-cloud-runner:2
+
+<span class="c1"># new settings (this REPLACES all the variables: send them all)</span>
+aws<span class="w"> </span>lambda<span class="w"> </span>update-function-configuration<span class="w"> </span>--function-name<span class="w"> </span><span class="nv">$FUNCTION</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span><span class="w"> </span>--environment<span class="w"> </span>file://env.json
+</pre></div>
+</div>
+</section>
+<section id="smoke-test">
+<h2>Smoke test<a class="headerlink" href="#smoke-test" title="Link to this heading"></a></h2>
+<p>Send one task with a client (<a class="reference internal" href="../user-guide/client-basic.html"><span class="doc">Client: sending a task</span></a>) and follow the logs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>logs<span class="w"> </span>tail<span class="w"> </span>/aws/lambda/<span class="nv">$FUNCTION</span><span class="w"> </span>--follow<span class="w"> </span>--region<span class="w"> </span><span class="nv">$AWS_REGION</span>
+</pre></div>
+</div>
+<p>You should see the invocation with its <code class="docutils literal notranslate"><span class="pre">trace_id</span></code>, and the client prints the
+result.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="runner-image.html" class="btn btn-neutral float-left" title="Runner image (ECR)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="terraform.html" class="btn btn-neutral float-right" title="Terraform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

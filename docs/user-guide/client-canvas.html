@@ -1,0 +1,230 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client: workflows &mdash; Celery Cloud 0.2.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="/celery-cloud/user-guide/client-canvas.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=938c9ccc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Client: revoking tasks" href="client-revoke.html" />
+    <link rel="prev" title="Client: retries, progress and delayed tasks" href="client-retries-progress.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Celery Cloud
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../concepts.html">Concepts and behaviour</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user-guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="server-local-tasks.html">Server: local tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-task-api.html">Server: the Celery-like task API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-remote-lambda.html">Server: remote Lambda tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server-local-debugging.html">Server: debugging locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-basic.html">Client: sending a task</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-errors.html">Client: errors, timeouts and states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-structured.html">Client: structured data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client-retries-progress.html">Client: retries, progress and delayed tasks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Client: workflows</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#which-task-a-result-belongs-to">Which task a result belongs to</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chords">Chords</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#errbacks">Errbacks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-happens-if-a-step-fails">What happens if a step fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#map-starmap-and-chunks">Map, starmap and chunks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="client-revoke.html">Client: revoking tasks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure.html">Infrastructure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Celery Cloud</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user-guide.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Client: workflows</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user-guide/client-canvas.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="client-workflows">
+<h1>Client: workflows<a class="headerlink" href="#client-workflows" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">link</span></code>, <code class="docutils literal notranslate"><span class="pre">chain</span></code>, <code class="docutils literal notranslate"><span class="pre">group</span></code>, <code class="docutils literal notranslate"><span class="pre">chord</span></code>, <code class="docutils literal notranslate"><span class="pre">link_error</span></code>, <code class="docutils literal notranslate"><span class="pre">map</span></code>, <code class="docutils literal notranslate"><span class="pre">starmap</span></code> and
+<code class="docutils literal notranslate"><span class="pre">chunks</span></code> work with the normal Celery API. How they run is explained in
+<a class="reference internal" href="../concepts.html#workflows"><span class="std std-ref">workflows</span></a>.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">canvas.py</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Workflows: link, chain, group and chord."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery</span><span class="w"> </span><span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">chord</span><span class="p">,</span> <span class="n">group</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">celery_app</span><span class="w"> </span><span class="kn">import</span> <span class="n">add</span><span class="p">,</span> <span class="n">divide</span><span class="p">,</span> <span class="n">report_error</span><span class="p">,</span> <span class="n">subtract</span><span class="p">,</span> <span class="n">total</span>
+
+<span class="c1"># link: run a second task with the result of the first</span>
+<span class="n">second</span> <span class="o">=</span> <span class="n">subtract</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">second_result</span> <span class="o">=</span> <span class="n">second</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>  <span class="c1"># freeze() gives us its AsyncResult before sending</span>
+<span class="n">add</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">link</span><span class="o">=</span><span class="n">second</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">second_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">))</span>  <span class="c1"># (10 + 3) - 1 = 12</span>
+
+<span class="c1"># chain: each task receives the result of the previous one</span>
+<span class="n">workflow</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="n">add</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">add</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">subtract</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">apply_async</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">workflow</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">))</span>  <span class="c1"># ((1 + 2) + 10) - 3 = 10</span>
+<span class="nb">print</span><span class="p">([</span><span class="n">step</span><span class="o">.</span><span class="n">result</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="p">(</span><span class="n">workflow</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">workflow</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">workflow</span><span class="p">)])</span>  <span class="c1"># 3, 13, 10</span>
+
+<span class="c1"># group: independent tasks, the result is the list of results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">group</span><span class="p">(</span><span class="n">add</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">add</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">add</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">apply_async</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">))</span>  <span class="c1"># [2, 4, 6]</span>
+
+<span class="c1"># chord: a group, then ONE task that receives the list of results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">chord</span><span class="p">([</span><span class="n">add</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">add</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">add</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])(</span><span class="n">total</span><span class="o">.</span><span class="n">s</span><span class="p">())</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">))</span>  <span class="c1"># 21</span>
+
+<span class="c1"># link_error: run a task when another one fails (it receives the failed task id)</span>
+<span class="n">handler</span> <span class="o">=</span> <span class="n">report_error</span><span class="o">.</span><span class="n">s</span><span class="p">()</span>
+<span class="n">handled</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">freeze</span><span class="p">()</span>
+<span class="n">divide</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">link_error</span><span class="o">=</span><span class="n">handler</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">handled</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">))</span>  <span class="c1"># handled failure of &lt;task id&gt;</span>
+
+<span class="c1"># map / starmap / chunks: one task over many inputs</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">add</span><span class="o">.</span><span class="n">starmap</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span><span class="o">.</span><span class="n">apply_async</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">))</span>  <span class="c1"># [3, 7, 11]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">add</span><span class="o">.</span><span class="n">chunks</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)],</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">apply_async</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">))</span>  <span class="c1"># [[2, 4], [6, 8]]</span>
+</pre></div>
+</div>
+</div>
+<section id="which-task-a-result-belongs-to">
+<h2>Which task a result belongs to<a class="headerlink" href="#which-task-a-result-belongs-to" title="Link to this heading"></a></h2>
+<p>When the runner starts the next task of a workflow the client did not call
+<code class="docutils literal notranslate"><span class="pre">apply_async</span></code> for it, so it needs the id in advance: <code class="docutils literal notranslate"><span class="pre">signature.freeze()</span></code> returns the
+<code class="docutils literal notranslate"><span class="pre">AsyncResult</span></code> before the signature is sent (as in the <code class="docutils literal notranslate"><span class="pre">link</span></code> example), and a
+<code class="docutils literal notranslate"><span class="pre">chain</span></code> or <code class="docutils literal notranslate"><span class="pre">chord</span></code> result already knows its steps (<code class="docutils literal notranslate"><span class="pre">result.parent</span></code>).</p>
+</section>
+<section id="chords">
+<h2>Chords<a class="headerlink" href="#chords" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>The body receives <strong>one argument</strong>: the list of results of the header, in the order of
+the header.</p></li>
+<li><p>A chord needs a result backend that can count: Celery’s DynamoDB backend can (the
+client creates the <code class="docutils literal notranslate"><span class="pre">chord_count</span></code> item when it starts the chord), so use the same table
+as the runner.</p></li>
+<li><p>If a header task fails the body is not run: its result is <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code> with
+<code class="docutils literal notranslate"><span class="pre">celery.exceptions.ChordError</span></code> (<code class="docutils literal notranslate"><span class="pre">Dependency</span> <span class="pre">&lt;id&gt;</span> <span class="pre">raised</span> <span class="pre">...</span></code>), and its <code class="docutils literal notranslate"><span class="pre">link_error</span></code>
+callbacks run.</p></li>
+<li><p>Every header task must store its result: do not send them with <code class="docutils literal notranslate"><span class="pre">ignore_result</span></code>.</p></li>
+</ul>
+</section>
+<section id="errbacks">
+<h2>Errbacks<a class="headerlink" href="#errbacks" title="Link to this heading"></a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">link_error</span></code> task receives the <strong>id of the failed task</strong> (the classic errback form).
+Declare it as <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">handler(task_id)</span></code>; to find out what went wrong look the task up with
+<code class="docutils literal notranslate"><span class="pre">AsyncResult(task_id)</span></code>.</p>
+</section>
+<section id="what-happens-if-a-step-fails">
+<h2>What happens if a step fails<a class="headerlink" href="#what-happens-if-a-step-fails" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>In a <strong>chain</strong> the next tasks never start; the chain result is the <code class="docutils literal notranslate"><span class="pre">FAILURE</span></code> of the
+failing step (<code class="docutils literal notranslate"><span class="pre">result.get()</span></code> raises its original exception).</p></li>
+<li><p>In a <strong>group</strong> the other tasks are unaffected; <code class="docutils literal notranslate"><span class="pre">get()</span></code> raises the first failure.</p></li>
+<li><p>The messages that start the next tasks are sent after the task stores its result. If
+SQS rejects them (very rare, the SDK retries) the callback is lost and only logged.</p></li>
+</ul>
+</section>
+<section id="map-starmap-and-chunks">
+<h2>Map, starmap and chunks<a class="headerlink" href="#map-starmap-and-chunks" title="Link to this heading"></a></h2>
+<p>They run as <code class="docutils literal notranslate"><span class="pre">celery.map</span></code> / <code class="docutils literal notranslate"><span class="pre">celery.starmap</span></code>: the runner calls the task once per item
+in <strong>one invocation</strong>, so the whole list must finish within the time limit (about 15
+minutes). <code class="docutils literal notranslate"><span class="pre">chunks</span></code> splits the work into several <code class="docutils literal notranslate"><span class="pre">starmap</span></code> messages, which run in
+parallel. The mapped task must be listed in <code class="docutils literal notranslate"><span class="pre">TASKS</span></code>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="client-retries-progress.html" class="btn btn-neutral float-left" title="Client: retries, progress and delayed tasks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="client-revoke.html" class="btn btn-neutral float-right" title="Client: revoking tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, impalah.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
